@@ -300,6 +300,148 @@ void fillChessboarLine(std::vector<cv::Point> points,
     }
 }
 
+void getChessboardGrid(cv::Mat dst, cv::Mat src, std::vector<cv::Point> top, std::vector<cv::Point> botton, std::vector<cv::Point> left, std::vector<cv::Point> right)
+{
+    cv::Point center_dst = {dst.cols/2, dst.rows/2};
+    cv::Point center_src = {(top[top.size() / 2].x + botton[botton.size() / 2].x) / 2,
+                           (left[left.size() / 2].y + right[right.size() / 2].y) / 2};
+
+    cv::Point2f srcTri[3];
+    cv::Point2f dstTri[3];
+    cv::Mat warp_mat;
+    warp_mat.create(2, 3, CV_32FC1);
+    cv::Mat mask;
+    mask.create(dst.rows, dst.cols, CV_8UC1);
+    mask.setTo(cv::Scalar(255));
+
+    //top
+    for (int i = 1; i < top.size(); i++)
+    {
+	srcTri[0] = {top[i - 1].x, top[i - 1].y};
+	srcTri[1] = {top[i].x, top[i].y};
+	srcTri[2] = center_src;
+	dstTri[0] = {(dst.cols - 1) * (i - 1) / (top.size() - 1), 1};
+	dstTri[1] = {(dst.cols - 1) * i / (top.size() - 1), 1};
+	dstTri[2] = center_dst;
+
+	cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(0), 1, 16, 0);
+	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
+	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
+
+	warp_mat = cv::getAffineTransform(srcTri, dstTri);	
+	cv::Mat warp = cv::Mat::zeros(dst.rows, dst.cols, dst.type());
+	cv::warpAffine(src, warp, warp_mat, warp.size());
+	cv::floodFill(mask, cv::Point(0, mask.rows - 1), cv::Scalar::all(0));
+
+        cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(255), 1, 16, 0);
+	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
+	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
+
+	warp.copyTo(dst, mask);
+	mask.setTo(cv::Scalar(255));
+    }
+    
+    //bottton
+    for (int i = 1; i < botton.size(); i++)
+    {
+	srcTri[0] = {botton[i - 1].x, botton[i - 1].y};
+	srcTri[1] = center_src;
+	srcTri[2] = {botton[i].x, botton[i].y};
+	dstTri[0] = {(dst.cols - 1) * (i - 1) / (botton.size() - 1)+1, dst.rows - 2};
+	dstTri[1] = center_dst;
+	dstTri[2] = {(dst.cols - 1) * i / (botton.size() - 1)+1, dst.rows - 2};
+
+	cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(0), 1, 16, 0);
+	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
+	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
+
+	warp_mat = cv::getAffineTransform(srcTri, dstTri);	
+	cv::Mat warp = cv::Mat::zeros(dst.rows, dst.cols, dst.type());
+	cv::warpAffine(src, warp, warp_mat, warp.size());
+	cv::floodFill(mask, cv::Point(0, 0), cv::Scalar::all(0));
+
+        cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(255), 1, 16, 0);
+	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
+	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
+
+	warp.copyTo(dst, mask);
+	mask.setTo(cv::Scalar(255));
+    } 
+ 
+    //left
+    for (int i = 1; i < left.size(); i++)
+    {
+	srcTri[0] = {left[i - 1].x, left[i - 1].y};
+	srcTri[1] = center_src;
+	srcTri[2] = {left[i].x, left[i].y};
+	dstTri[0] = {1, (dst.rows - 1) * (i - 1) / (left.size() - 1)+1};
+	dstTri[1] = center_dst;
+	dstTri[2] = {1, (dst.rows - 1) * i / (left.size() - 1)+1};
+
+	cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(0), 1, 16, 0);
+	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
+	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
+
+	warp_mat = cv::getAffineTransform(srcTri, dstTri);	
+	cv::Mat warp = cv::Mat::zeros(dst.rows, dst.cols, dst.type());
+	cv::warpAffine(src, warp, warp_mat, warp.size());
+	cv::floodFill(mask, cv::Point(dst.cols - 1, 0), cv::Scalar::all(0));
+        
+	cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(255), 1, 16, 0);
+	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
+	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
+
+	warp.copyTo(dst, mask);
+	mask.setTo(cv::Scalar(255));
+    }
+
+    //right
+    for (int i = 1; i < right.size(); i++)
+    {
+	srcTri[0] = center_src;
+	srcTri[1] = {right[i - 1].x, right[i - 1].y};
+	srcTri[2] = {right[i].x, right[i].y};
+	dstTri[0] = center_dst;
+	dstTri[1] = {dst.cols - 2, (dst.rows - 1) * (i - 1) / (right.size() - 1)+1};
+	dstTri[2] = {dst.cols - 2, (dst.rows - 1) * i / (right.size() - 1)+1};
+
+	cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(0), 1, 16, 0);
+	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
+	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
+
+	warp_mat = cv::getAffineTransform(srcTri, dstTri);	
+	cv::Mat warp = cv::Mat::zeros(dst.rows, dst.cols, dst.type());
+	cv::warpAffine(src, warp, warp_mat, warp.size());
+	cv::floodFill(mask, cv::Point(0, 0), cv::Scalar::all(0));
+        
+	cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(255), 1, 16, 0);
+	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
+	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
+	
+	warp.copyTo(dst, mask);
+	mask.setTo(cv::Scalar(255));
+    }
+}
+
+void getChessboardGrids(cv::Mat dst, cv::Size size, int side, cv::Mat src, std::vector<cv::Point> *rowL, std::vector<cv::Point> *colL)
+{
+    for (int i = 0; i < size.height; i++)
+    {
+	for (int j = 0; j < size.width; j++)
+	{
+	    cv::Mat grid = cv::Mat::zeros(side+2, side+2, src.type());
+	    getChessboardGrid(grid, src, *(rowL+size.width*(i+1)+j), *(rowL+size.width*i+j), *(colL + (size.width+1)*i+j+1), *(colL+(size.width+1)*i+j));
+	    IplImage ipl_grid = IplImage(grid);
+	    IplImage ipl_grids = IplImage(dst);
+	    CvRect roi_grid =cvRect(1, 1, side, side);
+	    CvRect roi_grids =cvRect(side*(size.width-1-j), side*(size.height-1-i), side, side);
+	    cvSetImageROI(&ipl_grid, roi_grid);
+	    cvSetImageROI(&ipl_grids, roi_grids);
+	    cvCopy(&ipl_grid, &ipl_grids); 
+	}
+    }
+}
+
 int main(int argc, char **argv)
 {
     //std::vector<cv::Point> rowL[8][6];
@@ -592,7 +734,7 @@ out:
 	    for (int i = 1; i < (rowL+8*r+c)->size(); i++)
 	    {
 		CvScalar color = {{0,0,255}};
-		cv::line(gray, (rowL+8*r+c)->at(i-1), (rowL+8*r+c)->at(i), color, 1, 16, 0);
+		//cv::line(gray, (rowL+8*r+c)->at(i-1), (rowL+8*r+c)->at(i), color, 1, 16, 0);
 
 		if (r == 0 || r == 5)
 		{
@@ -611,7 +753,7 @@ out:
 	    for (int i = 1; i < (colL+9*r+c)->size(); i++)
 	    {
 		CvScalar color = {{0,0,255}};
-		cv::line(gray, (colL+9*r+c)->at(i-1), (colL+9*r+c)->at(i), color, 1, 16, 0);
+		//cv::line(gray, (colL+9*r+c)->at(i-1), (colL+9*r+c)->at(i), color, 1, 16, 0);
 		if (c == 0 || c == 8)
 		{
 		    cv::line(img_mask, (colL+9*r+c)->at(i-1), (colL+9*r+c)->at(i), cv::Scalar::all(0), 1, 16, 0);
@@ -636,24 +778,48 @@ out:
 
     cv::floodFill(img_mask, cv::Point(1, 1), cv::Scalar::all(0));
     gray.copyTo(img_show, img_mask);
-    cv::namedWindow("mask");
-    cv::imshow("mask", img_mask);
-    cv::namedWindow("show");
-    cv::imshow("show", img_show);
+    //cv::namedWindow("mask");
+    //cv::imshow("mask", img_mask);
+    //cv::namedWindow("show");
+    //cv::imshow("show", img_show);
 
 #if 0
-    cv::Point2f srcTri[4] = {{0,0},{1,0},{0,100},{100,100}};
-    cv::Point2f dstTri[4] = {{200,200},{201, 200},{200,300},{300,300}};
+    cv::Point2f srcTri[3] = {{corners[53].x,corners[53].y},{corners[45].x, corners[45].y},{corners[0].x, corners[0].y}};
+    cv::Point2f dstTri[3] = {{corners[8].x,corners[45].y},{corners[0].x, corners[45].y},{corners[0].x, corners[0].y}};
     cv::Mat warp_mat;
-    warp_mat.create(3, 3, CV_32FC1);
-    warp_mat = cv::getPerspectiveTransform(srcTri, dstTri);
-    cv::Mat warp;
-    cv::warpPerspective(gray, warp, warp_mat, {400, 400});
+    warp_mat.create(2, 3, CV_32FC1);
+    warp_mat = cv::getAffineTransform(srcTri, dstTri);
+    cv::Mat warp = cv::Mat::zeros(gray.rows, gray.cols, gray.type());
+    cv::warpAffine(gray, warp, warp_mat, warp.size());
     cv::namedWindow("warp");
     cv::imshow("warp", warp);
 #endif
+    cv::Mat grids = cv::Mat::zeros(500, 800, gray.type());
+    getChessboardGrids(grids, {8,5}, 100, gray, rowL, colL); 
+
+#if 0
+    for (int i = 0; i < 5; i++)
+    {
+	for (int j = 0; j < 8; j++)
+	{
+	    cv::Mat grid = cv::Mat::zeros(100, 100, gray.type());
+	    getChessboardGrid(grid, gray, *(rowL+8*(i+1)+j), *(rowL+8*i+j), *(colL + 9*i+j+1), *(colL+9*i+j));
+	    IplImage ipl_grid = IplImage(grid);
+	    IplImage ipl_grids = IplImage(grids);
+	    CvRect roi_grid =cvRect(0, 0, 100, 100);
+	    CvRect roi_grids =cvRect(100*(7-j), 100*(4-i), 100, 100);
+	    cvSetImageROI(&ipl_grid, roi_grid);
+	    cvSetImageROI(&ipl_grids, roi_grids);
+	    cvCopy(&ipl_grid, &ipl_grids);  
+	}
+    }
+#endif
+    cv::namedWindow("grids");
+    cv::imshow("grids", grids);
 
     cv::imwrite("Chessboard/show.jpg", img_show);
+
+    cv::imwrite("Chessboard/grids.jpg", grids);
 
     cv::waitKey();
 #endif
