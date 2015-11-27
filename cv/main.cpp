@@ -31,6 +31,51 @@ void initChessboarLine(std::vector<cv::Point> *rowL,
     }
 }
 
+void fixChessboarLine(std::vector<cv::Point> *rowL,
+	int rows,
+	std::vector<cv::Point> *colL,
+	int cols)
+{
+    for (int i = 0; i < rows; i++)
+    {
+	std::vector<cv::Point> points;
+	points.push_back((rowL + i)->at(0));
+	
+	for (int j = 1; j < (rowL + i)->size(); j++)
+	{
+	    int xDistance = (rowL + i)->at(j).x - (rowL + i)->at(j-1).x;
+	    int yDistance = (rowL + i)->at(j).y - (rowL + i)->at(j-1).y;
+	    for (int k = 1; k < xDistance; k++)
+	    {
+		 points.push_back({(rowL + i)->at(j-1).x + k, (rowL + i)->at(j-1).y + k * yDistance / xDistance});
+	    }
+	    points.push_back((rowL + i)->at(j));
+	}
+
+	*(rowL + i) = points;
+    }
+
+    for (int i = 0; i < cols; i++)
+    {
+	std::vector<cv::Point> points;
+	points.push_back((colL + i)->at(0));
+	
+	for (int j = 1; j < (colL + i)->size(); j++)
+	{
+	    int xDistance = (colL + i)->at(j).x - (colL + i)->at(j-1).x;
+	    int yDistance = (colL + i)->at(j).y - (colL + i)->at(j-1).y;
+	    for (int k = 1; k < yDistance; k++)
+	    {
+		 points.push_back({(colL + i)->at(j-1).x + k * xDistance / yDistance, (colL + i)->at(j-1).y + k});
+	    }
+	    points.push_back((colL + i)->at(j));
+	}
+
+	*(colL + i) = points;
+    }
+}
+
+
 void fillChessboarLine(std::vector<cv::Point> points,
 	std::vector<cv::Point> *rowL,
 	std::vector<cv::Point> *colL,
@@ -300,6 +345,131 @@ void fillChessboarLine(std::vector<cv::Point> points,
     }
 }
 
+void getChessboardGridSidePoints(std::vector<cv::Point> *points, cv::Point start, int side, int direction, int reference)
+{
+    for (int i = 0; i < reference; i++)
+    {
+	if (direction == 0)
+	{
+            points->push_back({start.x + (int)round((float)(i * (side - 1)) / (reference - 1)), start.y});
+	}
+	else
+	{
+            points->push_back({start.x, start.y + (int)round((float)(i * (side - 1)) / (reference - 1))});
+	}
+    }
+}
+
+void getLinePoints(std::vector<cv::Point> *points, cv::Point start, cv::Point end, int direction)
+{
+    float x, y;
+
+    if (direction == 0)
+    {
+	if (start.x == end.x)
+	{
+	    for (int i = 0; i <= end.y - start.y; i++)
+	    {
+		x = start.x;
+		y = start.y + i;
+		points->push_back({(int)x, (int)y});
+	    }
+	}
+	else
+	{
+	    float a = (float)(start.y - end.y) / (float)(start.x - end.x);
+	    float b = start.y - a * start.x;
+	    
+	    for (int i = 0; i <= end.y - start.y; i++)
+	    {
+		y = start.y + i;
+		x = round((y - b) / a);
+		points->push_back({(int)x, (int)y});
+	    }
+	}
+    }
+    else
+    {
+        if (start.y == end.y)
+	{
+	    for (int i = 0; i <= end.x - start.x; i++)
+	    {
+		x = start.x + i;
+		y = start.y;
+		points->push_back({(int)x, (int)y});
+	    }
+	}
+	else
+	{
+	    float a = (float)(start.y - end.y) / (float)(start.x - end.x);
+	    float b = start.y - a * start.x;
+	    
+	    for (int i = 0; i <= end.x - start.x; i++)
+	    {
+		x = start.x + i;
+		y = round(a * x + b);
+		points->push_back({(int)x, (int)y});
+	    }
+	}
+    }
+}
+
+void getLinePoints(std::vector<cv::Point> *points, cv::Point start, cv::Point end, int direction, int reference)
+{
+    float x, y;
+
+    if (direction == 0)
+    {
+	if (start.x == end.x)
+	{
+	    for (int i = 0; i < reference; i++)
+	    {
+		x = start.x;
+		y = round((float)(start.y + i * (end.y - start.y)) / (float)reference);
+		points->push_back({(int)x, (int)y});
+	    }
+	}
+	else
+	{
+	    float a = (float)(start.y - end.y) / (float)(start.x - end.x);
+	    float b = start.y - a * start.x;
+	    
+	    for (int i = 0; i < reference; i++)
+	    {
+		y = start.y + round((float)(i * (end.y - start.y)) / (reference - 1));
+		x = round((y - b) / a);
+
+		points->push_back({(int)x, (int)y});
+	    }
+	}
+    }
+    else
+    {
+        if (start.y == end.y)
+	{
+	    for (int i = 0; i < reference; i++)
+	    {
+		y = start.y;
+		x = round((float)(start.x + i * (end.x - start.x)) / (float)reference);
+		points->push_back({(int)x, (int)y});
+	    }
+	}
+	else
+	{
+	    float a = (float)(start.y - end.y) / (float)(start.x - end.x);
+	    float b = start.y - a * start.x;
+	    
+	    for (int i = 0; i < reference; i++)
+	    {
+		x = start.x + round((float)(i * (end.x - start.x)) / (reference - 1));
+		y = round (a * x + b);
+
+		points->push_back({(int)x, (int)y});
+	    }
+	}
+    }
+}
+
 void getChessboardGrid(cv::Mat dst, cv::Mat src, std::vector<cv::Point> top, std::vector<cv::Point> botton, std::vector<cv::Point> left, std::vector<cv::Point> right)
 {
     cv::Point center_dst = {dst.cols/2, dst.rows/2};
@@ -315,111 +485,127 @@ void getChessboardGrid(cv::Mat dst, cv::Mat src, std::vector<cv::Point> top, std
     mask.setTo(cv::Scalar(255));
 
     //top
-    for (int i = 1; i < top.size(); i++)
+    dst.at<cv::Vec3b>(0,0) = src.at<cv::Vec3b>(top[0].y,top[0].x);
+    dst.at<cv::Vec3b>(0,99) = src.at<cv::Vec3b>(top[top.size()-1].y,top[top.size()-1].x);
+    dst.at<cv::Vec3b>(center_dst.y,center_dst.x) = src.at<cv::Vec3b>(center_src.y,center_src.x);
+    
+    dst.at<cv::Vec3b>(0,50) = src.at<cv::Vec3b>(top[(top.size()-1)/2].y,top[(top.size()-1)/2].x);
+
+    std::vector<cv::Point> *top_points = new std::vector<cv::Point>();
+    getChessboardGridSidePoints(top_points, {0,0}, dst.cols, 0, top.size());
+
+    for (int i = 0; i < top.size(); i++)
     {
-	srcTri[0] = {top[i - 1].x, top[i - 1].y};
-	srcTri[1] = {top[i].x, top[i].y};
-	srcTri[2] = center_src;
-	dstTri[0] = {(dst.cols - 1) * (i - 1) / (top.size() - 1), 1};
-	dstTri[1] = {(dst.cols - 1) * i / (top.size() - 1), 1};
-	dstTri[2] = center_dst;
+	std::vector<cv::Point> *line_points_src = new std::vector<cv::Point>();
+	std::vector<cv::Point> *line_points_dst = new std::vector<cv::Point>();
+	
+	getLinePoints(line_points_src, top[i], center_src, 0);
+	getLinePoints(line_points_dst, top_points->at(i), center_dst, 0, line_points_src->size());
 
-	cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(0), 1, 16, 0);
-	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
-	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
+	for (int j = 0; j < line_points_src->size(); j++)
+	{
+	    dst.at<cv::Vec3b>(line_points_dst->at(j).y, line_points_dst->at(j).x) = src.at<cv::Vec3b>(line_points_src->at(j).y, line_points_src->at(j).x);
+	}
 
-	warp_mat = cv::getAffineTransform(srcTri, dstTri);	
-	cv::Mat warp = cv::Mat::zeros(dst.rows, dst.cols, dst.type());
-	cv::warpAffine(src, warp, warp_mat, warp.size());
-	cv::floodFill(mask, cv::Point(0, mask.rows - 1), cv::Scalar::all(0));
-
-        cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(255), 1, 16, 0);
-	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
-	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
-
-	warp.copyTo(dst, mask);
-	mask.setTo(cv::Scalar(255));
+	delete line_points_src;
+	delete line_points_dst;
     }
+    delete top_points;
     
     //bottton
+    dst.at<cv::Vec3b>(0,99) = src.at<cv::Vec3b>(top[0].y,top[0].x);
+    dst.at<cv::Vec3b>(99,99) = src.at<cv::Vec3b>(top[top.size()-1].y,top[top.size()-1].x);
+    dst.at<cv::Vec3b>(center_dst.y,center_dst.x) = src.at<cv::Vec3b>(center_src.y,center_src.x);
+    
+    dst.at<cv::Vec3b>(99,50) = src.at<cv::Vec3b>(top[(top.size()-1)/2].y,top[(top.size()-1)/2].x);
+    
+    std::vector<cv::Point> *botton_points = new std::vector<cv::Point>();
+    getChessboardGridSidePoints(botton_points, {0, 99}, dst.cols, 0, botton.size());
+    
     for (int i = 1; i < botton.size(); i++)
     {
-	srcTri[0] = {botton[i - 1].x, botton[i - 1].y};
-	srcTri[1] = center_src;
-	srcTri[2] = {botton[i].x, botton[i].y};
-	dstTri[0] = {(dst.cols - 1) * (i - 1) / (botton.size() - 1)+1, dst.rows - 2};
-	dstTri[1] = center_dst;
-	dstTri[2] = {(dst.cols - 1) * i / (botton.size() - 1)+1, dst.rows - 2};
+        std::vector<cv::Point> *line_points_src = new std::vector<cv::Point>();
+	std::vector<cv::Point> *line_points_dst = new std::vector<cv::Point>();
+	
+	getLinePoints(line_points_src, center_src, botton[i], 0);
+	getLinePoints(line_points_dst, center_dst, botton_points->at(i), 0, line_points_src->size());
 
-	cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(0), 1, 16, 0);
-	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
-	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
+	for (int j = 0; j < line_points_src->size(); j++)
+	{
+	    dst.at<cv::Vec3b>(line_points_dst->at(j).y, line_points_dst->at(j).x) = src.at<cv::Vec3b>(line_points_src->at(j).y, line_points_src->at(j).x);
+	}
 
-	warp_mat = cv::getAffineTransform(srcTri, dstTri);	
-	cv::Mat warp = cv::Mat::zeros(dst.rows, dst.cols, dst.type());
-	cv::warpAffine(src, warp, warp_mat, warp.size());
-	cv::floodFill(mask, cv::Point(0, 0), cv::Scalar::all(0));
-
-        cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(255), 1, 16, 0);
-	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
-	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
-
-	warp.copyTo(dst, mask);
-	mask.setTo(cv::Scalar(255));
-    } 
+	delete line_points_src;
+	delete line_points_dst;
+    }
+    delete botton_points;
  
     //left
+    dst.at<cv::Vec3b>(0,0) = src.at<cv::Vec3b>(top[0].y,top[0].x);
+    dst.at<cv::Vec3b>(99,0) = src.at<cv::Vec3b>(top[top.size()-1].y,top[top.size()-1].x);
+    dst.at<cv::Vec3b>(center_dst.y,center_dst.x) = src.at<cv::Vec3b>(center_src.y,center_src.x);
+    
+    dst.at<cv::Vec3b>(50,0) = src.at<cv::Vec3b>(top[(top.size()-1)/2].y,top[(top.size()-1)/2].x);
+    
+    std::vector<cv::Point> *left_points = new std::vector<cv::Point>();
+    getChessboardGridSidePoints(left_points, {0, 0}, dst.cols, 1, left.size());
+
     for (int i = 1; i < left.size(); i++)
     {
-	srcTri[0] = {left[i - 1].x, left[i - 1].y};
-	srcTri[1] = center_src;
-	srcTri[2] = {left[i].x, left[i].y};
-	dstTri[0] = {1, (dst.rows - 1) * (i - 1) / (left.size() - 1)+1};
-	dstTri[1] = center_dst;
-	dstTri[2] = {1, (dst.rows - 1) * i / (left.size() - 1)+1};
+        std::vector<cv::Point> *line_points_src = new std::vector<cv::Point>();
+	std::vector<cv::Point> *line_points_dst = new std::vector<cv::Point>();
+	
+	getLinePoints(line_points_src, left[i], center_src, 1);
+	getLinePoints(line_points_dst, left_points->at(i), center_dst, 1, line_points_src->size());
 
-	cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(0), 1, 16, 0);
-	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
-	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
+	for (int j = 0; j < line_points_src->size(); j++)
+	{
+	    dst.at<cv::Vec3b>(line_points_dst->at(j).y, line_points_dst->at(j).x) = src.at<cv::Vec3b>(line_points_src->at(j).y, line_points_src->at(j).x);
+	}
 
-	warp_mat = cv::getAffineTransform(srcTri, dstTri);	
-	cv::Mat warp = cv::Mat::zeros(dst.rows, dst.cols, dst.type());
-	cv::warpAffine(src, warp, warp_mat, warp.size());
-	cv::floodFill(mask, cv::Point(dst.cols - 1, 0), cv::Scalar::all(0));
-        
-	cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(255), 1, 16, 0);
-	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
-	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
-
-	warp.copyTo(dst, mask);
-	mask.setTo(cv::Scalar(255));
+	delete line_points_src;
+	delete line_points_dst;
     }
+    delete left_points;
 
     //right
+    dst.at<cv::Vec3b>(0,99) = src.at<cv::Vec3b>(top[0].y,top[0].x);
+    dst.at<cv::Vec3b>(99,99) = src.at<cv::Vec3b>(top[top.size()-1].y,top[top.size()-1].x);
+    dst.at<cv::Vec3b>(center_dst.y,center_dst.x) = src.at<cv::Vec3b>(center_src.y,center_src.x);
+    
+    dst.at<cv::Vec3b>(50,99) = src.at<cv::Vec3b>(top[(top.size()-1)/2].y,top[(top.size()-1)/2].x);
+    
+    std::vector<cv::Point> *right_points = new std::vector<cv::Point>();
+    getChessboardGridSidePoints(right_points, {99, 0}, dst.cols, 1, right.size());
+    
     for (int i = 1; i < right.size(); i++)
     {
-	srcTri[0] = center_src;
-	srcTri[1] = {right[i - 1].x, right[i - 1].y};
-	srcTri[2] = {right[i].x, right[i].y};
-	dstTri[0] = center_dst;
-	dstTri[1] = {dst.cols - 2, (dst.rows - 1) * (i - 1) / (right.size() - 1)+1};
-	dstTri[2] = {dst.cols - 2, (dst.rows - 1) * i / (right.size() - 1)+1};
-
-	cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(0), 1, 16, 0);
-	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
-	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(0), 1, 16, 0);
-
-	warp_mat = cv::getAffineTransform(srcTri, dstTri);	
-	cv::Mat warp = cv::Mat::zeros(dst.rows, dst.cols, dst.type());
-	cv::warpAffine(src, warp, warp_mat, warp.size());
-	cv::floodFill(mask, cv::Point(0, 0), cv::Scalar::all(0));
-        
-	cv::line(mask, dstTri[0], dstTri[1], cv::Scalar::all(255), 1, 16, 0);
-	cv::line(mask, dstTri[1], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
-	cv::line(mask, dstTri[2], dstTri[2], cv::Scalar::all(255), 1, 16, 0);
+        std::vector<cv::Point> *line_points_src = new std::vector<cv::Point>();
+	std::vector<cv::Point> *line_points_dst = new std::vector<cv::Point>();
 	
-	warp.copyTo(dst, mask);
-	mask.setTo(cv::Scalar(255));
+	getLinePoints(line_points_src, center_src, right[i], 1);
+	getLinePoints(line_points_dst, center_dst, right_points->at(i), 1, line_points_src->size());
+
+	for (int j = 0; j < line_points_src->size(); j++)
+	{
+	    dst.at<cv::Vec3b>(line_points_dst->at(j).y, line_points_dst->at(j).x) = src.at<cv::Vec3b>(line_points_src->at(j).y, line_points_src->at(j).x);
+	}
+
+	delete line_points_src;
+	delete line_points_dst;
+    }
+    delete right_points;
+
+    for (int i = 0; i < dst.rows; i++)
+    {
+	for (int j = 0; j < dst.cols; j++)
+	{
+	    if (dst.at<cv::Vec3b>(i, j) == cv::Vec3b(0,0,0))
+	    {
+		//dst.at<cv::Vec3b>(i, j) = dst.at<cv::Vec3b>(center_dst.y, center_dst.x);
+	    }
+	    //dst.at<cv::Vec3b>(i, j) = dst.at<cv::Vec3b>(center_dst.y, center_dst.x);
+	}
     }
 }
 
@@ -429,11 +615,11 @@ void getChessboardGrids(cv::Mat dst, cv::Size size, int side, cv::Mat src, std::
     {
 	for (int j = 0; j < size.width; j++)
 	{
-	    cv::Mat grid = cv::Mat::zeros(side+2, side+2, src.type());
+	    cv::Mat grid = cv::Mat::zeros(side, side, src.type());
 	    getChessboardGrid(grid, src, *(rowL+size.width*(i+1)+j), *(rowL+size.width*i+j), *(colL + (size.width+1)*i+j+1), *(colL+(size.width+1)*i+j));
 	    IplImage ipl_grid = IplImage(grid);
 	    IplImage ipl_grids = IplImage(dst);
-	    CvRect roi_grid =cvRect(1, 1, side, side);
+	    CvRect roi_grid =cvRect(0, 0, side, side);
 	    CvRect roi_grids =cvRect(side*(size.width-1-j), side*(size.height-1-i), side, side);
 	    cvSetImageROI(&ipl_grid, roi_grid);
 	    cvSetImageROI(&ipl_grids, roi_grids);
@@ -545,76 +731,20 @@ int main(int argc, char **argv)
 		*(img_dst.data + img_dst.cols * i + j) = 100;
 		points.push_back({i,j});
 	    }
-	    //int x_color = img.at<cv::Vec3b>(i+1,j)[0] + img.at<cv::Vec3b>(i+1,j)[1] + img.at<cv::Vec3b>(i+1,j)[2];
-	    //int y_color = img.at<cv::Vec3b>(i,j+1)[0] + img.at<cv::Vec3b>(i,j+1)[1] + img.at<cv::Vec3b>(i,j+1)[2];
-	    //if (color < (x_color + 255))
-	    //{
-	//	points.push_back({i,j});
-	  //  }
-	    //else if (color < (y_color + 255))
-	    //{
-	//	points.push_back({i,j});
-	  //  }
 	}
     }
 
-#if 1
     bool remove = false;
     for (auto point : points)
     {
 	remove = false;
-#if 0
-	//top
-        for (int i = 0; i < 9; i++)
-	{
-	    if (point.x < corners[45+i].y && point.y < corners[45+i].x)
-	    {
-		std::cout << "remove " << point.y << " " << point.x << std::endl;
-		remove = true;
-		break;
-	    }
-	}
-
-	//botton
-	for (int i = 0; i < 9; i++)
-	{
-	    if (point.y > corners[i].x && point.x > corners[i].y)
-	    {
-		std::cout << "remove " << point.y << " " << point.x << std::endl;
-		remove = true;
-		break;
-	    }
-	}
-
-	//right
-	for (int i = 0; i < 6; i++)
-	{
-            if (point.y > corners[i*9].x && point.x < corners[i*9].y)
-	    {
-		std::cout << "remove " << point.y << " " << point.x << std::endl;
-		remove = true;
-		break;
-	    }
-	}
-
-        //left
-	for (int i = 0; i < 6; i++)
-	{
-            if (point.y > corners[i*9+8].x && point.x < corners[i*9+8].y)
-	    {
-		std::cout << "remove " << point.y << " " << point.x << std::endl;
-		remove = true;
-		break;
-	    }
-	}
-#endif
 
         //left
 	for (int i = 0; i < 6; i++)
 	{
 	    float fix = std::fabs(corners[8+i*9].y - corners[7+i*9].y)/std::fabs(corners[8+i*9].x - corners[7+i*9].x);
 	    fix *= 2;
-	    if (fix < 0.9)
+	    if(fix < 0.9)
 	    {
 		fix = 0.9;
 	    }
@@ -706,7 +836,7 @@ out:
 	    points_line.push_back({point.y, point.x});
 	}
     }
-#endif
+    
     fillChessboarLine(points_line, (std::vector<cv::Point>*)rowL, (std::vector<cv::Point>*)colL, corners, patternsize); 
 
     struct 
@@ -761,6 +891,35 @@ out:
 	    }
 	}
     }
+
+    //fixChessboarLine(rowL, 48, colL, 45);
+#if 0
+    for (int r = 0; r < 6; r++)
+    {
+	for (int c = 0; c < 8; c++)
+	{
+
+	    for (int i = 1; i < (rowL+8*r+c)->size(); i++)
+	    {
+		CvScalar color = {{0,0,255}};
+		cv::line(gray, (rowL+8*r+c)->at(i-1), (rowL+8*r+c)->at(i), color, 1, 16, 0);
+	    }
+	}
+    }
+    
+    for (int r = 0; r < 5; r++)
+    {
+	for (int c = 0; c < 9; c++)
+	{
+	    for (int i = 1; i < (colL+9*r+c)->size(); i++)
+	    {
+		CvScalar color = {{0,0,255}};
+		cv::line(gray, (colL+9*r+c)->at(i-1), (colL+9*r+c)->at(i), color, 1, 16, 0);
+	    }
+	}
+    }
+#endif
+
 #endif
 
 #if 1
@@ -794,26 +953,10 @@ out:
     cv::namedWindow("warp");
     cv::imshow("warp", warp);
 #endif
+    fixChessboarLine(rowL, 48, colL, 45);
     cv::Mat grids = cv::Mat::zeros(500, 800, gray.type());
     getChessboardGrids(grids, {8,5}, 100, gray, rowL, colL); 
 
-#if 0
-    for (int i = 0; i < 5; i++)
-    {
-	for (int j = 0; j < 8; j++)
-	{
-	    cv::Mat grid = cv::Mat::zeros(100, 100, gray.type());
-	    getChessboardGrid(grid, gray, *(rowL+8*(i+1)+j), *(rowL+8*i+j), *(colL + 9*i+j+1), *(colL+9*i+j));
-	    IplImage ipl_grid = IplImage(grid);
-	    IplImage ipl_grids = IplImage(grids);
-	    CvRect roi_grid =cvRect(0, 0, 100, 100);
-	    CvRect roi_grids =cvRect(100*(7-j), 100*(4-i), 100, 100);
-	    cvSetImageROI(&ipl_grid, roi_grid);
-	    cvSetImageROI(&ipl_grids, roi_grids);
-	    cvCopy(&ipl_grid, &ipl_grids);  
-	}
-    }
-#endif
     cv::namedWindow("grids");
     cv::imshow("grids", grids);
 
