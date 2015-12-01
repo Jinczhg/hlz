@@ -1,0 +1,1 @@
+g++ -g -std=c++11 -o test main.cpp -lopencv_core -lopencv_highgui -lopencv_calib3d -lopencv_imgproc

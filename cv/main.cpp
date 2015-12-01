@@ -47,7 +47,7 @@ void fixChessboarLine(std::vector<cv::Point> *rowL,
 	    int yDistance = (rowL + i)->at(j).y - (rowL + i)->at(j-1).y;
 	    for (int k = 1; k < xDistance; k++)
 	    {
-		 points.push_back({(rowL + i)->at(j-1).x + k, (rowL + i)->at(j-1).y + k * yDistance / xDistance});
+		points.push_back({(rowL + i)->at(j-1).x + k, (rowL + i)->at(j-1).y + k * yDistance / xDistance});
 	    }
 	    points.push_back((rowL + i)->at(j));
 	}
@@ -66,7 +66,7 @@ void fixChessboarLine(std::vector<cv::Point> *rowL,
 	    int yDistance = (colL + i)->at(j).y - (colL + i)->at(j-1).y;
 	    for (int k = 1; k < yDistance; k++)
 	    {
-		 points.push_back({(colL + i)->at(j-1).x + k * xDistance / yDistance, (colL + i)->at(j-1).y + k});
+		points.push_back({(colL + i)->at(j-1).x + k * xDistance / yDistance, (colL + i)->at(j-1).y + k});
 	    }
 	    points.push_back((colL + i)->at(j));
 	}
@@ -76,16 +76,15 @@ void fixChessboarLine(std::vector<cv::Point> *rowL,
 }
 
 
-void fillChessboarLine(std::vector<cv::Point> points,
+void fillChessboarLine(std::vector<cv::Point> *points,
 	std::vector<cv::Point> *rowL,
 	std::vector<cv::Point> *colL,
 	std::vector<cv::Point2f> corners,
 	cv::Size size)
 {
-    std::cout << "points.size()=" << points.size() << std::endl;
     int n = 0;
 
-    for (auto point : points)
+    for (auto point : *points)
     {
 	float distance = std::numeric_limits<float>::max();
 	int row = 0;
@@ -96,7 +95,6 @@ void fillChessboarLine(std::vector<cv::Point> points,
 	float b1 = 0;
 	float b2 = 0;
 	n++;
-	//std::cout << n << std::endl;
 
 	for (int i = 0; i < size.height; i++)
 	{
@@ -109,20 +107,12 @@ void fillChessboarLine(std::vector<cv::Point> points,
 		    row = i;
 		    col = j;
 	        }
-		//std::cout << "tmp:" << tmp << "    ";
 	    }
-	    //std::cout << std::endl;
 	}
 
-	//std::cout << "(" << point.x << "," << point.y << ")" << std::endl;
-        //std::cout << "row = " << row << ", col = " << col << std::endl;
-#if 1
 	//center
 	if (col != 0 && col != (size.width -1) && row != 0 && row != (size.height -1))
 	{
-#if 1
-            //std::cout << "center" << std::endl;
-
             a1 = (corners[size.width*(row+1)+col+1].y - corners[size.width*row+col].y) / (corners[size.width*(row+1)+col+1].x - corners[size.width*row+col].x);
 	    b1 = corners[size.width*row+col].y - a1 * corners[size.width*row+col].x;
 	    
@@ -151,14 +141,11 @@ void fillChessboarLine(std::vector<cv::Point> points,
                    (colL + size.width*row + col)->push_back(point);
 		}
 	    }
-#endif
 	}
+
 	//left
 	else if (col == (size.width -1) && row != 0 && row != (size.height - 1))
 	{
-#if 1
-	    //std::cout << "left" << std::endl;
-
 	    a1 = (corners[size.width*(row-1)+col-1].y - corners[size.width*row+col].y) / (corners[size.width*(row-1)+col-1].x - corners[size.width*row+col].x);
 	    b1 = corners[size.width*row+col].y - a1 * corners[size.width*row+col].x;
 	    
@@ -180,14 +167,11 @@ void fillChessboarLine(std::vector<cv::Point> points,
 		    (colL + (size.width)*row + col)->push_back(point);
 		}
 	    }
-#endif
 	}
+
 	//right
 	else if (col == 0 && row != 0 && row != (size.height - 1))
 	{
-#if 1
-	    //std::cout << "right" << std::endl;
-
             a1 = (corners[size.width*(row+1)+1].y - corners[size.width*row].y) / (corners[size.width*(row+1)+1].x - corners[size.width*row].x );
 	    b1 = corners[size.width*row+col].y - a1 * corners[size.width*row+col].x;
 	    
@@ -209,14 +193,11 @@ void fillChessboarLine(std::vector<cv::Point> points,
 	    {
 		(colL + size.width*row)->push_back(point);
 	    }
-#endif
 	}
+
 	//botton
 	else if (row == 0 && col != 0 && col != (size.width -1))
 	{
-#if 1
-	    //std::cout << "botton" << std::endl;
-
             a1 = (corners[size.width+col+1].y - corners[col].y) / (corners[size.width+col+1].x - corners[col].x );
 	    b1 = corners[col].y - a1 * corners[col].x;
 	    
@@ -238,14 +219,11 @@ void fillChessboarLine(std::vector<cv::Point> points,
 		    (colL + col)->push_back(point);
 		}
 	    }
-#endif
 	}
+
 	//top
 	else if (row == (size.height - 1) && col != 0 && col != (size.width -1))
 	{
-#if 1
-	    //std::cout << "top" << std::endl;
-
             a1 = (corners[size.width*(row-1)+col-1].y - corners[size.width*row+col].y) / (corners[size.width*(row-1)+col-1].x - corners[size.width*row+col].x );
 	    b1 = corners[size.width*row+col].y - a1 * corners[size.width*row+col].x;
 	    
@@ -267,14 +245,11 @@ void fillChessboarLine(std::vector<cv::Point> points,
 	    {
 		(rowL + (size.width-1)*row + col - 1)->push_back(point);
 	    }
-#endif
 	}
+
 	//right-botton
 	else if (row == 0 && col == 0)
 	{
-#if 1
-	    //std::cout << "right-botton" << std::endl;
-
             a1 = (corners[size.width+1].y - corners[0].y) / (corners[size.width+1].x - corners[0].x );
 	    b1 = corners[0].y - a1 * corners[0].x;
 	    if (point.y > a1*point.x + b1)
@@ -285,14 +260,11 @@ void fillChessboarLine(std::vector<cv::Point> points,
 	    {
 		colL->push_back(point);
 	    }
-#endif
 	}
+
 	//left-botton
 	else if (row == 0 && col == (size.width - 1))
 	{
-#if 1
-	    //std::cout << "left-botton" << std::endl;
-
             a2 = (corners[size.width+col-1].y - corners[col].y) / (corners[size.width+col-1].x - corners[col].x);
             b2 = corners[col].y - a2 * corners[col].x;
 	    if (point.y > a2*point.x + b2)
@@ -303,14 +275,11 @@ void fillChessboarLine(std::vector<cv::Point> points,
 	    {
 		(colL + col)->push_back(point);
 	    }
-#endif
 	}
+
 	//right-top
 	else if (row == (size.height - 1) && col == 0)
 	{
-#if 1
-	    //std::cout << "right-top" << std::endl;
-
             a2 = (corners[size.width*(row-1)+1].y - corners[size.width*row].y) / (corners[size.width*(row-1)+1].x - corners[size.width*row].x);
             b2 = corners[size.width*row].y - a2 * corners[size.width*row].x;
 	    if (point.y > a2*point.x + b2)
@@ -321,14 +290,11 @@ void fillChessboarLine(std::vector<cv::Point> points,
 	    {
 		(rowL + (size.width-1)*row)->push_back(point);
 	    }
-#endif
 	}
+
 	//left-top
 	else if (row == (size.height - 1) && col == (size.width - 1))
 	{
-#if 1
-	    //std::cout << "left-top" << std::endl;
-
             a1 = (corners[size.width*(row-1)+col-1].y - corners[size.width*row+col].y) / (corners[size.width*(row-1)+col-1].x - corners[size.width*row+col].x );
 	    b1 = corners[size.width*row+col].y - a1 * corners[size.width*row+col].x;
 	    if (point.y > a1*point.x + b1)
@@ -339,9 +305,7 @@ void fillChessboarLine(std::vector<cv::Point> points,
 	    {
 		(rowL + (size.width-1)*row + (col-1))->push_back(point);
 	    }
-#endif
 	}
-#endif
     }
 }
 
@@ -485,12 +449,6 @@ void getChessboardGrid(cv::Mat dst, cv::Mat src, std::vector<cv::Point> top, std
     mask.setTo(cv::Scalar(255));
 
     //top
-    dst.at<cv::Vec3b>(0,0) = src.at<cv::Vec3b>(top[0].y,top[0].x);
-    dst.at<cv::Vec3b>(0,99) = src.at<cv::Vec3b>(top[top.size()-1].y,top[top.size()-1].x);
-    dst.at<cv::Vec3b>(center_dst.y,center_dst.x) = src.at<cv::Vec3b>(center_src.y,center_src.x);
-    
-    dst.at<cv::Vec3b>(0,50) = src.at<cv::Vec3b>(top[(top.size()-1)/2].y,top[(top.size()-1)/2].x);
-
     std::vector<cv::Point> *top_points = new std::vector<cv::Point>();
     getChessboardGridSidePoints(top_points, {0,0}, dst.cols, 0, top.size());
 
@@ -513,14 +471,8 @@ void getChessboardGrid(cv::Mat dst, cv::Mat src, std::vector<cv::Point> top, std
     delete top_points;
     
     //bottton
-    dst.at<cv::Vec3b>(0,99) = src.at<cv::Vec3b>(top[0].y,top[0].x);
-    dst.at<cv::Vec3b>(99,99) = src.at<cv::Vec3b>(top[top.size()-1].y,top[top.size()-1].x);
-    dst.at<cv::Vec3b>(center_dst.y,center_dst.x) = src.at<cv::Vec3b>(center_src.y,center_src.x);
-    
-    dst.at<cv::Vec3b>(99,50) = src.at<cv::Vec3b>(top[(top.size()-1)/2].y,top[(top.size()-1)/2].x);
-    
     std::vector<cv::Point> *botton_points = new std::vector<cv::Point>();
-    getChessboardGridSidePoints(botton_points, {0, 99}, dst.cols, 0, botton.size());
+    getChessboardGridSidePoints(botton_points, {0, dst.rows-1}, dst.cols, 0, botton.size());
     
     for (int i = 1; i < botton.size(); i++)
     {
@@ -541,12 +493,6 @@ void getChessboardGrid(cv::Mat dst, cv::Mat src, std::vector<cv::Point> top, std
     delete botton_points;
  
     //left
-    dst.at<cv::Vec3b>(0,0) = src.at<cv::Vec3b>(top[0].y,top[0].x);
-    dst.at<cv::Vec3b>(99,0) = src.at<cv::Vec3b>(top[top.size()-1].y,top[top.size()-1].x);
-    dst.at<cv::Vec3b>(center_dst.y,center_dst.x) = src.at<cv::Vec3b>(center_src.y,center_src.x);
-    
-    dst.at<cv::Vec3b>(50,0) = src.at<cv::Vec3b>(top[(top.size()-1)/2].y,top[(top.size()-1)/2].x);
-    
     std::vector<cv::Point> *left_points = new std::vector<cv::Point>();
     getChessboardGridSidePoints(left_points, {0, 0}, dst.cols, 1, left.size());
 
@@ -569,14 +515,8 @@ void getChessboardGrid(cv::Mat dst, cv::Mat src, std::vector<cv::Point> top, std
     delete left_points;
 
     //right
-    dst.at<cv::Vec3b>(0,99) = src.at<cv::Vec3b>(top[0].y,top[0].x);
-    dst.at<cv::Vec3b>(99,99) = src.at<cv::Vec3b>(top[top.size()-1].y,top[top.size()-1].x);
-    dst.at<cv::Vec3b>(center_dst.y,center_dst.x) = src.at<cv::Vec3b>(center_src.y,center_src.x);
-    
-    dst.at<cv::Vec3b>(50,99) = src.at<cv::Vec3b>(top[(top.size()-1)/2].y,top[(top.size()-1)/2].x);
-    
     std::vector<cv::Point> *right_points = new std::vector<cv::Point>();
-    getChessboardGridSidePoints(right_points, {99, 0}, dst.cols, 1, right.size());
+    getChessboardGridSidePoints(right_points, {dst.cols-1, 0}, dst.cols, 1, right.size());
     
     for (int i = 1; i < right.size(); i++)
     {
@@ -628,69 +568,170 @@ void getChessboardGrids(cv::Mat dst, cv::Size size, int side, cv::Mat src, std::
     }
 }
 
-int main(int argc, char **argv)
+void getChessboardSidePoints(std::vector<cv::Point> *allPoints, std::vector<cv::Point> *sidePoints, std::vector<cv::Point2f> *corners, cv::Size size)
 {
-    //std::vector<cv::Point> rowL[8][6];
-    //std::vector<cv::Point> colL[9][5];
-    std::vector<cv::Point> *rowL = new std::vector<cv::Point>[48];
-    std::vector<cv::Point> *colL = new std::vector<cv::Point>[45];
-    char name[255];
-    if (argc > 1)
-    {
-	sprintf(name, "Chessboard/%s.jpg", argv[1]);
-    }
-    else
-    {
-	sprintf(name, "Chessboard/1.jpg");
-    }
-    cv::Mat gray = cv::imread(name);
-#if 1
-    cv::Size patternsize(9, 6);
-    std::vector<cv::Point2f> corners;
-
-    bool patternfound = cv::findChessboardCorners(gray, patternsize, corners,
-	    cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE
-	    /*+ cv::CALIB_CB_FAST_CHECK*/);
-
-    if (patternfound)
-    {
-	initChessboarLine(rowL, colL, corners, patternsize);
-	//cv::cornerSubPix(gray, corners, cv::Size(11, 11), cv::Size(-1, -1),
-	//	cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
-    }
-    else
-    {
-	std::cout << "cv::findChessboardCorners() reutrn false" << std::endl;
-    }
-
-    //cv::drawChessboardCorners(gray, patternsize, cv::Mat(corners), patternfound);
-
-    cv::Mat img;
-    cv::Mat img_dst;
-    cv::Mat img_mask;
-    cv::Mat img_show;
-    img.create(gray.rows, gray.cols, CV_8UC1);
-    img_dst.create(gray.rows, gray.cols, CV_8UC1);
-    img_mask.create(gray.rows, gray.cols, CV_8UC1);
-    img_mask.setTo(cv::Scalar(255));
-    //gray.copyTo(img_show);
+    bool remove = false;
+    int rows = size.height;
+    int cols = size.width;
     
-
-    cv::cvtColor(gray, img, CV_BGR2GRAY);
-    cv::Canny(img, img_dst, 50, 150, 3);
-    int x_min = gray.cols;
-    int x_max = 0;
-    int y_min = gray.cols;
-    int y_max = 0;
-    std::vector<cv::Point> points;
-    std::vector<cv::Point> points_line;
-
-    std::cout << img_dst.channels() << std::endl;
-
-#if 1
-    for (const auto point : corners)
+    for (auto point : *allPoints)
     {
-	//std::cout << point.x << ", " << point.y << std::endl;
+	remove = false;
+
+        //left
+	for (int i = 0; i < rows; i++)
+	{
+            float k, k1, k2, b1, b2;
+	    
+	    k = (corners->at((i+1)*cols - 1).y - corners->at((i+1)*cols - 2).y)/(corners->at((i+1)*cols - 1).x - corners->at((i+1)*cols - 2).x);
+	    
+	    if ((1+k)/(1-k) > 0)
+	    {
+		k1 = (k + 1) / (1 - k);
+		k2 = (k - 1) / (1 + k);
+	    }
+	    else
+	    {
+                k1 = (k - 1) / (1 + k);
+		k2 = (k + 1) / (1 - k);
+	    }
+
+            b1 = corners->at((i+1)*cols - 1).y - k1 * corners->at((i+1)*cols - 1).x;
+	    b2 = corners->at((i+1)*cols - 1).y - k2 * corners->at((i+1)*cols - 1).x;
+	    
+	    if (point.x < corners->at((i+1)*cols - 1).x 
+		&& point.y >= (k1 * point.x + b1) && point.y <= (k2 * point.x + b2))
+		{
+		    remove = true;
+		    goto out;
+		}
+	}
+
+	//right
+	for (int i = 0; i < rows; i++)
+	{
+	    float k, k1, k2, b1, b2;
+	    
+	    k = (corners->at(i*cols).y - corners->at(1+i*cols).y)/(corners->at(i*cols).x - corners->at(1+i*cols).x);
+	    
+	    if ((1+k)/(1-k) > 0)
+	    {
+		k1 = (k + 1) / (1 - k);
+		k2 = (k - 1) / (1 + k);
+	    }
+	    else
+	    {
+                k1 = (k - 1) / (1 + k);
+		k2 = (k + 1) / (1 - k);
+	    }
+
+	    b1 = corners->at(i*cols).y - k1 * corners->at(i*cols).x;
+	    b2 = corners->at(i*cols).y - k2 * corners->at(i*cols).x;
+
+	    
+	    if (point.x > corners->at(i*cols).x 
+		&& point.y >= (k2 * point.x + b2) && point.y <= (k1 * point.x + b1))
+		{
+		    remove = true;
+		    goto out;
+		} 
+	}
+
+	//botton
+	for (int i = 0; i < cols; i++)
+	{
+            float k, k1, k2, b1, b2;
+	    
+	    if (corners->at(i).x == corners->at(cols+i).x)
+	    {
+		k1 = 1;
+		k2 = -1;
+	    }
+	    else
+	    {
+		k = (corners->at(i).y - corners->at(cols+i).y)/(corners->at(i).x - corners->at(cols+i).x);
+	        if ((1+k)/(1-k) > 0)
+		{
+		    k1 = (k + 1) / (1 - k);
+		    k2 = (k - 1) / (1 + k);
+		}
+		else
+		{
+		    k1 = (k - 1) / (1 + k);
+		    k2 = (k + 1) / (1 - k);
+		}
+	    }
+
+            b1 = corners->at(i).y - k1 * corners->at(i).x; 
+            b2 = corners->at(i).y - k2 * corners->at(i).x; 
+	    
+	    if (point.y > corners->at(i).y 
+		&& point.x >= (point.y - b2) / k2 && point.x <= (point.y - b1) / k1)
+		{
+		    remove = true;
+		    goto out;
+		}
+	}
+
+	//top
+        for (int i = 0; i < cols; i++)
+	{
+            float k, k1, k2, b1, b2;
+	    if (corners->at(cols*(rows-1)+i).x == corners->at(cols*(rows-2)+i).x)
+	    {
+                k1 = 1;
+		k2 = -1;
+	    }
+            else
+	    {
+		k = (corners->at(cols*(rows-1)+i).y - corners->at(cols*(rows-2)+i).y)/(corners->at(cols*(rows-1)+i).x - corners->at(cols*(rows-2)+i).x);
+		 
+		if ((1+k)/(1-k) > 0)
+		{
+		    k1 = (k + 1) / (1 - k);
+		    k2 = (k - 1) / (1 + k);
+		}
+		else
+		{
+		    k1 = (k - 1) / (1 + k);
+		    k2 = (k + 1) / (1 - k);
+		}
+	    }
+	    
+	    b1 = corners->at(cols*(rows-1)+i).y - k1 * corners->at(cols*(rows-1)+i).x;
+            b2 = corners->at(cols*(rows-1)+i).y - k2 * corners->at(cols*(rows-1)+i).x;
+	    
+	    if (point.y < corners->at(cols*(rows-1)+i).y 
+		&& point.x >= (point.y - b1) / k1 && point.x <= (point.y - b2) / k2)
+		{
+		    remove = true;
+		    goto out;
+		}
+	}
+
+out:
+	if (!remove)
+	{
+	    sidePoints->push_back({point.x, point.y});
+	}
+    }
+}
+
+void getChessboardRectanglePoints(cv::Mat mat, std::vector<cv::Point2f> *corners, std::vector<cv::Point> *rectPoints)
+{
+    int x_min = mat.cols;
+    int x_max = 0;
+    int y_min = mat.cols;
+    int y_max = 0;
+
+    cv::Mat *img_gray = new cv::Mat(mat.rows, mat.cols, CV_8UC1);
+    cv::Mat *img_dst = new cv::Mat(mat.rows, mat.cols, CV_8UC1);
+
+    cv::cvtColor(mat, *img_gray, CV_BGR2GRAY);
+    cv::Canny(*img_gray, *img_dst, 80, 160, 3);
+    
+    for (const auto point : *corners)
+    {
 	if (x_min > point.x)
 	{
 	    x_min = point.x;
@@ -712,133 +753,29 @@ int main(int argc, char **argv)
 	}
     }
 
-    std::cout << x_min << " " << x_max << " " << y_min << " " <<  y_max << std::endl;
-    int width = (x_max - x_min)/16;
-    int hight = (y_max - y_min)/10;
-    x_min -= width;
-    x_max += width;
-    y_min -= hight;
-    y_max += hight;
+    x_min -= 1;
+    x_max += 1;
+    y_min -= 1;
+    y_max += 1;
 
     for (int i = y_min; i <= y_max; i++)
     {
         for (int j = x_min; j <= x_max; j++)
 	{
-	    int color = img_dst.at<uchar>(i,j);
-	    //std::cout << i << "," << j << "=" << color << std::endl;
+	    int color = img_dst->at<uchar>(i,j);
 	    if (color > 0)
 	    {
-		*(img_dst.data + img_dst.cols * i + j) = 100;
-		points.push_back({i,j});
+		rectPoints->push_back({j,i});
 	    }
 	}
     }
 
-    bool remove = false;
-    for (auto point : points)
-    {
-	remove = false;
+    delete img_gray;
+    delete img_dst;
+}
 
-        //left
-	for (int i = 0; i < 6; i++)
-	{
-	    float fix = std::fabs(corners[8+i*9].y - corners[7+i*9].y)/std::fabs(corners[8+i*9].x - corners[7+i*9].x);
-	    fix *= 2;
-	    if(fix < 0.9)
-	    {
-		fix = 0.9;
-	    }
-	    else if (fix > 2.0)
-	    {
-		fix = 2.0;
-	    }
-
-	    if (point.y < corners[8+i*9].x 
-		&& (point.x >= (corners[8+i*9].y - (corners[8+i*9].x - point.y)*fix) && point.x <= (corners[8+i*9].y + (corners[8+i*9].x - point.y)*fix)))
-		{
-		    remove = true;
-		    goto out;
-		}
-	}
-
-	//right
-	for (int i = 0; i < 6; i++)
-	{
-	    float fix = std::fabs(corners[i*9].y - corners[1+i*9].y)/std::fabs(corners[i*9].x - corners[1+i*9].x);
-	    fix *= 2;
-	    if (fix < 0.9)
-	    {
-		fix = 0.9;
-	    }
-	    else if (fix > 2.0)
-	    {
-		fix = 2.0;
-	    }
-
-	    if (point.y > corners[i*9].x 
-		&& (point.x >= (corners[i*9].y - (point.y - corners[i*9].x)*fix) && point.x <= (corners[i*9].y + (point.y - corners[i*9].x)*fix)))
-		{
-		    remove = true;
-		    goto out;
-		}
-	}
-
-	//botton
-	for (int i = 0; i < 9; i++)
-	{
-	    float fix = std::fabs(corners[i].x - corners[9+i].x)/std::fabs(corners[i].y - corners[9+i].y);
-	    fix *= 2;
-	    if (fix < 0.9)
-	    {
-		fix = 0.9;
-	    }
-	    else if (fix > 2.0)
-	    {
-		fix = 2.0;
-	    }
-
-            if (point.x > corners[i].y
-		&& (point.y >= (corners[i].x - (point.x - corners[i].y)*fix) && point.y <= (corners[i].x + (point.x - corners[i].y)*fix)))
-		{
-		    remove = true;
-		    goto out;
-		}
-	}
-
-	//top
-        for (int i = 0; i < 9; i++)
-	{
-	    float fix = std::fabs(corners[45+i].y - corners[36+i].y)/std::fabs(corners[45+i].x - corners[36+i].x);
-	    fix *= 2;
-	    if (fix < 0.9)
-	    {
-		fix = 0.9;
-	    }
-	    else if (fix > 2.0)
-	    {
-		fix = 2;
-	    }
-
-            if (point.x < corners[45+i].y
-		&& (point.y >= (corners[45+i].x - (corners[45+i].y - point.x)*fix) && point.y <= (corners[45+i].x + (corners[45+i].y - point.x)*fix)))
-		{
-		    remove = true;
-		    goto out;
-		}
-	}
-
-out:
-	if (!remove)
-	{
-	    //gray.at<cv::Vec3b>(point.x,point.y)[0] = 0;
-	    //gray.at<cv::Vec3b>(point.x,point.y)[1] = 0;
-	    //gray.at<cv::Vec3b>(point.x,point.y)[2] = 255;
-	    points_line.push_back({point.y, point.x});
-	}
-    }
-    
-    fillChessboarLine(points_line, (std::vector<cv::Point>*)rowL, (std::vector<cv::Point>*)colL, corners, patternsize); 
-
+void sortChessboardSidePoints(std::vector<cv::Point> *rowL, std::vector<cv::Point> *colL, cv::Size size)
+{
     struct 
     {
 	bool operator()(cv::Point a, cv::Point b)
@@ -855,81 +792,128 @@ out:
 	}
     } yLess;
 
-    for (int r = 0; r < 6; r++)
+    int rows = size.height;
+    int cols = size.width;
+    std::vector<cv::Point> *line = NULL;
+
+    for (int r = 0; r < rows; r++)
     {
-	for (int c = 0; c < 8; c++)
+	for (int c = 0; c < cols - 1; c++)
 	{
-	    std::sort((rowL+8*r+c)->begin(), (rowL+8*r+c)->end(), xLess);
-
-	    for (int i = 1; i < (rowL+8*r+c)->size(); i++)
-	    {
-		CvScalar color = {{0,0,255}};
-		//cv::line(gray, (rowL+8*r+c)->at(i-1), (rowL+8*r+c)->at(i), color, 1, 16, 0);
-
-		if (r == 0 || r == 5)
-		{
-		    cv::line(img_mask, (rowL+8*r+c)->at(i-1), (rowL+8*r+c)->at(i), cv::Scalar::all(0), 1, 16, 0);
-		}
-	    }
+	    line = rowL+(cols-1)*r+c;
+	    std::sort(line->begin(), line->end(), xLess);
 	}
     }
     
-    for (int r = 0; r < 5; r++)
+    for (int r = 0; r < rows - 1; r++)
     {
-	for (int c = 0; c < 9; c++)
+	for (int c = 0; c < cols; c++)
 	{
-	    std::sort((colL+9*r+c)->begin(), (colL+9*r+c)->end(), yLess);
-
-	    for (int i = 1; i < (colL+9*r+c)->size(); i++)
-	    {
-		CvScalar color = {{0,0,255}};
-		//cv::line(gray, (colL+9*r+c)->at(i-1), (colL+9*r+c)->at(i), color, 1, 16, 0);
-		if (c == 0 || c == 8)
-		{
-		    cv::line(img_mask, (colL+9*r+c)->at(i-1), (colL+9*r+c)->at(i), cv::Scalar::all(0), 1, 16, 0);
-		}
-	    }
+	    line = colL+cols*r+c;
+	    std::sort(line->begin(), line->end(), yLess);
 	}
     }
+}
 
-    //fixChessboarLine(rowL, 48, colL, 45);
-#if 0
-    for (int r = 0; r < 6; r++)
+int main(int argc, char **argv)
+{
+    std::vector<cv::Point> *rowL = new std::vector<cv::Point>[48];
+    std::vector<cv::Point> *colL = new std::vector<cv::Point>[45];
+    char name[255];
+    if (argc > 1)
     {
-	for (int c = 0; c < 8; c++)
-	{
-
-	    for (int i = 1; i < (rowL+8*r+c)->size(); i++)
-	    {
-		CvScalar color = {{0,0,255}};
-		cv::line(gray, (rowL+8*r+c)->at(i-1), (rowL+8*r+c)->at(i), color, 1, 16, 0);
-	    }
-	}
+	//sprintf(name, "Chessboard/%s_undistorted.jpg", argv[1]);
+	sprintf(name, "Chessboard/%s.jpg", argv[1]);
     }
-    
-    for (int r = 0; r < 5; r++)
+    else
     {
-	for (int c = 0; c < 9; c++)
-	{
-	    for (int i = 1; i < (colL+9*r+c)->size(); i++)
-	    {
-		CvScalar color = {{0,0,255}};
-		cv::line(gray, (colL+9*r+c)->at(i-1), (colL+9*r+c)->at(i), color, 1, 16, 0);
-	    }
-	}
+	//sprintf(name, "Chessboard/1_undistorted.jpg");
+	sprintf(name, "Chessboard/1.jpg");
     }
-#endif
+    cv::Mat gray = cv::imread(name);
+#if 1
+    cv::Size patternsize(9, 6);
+    std::vector<cv::Point2f> corners;
 
-#endif
+    bool patternfound = cv::findChessboardCorners(gray, patternsize, corners,
+	    cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE
+	    /*+ cv::CALIB_CB_FAST_CHECK*/);
+
+    if (patternfound)
+    {
+	cv::Mat *img_gray = new cv::Mat(gray.rows, gray.cols, CV_8UC1);
+	
+	cv::cvtColor(gray, *img_gray, CV_BGR2GRAY);
+	cv::cornerSubPix(*img_gray, corners, cv::Size(10, 10), cv::Size(-1, -1),
+		cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.001));
+
+	delete img_gray;
+	
+	initChessboarLine(rowL, colL, corners, patternsize);
+    }
+    else
+    {
+	std::cout << "cv::findChessboardCorners() reutrn false" << std::endl;
+    }
+
+    //cv::drawChessboardCorners(gray, patternsize, cv::Mat(corners), patternfound);
+    //cv::namedWindow("gray");
+    //cv::imshow("gray", gray);
+    //cv::imwrite("tmp.jpg", gray);
 
 #if 1
-    //CvScalar color = {{0,0,255}};
-    //cv::line(gray, corners[0], corners[1], color, 1, 16, 0);
-    //cv::line(gray, corners[1], corners[2], color, 1, 16, 0);
-    //cv::line(gray, corners[9], corners[10], color, 1, 16, 0);
-    //cv::line(gray, corners[10], corners[11], color, 1, 16, 0);
+    cv::Mat img_mask;
+    cv::Mat img_show;
+    img_mask.create(gray.rows, gray.cols, CV_8UC1);
+    img_mask.setTo(cv::Scalar(255));
+    
+    std::vector<cv::Point> points;
+    std::vector<cv::Point> points_line;
 
-#endif
+    getChessboardRectanglePoints(gray, &corners, &points);
+
+    for (auto point : points)
+    {
+	gray.at<cv::Vec3b>(point.y,point.x)[0] = 0;
+	gray.at<cv::Vec3b>(point.y,point.x)[1] = 255;
+	gray.at<cv::Vec3b>(point.y,point.x)[2] = 0;
+
+    }
+
+    getChessboardSidePoints(&points, &points_line, &corners, patternsize);
+
+    //for (auto point : points_line)
+    //{
+	//gray.at<cv::Vec3b>(point.y,point.x)[0] = 0;
+	//gray.at<cv::Vec3b>(point.y,point.x)[1] = 0;
+	//gray.at<cv::Vec3b>(point.y,point.x)[2] = 255;
+    //}
+    
+    fillChessboarLine(&points_line, rowL, colL, corners, patternsize); 
+
+    sortChessboardSidePoints(rowL, colL, patternsize);
+
+    fixChessboarLine(rowL, 48, colL, 45);
+
+    for (int j = 0; j < 48; j++)
+    {
+	std::vector<cv::Point> *line = rowL + j;
+	CvScalar color = {{0,0,255}};
+	for (int i = 1; i < line->size(); i++)
+	{
+	    cv::line(gray, line->at(i-1), line->at(i), color, 1, 16, 0);
+	}
+    }
+
+    for (int j = 0; j < 45; j++)
+    {
+	std::vector<cv::Point> *line = colL + j;
+	CvScalar color = {{0,0,255}};
+	for (int i = 1; i < line->size(); i++)
+	{
+	    cv::line(gray, line->at(i-1), line->at(i), color, 1, 16, 0);
+	}
+    }
 
     //cv::imwrite("Chessboard/3_corner.jpg", img_dst);
     cv::namedWindow("corner");
@@ -953,19 +937,20 @@ out:
     cv::namedWindow("warp");
     cv::imshow("warp", warp);
 #endif
-    fixChessboarLine(rowL, 48, colL, 45);
-    cv::Mat grids = cv::Mat::zeros(500, 800, gray.type());
-    getChessboardGrids(grids, {8,5}, 100, gray, rowL, colL); 
+    cv::Mat grids = cv::Mat::zeros(250, 400, gray.type());
+    getChessboardGrids(grids, {8,5}, 50, gray, rowL, colL); 
 
-    cv::namedWindow("grids");
-    cv::imshow("grids", grids);
+    //cv::namedWindow("grids");
+    //cv::imshow("grids", grids);
 
     cv::imwrite("Chessboard/show.jpg", img_show);
 
     cv::imwrite("Chessboard/grids.jpg", grids);
 
-    cv::waitKey();
 #endif
-
+#endif
+    
+    cv::waitKey();
+    
     return 0;
 }
