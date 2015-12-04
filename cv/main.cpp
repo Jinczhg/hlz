@@ -7,6 +7,22 @@
 #include <vector>
 #include <limits>
 
+struct 
+{
+    bool operator()(cv::Point a, cv::Point b)
+    {
+	return a.x < b.x;
+    }
+} xLess;
+
+struct 
+{
+    bool operator()(cv::Point a, cv::Point b)
+    {
+	return a.y < b.y;
+    }
+} yLess;
+
 void initChessboarLine(std::vector<cv::Point> *rowL,
 	std::vector<cv::Point> *colL,
 	std::vector<cv::Point2f> corners,
@@ -438,497 +454,307 @@ void getChessboardGrid(cv::Mat dst, cv::Point locate, int side, cv::Mat src,
 	std::vector<cv::Point> top, std::vector<cv::Point> botton,
 	std::vector<cv::Point> left, std::vector<cv::Point> right)
 {
-    double side_f = side - 1;
+    cv::Point point;
+    cv::Point top_point;
+    cv::Point botton_point;
+    cv::Point left_point;
+    cv::Point right_point;
+    float k_h, k_v, b_h, b_v;
 
+    float h, v, x, y;
+    float side_f = side - 1;
+    int h_size, v_size;
+    int i_top, i_botton, i_left, i_right;
+
+    cv::Mat *mask = new cv::Mat(src.rows, src.cols, CV_8UC1);
     std::vector<cv::Point> *mask_points = new std::vector<cv::Point>();
-    cv::Mat mask;
-    mask.create(src.rows, src.cols, CV_8UC1);
-    mask.setTo(cv::Scalar(255));
+    std::vector<cv::Point> *top_line = new std::vector<cv::Point>();
+    std::vector<cv::Point> *botton_line = new std::vector<cv::Point>();
+    std::vector<cv::Point> *left_line = new std::vector<cv::Point>();
+    std::vector<cv::Point> *right_line = new std::vector<cv::Point>();
 
-    std::cout << "top size:" << top.size() << std::endl;
+    mask->setTo(cv::Scalar(255));
+
     for (int i = 1; i < top.size(); i++)
     {
-        cv::line(mask, top.at(i), top.at(i-1), cv::Scalar(0));
-	std::cout << "(" << top.at(i).x << "," << top.at(i).y << ") ";
+        cv::line(*mask, top.at(i), top.at(i-1), cv::Scalar(0));
     }
-    std::cout << std::endl;
 
-    std::cout << "botton size:" << botton.size() << std::endl;
     for (int i = 1; i < botton.size(); i++)
     {
-        cv::line(mask, botton.at(i), botton.at(i-1), cv::Scalar(0));
-	std::cout << "(" << botton.at(i).x << "," << botton.at(i).y << ") "; 
+        cv::line(*mask, botton.at(i), botton.at(i-1), cv::Scalar(0));
     }
-    std::cout << std::endl;
 
-    std::cout << "left size:" << left.size() << std::endl;
     for (int i = 1; i < left.size(); i++)
     {
-        cv::line(mask, left.at(i), left.at(i-1), cv::Scalar(0));
-	std::cout << "(" << left.at(i).x << "," << left.at(i).y << ") ";
+        cv::line(*mask, left.at(i), left.at(i-1), cv::Scalar(0));
     }
-    std::cout << std::endl;
 
-    std::cout << "right size:" << right.size() << std::endl;
     for (int i = 1; i < right.size(); i++)
     {
-        cv::line(mask, right.at(i), right.at(i-1), cv::Scalar(0));
-	std::cout << "(" << right.at(i).x << "," << right.at(i).y << ") ";
+        cv::line(*mask, right.at(i), right.at(i-1), cv::Scalar(0));
     }
-    std::cout << std::endl;
 
-    cv::floodFill(mask, cv::Point(1, 1), cv::Scalar::all(0));
+    cv::floodFill(*mask, cv::Point(1, 1), cv::Scalar::all(0));
 
-    for (int r = 0; r < mask.rows; r++)
+    for (int r = 0; r < mask->rows; r++)
     {
-	for (int c = 0; c < mask.cols; c++)
+	for (int c = 0; c < mask->cols; c++)
 	{
-	    if (mask.at<uchar>(r,c) != 0)
+	    if (mask->at<uchar>(r,c) != 0)
 	    {
 		mask_points->push_back({c, r});
 	    }
 	}
     }
 
+    //top_line
+    for (auto point : top)
+    {
+	mask->at<uchar>(point.y, point.x) = 125;
+    }
+
     for (auto point : *mask_points)
     {
+	if (mask->at<uchar>(point.y-1, point.x) == 125
+		|| mask->at<uchar>(point.y-1, point.x-1) == 125
+		|| mask->at<uchar>(point.y-1, point.x+1) == 125)
+	{
+	    top_line->push_back(point);
+	}
+    }
+    std::sort(top_line->begin(), top_line->end(), xLess);
+
+    for (auto point : top)
+    {
+	mask->at<uchar>(point.y, point.x) = 255;
+    }
+
+    //botton_line
+    for (auto point : botton)
+    {
+	mask->at<uchar>(point.y, point.x) = 125;
+    }
+
+    for (auto point : *mask_points)
+    {
+	if (mask->at<uchar>(point.y+1, point.x) == 125
+		|| mask->at<uchar>(point.y+1, point.x-1) == 125
+		|| mask->at<uchar>(point.y+1, point.x+1) == 125)
+	{
+	    botton_line->push_back(point);
+	}
+    }
+    std::sort(botton_line->begin(), botton_line->end(), xLess);
+    
+    for (auto point : botton)
+    {
+	mask->at<uchar>(point.y, point.x) = 255;
+    }
+
+    //left_line
+    for (auto point : left)
+    {
+	mask->at<uchar>(point.y, point.x) = 125;
+    }
+
+    for (auto point : *mask_points)
+    {
+	if (mask->at<uchar>(point.y, point.x-1) == 125
+		|| mask->at<uchar>(point.y-1, point.x-1) == 125
+		|| mask->at<uchar>(point.y+1, point.x-1) == 125)
+	{
+	    left_line->push_back(point);
+	}
+    }
+    std::sort(left_line->begin(), left_line->end(), yLess);
+    
+    for (auto point : left)
+    {
+	mask->at<uchar>(point.y, point.x) = 255;
+    }
+
+    //right_line
+    for (auto point : right)
+    {
+	mask->at<uchar>(point.y, point.x) = 125;
+    }
+
+    for (auto point : *mask_points)
+    {
+	if (mask->at<uchar>(point.y, point.x+1) == 125
+		|| mask->at<uchar>(point.y-1, point.x+1) == 125
+		|| mask->at<uchar>(point.y+1, point.x+1) == 125)
+	{
+	    right_line->push_back(point);
+	}
+    }
+    std::sort(right_line->begin(), right_line->end(), yLess);
+
+    for (auto point : left)
+    {
+	mask->at<uchar>(point.y, point.x) = 255;
+    }
+
+    
+    //h_size = (top.size()-1 + botton.size()-1) / 2;
+    //v_size = (left.size()-1 + right.size()-1) / 2;
+    
+    h_size = (top_line->size()-1 + botton_line->size()-1) / 2;
+    v_size = (left_line->size()-1 + right_line->size()-1) / 2;
+
+    //fill grid
+    for (int r = 0; r < side; r++)
+    {
+        for (int c = 0; c < side; c++)
+	{
+            h = h_size * c / side_f;
+	    v = v_size * r / side_f;
+#if 0
+	    if (r == 0)
+	    {
+                i_top = (top.size()-1)*h/h_size;
+                point = top.at(i_top);
+	    }
+	    else if (r == side_f)
+	    {
+		i_botton = (botton.size()-1)*h/h_size;
+		point = botton.at(i_botton);
+	    }
+	    else if (c == 0)
+	    {
+		i_left = (left.size()-1)*v/v_size;
+		point = left.at(i_left);
+	    }
+	    else if (c == side_f)
+	    {
+		i_right = (right.size()-1)*v/v_size;
+                point = right.at(i_right);
+	    }
+	    else
+	    {
+		i_top = (int)round((top.size()-1)*h/h_size);
+		i_botton = (int)round((botton.size()-1)*h/h_size);
+		i_left = (int)round((left.size()-1)*v/v_size);
+		i_right = (int)round((right.size()-1)*v/v_size);
+		top_point = top.at(i_top);
+		botton_point = botton.at(i_botton);
+		left_point = left.at(i_left);
+		right_point = right.at(i_right);
+
+                if (top_point.x == botton_point.x)
+		{
+                    point.x = top_point.x;
+		    point.y = top_point.y + (botton_point.y - top_point.y) * v / v_size;
+		}
+		else
+		{
+		    k_h = ((float)(top_point.y-botton_point.y))/((float)(top_point.x-botton_point.x));
+		    k_v = ((float)(left_point.y-right_point.y))/((float)(left_point.x-right_point.x));
+		    b_h = top_point.y - k_h*top_point.x;
+		    b_v = left_point.y - k_v*left_point.x;
+
+		    
+		    if (k_h == k_v)
+		    {
+			continue;
+		    }
+
+		    x = (b_v - b_h) / (k_h - k_v);
+		    y = (b_h * k_v - b_v * k_h) / (k_v - k_h);
+		    point.x = (int)round(x);
+		    point.y = (int)round(y);
+		}
+
+		if (mask->at<uchar>(point.y, point.x) != 255)
+		{
+		    continue;
+		}
+	    }
+#else
+            if (r == 0)
+	    {
+                i_top = (top_line->size()-1)*h/h_size;
+                point = top_line->at(i_top);
+	    }
+	    else if (r == side_f)
+	    {
+		i_botton = (botton_line->size()-1)*h/h_size;
+		point = botton_line->at(i_botton);
+	    }
+	    else if (c == 0)
+	    {
+		i_left = (left_line->size()-1)*v/v_size;
+		point = left_line->at(i_left);
+	    }
+	    else if (c == side_f)
+	    {
+		i_right = (right_line->size()-1)*v/v_size;
+                point = right_line->at(i_right);
+	    }
+	    else
+	    {
+		i_top = (int)round((top_line->size()-1)*h/h_size);
+		i_botton = (int)round((botton_line->size()-1)*h/h_size);
+		i_left = (int)round((left_line->size()-1)*v/v_size);
+		i_right = (int)round((right_line->size()-1)*v/v_size);
+		top_point = top_line->at(i_top);
+		botton_point = botton_line->at(i_botton);
+		left_point = left_line->at(i_left);
+		right_point = right_line->at(i_right);
+
+                if (top_point.x == botton_point.x)
+		{
+                    point.x = top_point.x;
+		    point.y = top_point.y + (botton_point.y - top_point.y) * v / v_size;
+		}
+		else
+		{
+		    k_h = ((float)(top_point.y-botton_point.y))/((float)(top_point.x-botton_point.x));
+		    k_v = ((float)(left_point.y-right_point.y))/((float)(left_point.x-right_point.x));
+		    b_h = top_point.y - k_h*top_point.x;
+		    b_v = left_point.y - k_v*left_point.x;
+
+		    
+		    if (k_h == k_v)
+		    {
+			continue;
+		    }
+
+		    x = (b_v - b_h) / (k_h - k_v);
+		    y = (b_h * k_v - b_v * k_h) / (k_v - k_h);
+		    point.x = (int)round(x);
+		    point.y = (int)round(y);
+		}
+
+		if (mask->at<uchar>(point.y, point.x) != 255)
+		{
+		    continue;
+		}
+	    }
+
+#endif
+
+            dst.at<cv::Vec3b>(r+locate.y, c+locate.x) = src.at<cv::Vec3b>(point.y, point.x);
+	}
     }
 
     delete mask_points;
-
-
-#if 0
-    std::vector<cv::Point> *top_line = new std::vector<cv::Point>(top);
-    std::vector<cv::Point> *botton_line = new std::vector<cv::Point>(botton);
-    std::vector<cv::Point> *left_line = new std::vector<cv::Point>(left);
-    std::vector<cv::Point> *right_line = new std::vector<cv::Point>(right);
-
-    cv::Point point_src;
-    cv::Point point_dst;
-    
-    cv::Point2f top_start = {0, 0};
-    cv::Point2f top_end = {(float)side - 1, 0};
-    cv::Point2f botton_start = {0, (float)side - 1};
-    cv::Point2f botton_end = {(float)side - 1, (float)side - 1};
-    cv::Point2f left_start = {0, 0};
-    cv::Point2f left_end = {0, (float)side - 1};
-    cv::Point2f right_start = {(float)side - 1, 0};
-    cv::Point2f right_end = {(float)side - 1, (float)side - 1};
-
-    float top_dist = (float)side/(float)top_line->size();
-    float botton_dist = (float)side/(float)botton_line->size();
-    float left_dist = (float)side/(float)left_line->size();
-    float right_dist = (float)side/(float)right_line->size();
-    
-    while (top_line->size() > 0
-	    || botton_line->size() > 0
-	    || left_line->size() > 0
-	    || right_line->size() > 0)
-    {
-	std::cout << "size" << "(" <<  top_line->size() << "," <<  botton_line->size() << "," << left_line->size() << "," << right_line->size() << ")" << std::endl;
-	
-	//top
-	for (int i = 0; i < top_line->size(); i++)
-	{
-	    point_src = top_line->at(i);
-	    point_dst.y = (int)round(top_start.y);
-
-	    if (top_line->size() > 1)
-	    {
-		point_dst.x = (int)round(top_start.x + (top_end.x-top_start.x)*i/(top_line->size()-1));
-	    }
-	    else
-	    {
-		point_dst.x = (int)round((top_start.x + top_end.x)/2);
-	    }
-
-	    std::cout << "top" << "(" <<  point_dst.x << "," <<  point_dst.y << ")" << std::endl;
-	    dst.at<cv::Vec3b>(point_dst.y+locate.y, point_dst.x+locate.x) = src.at<cv::Vec3b>(point_src.y, point_src.x);
-	    top_line->at(i).y += 1;
-	}
-		
-	//botton
-	for (int i = 0; i < botton_line->size(); i++)
-	{
-	    point_src = botton_line->at(i);
-	    point_dst.y = (int)round(botton_start.y);
-
-	    if (botton_line->size() > 1)
-	    {
-		point_dst.x = (int)round(botton_start.x + (botton_end.x-botton_start.x)*i/(botton_line->size()-1));
-	    }
-	    else
-	    {
-		point_dst.x = (int)round((botton_start.x + botton_end.x)/2);
-	    }
-
-	    std::cout << "botton" << "(" <<  point_dst.x << "," <<  point_dst.y << ")" << std::endl;
-	    dst.at<cv::Vec3b>(point_dst.y+locate.y, point_dst.x+locate.x) = src.at<cv::Vec3b>(point_src.y, point_src.x);
-	    botton_line->at(i).y -= 1;
-	}
-
-	//left
-	for (int i = 0; i < left_line->size(); i++)
-	{
-	    point_src = left_line->at(i);
-	    point_dst.x = (int)round(left_start.x);
-
-	    if (left_line->size() > 1)
-	    {
-		point_dst.y = (int)round(left_start.y + (left_end.y-left_start.y)*i/(left_line->size()-1));
-	    }
-	    else
-	    {
-		point_dst.y = (int)round((left_start.y + left_end.y)/2);
-	    }
-
-	    std::cout << "left" << "(" <<  point_dst.x << "," <<  point_dst.y << ")" << std::endl;
-	    dst.at<cv::Vec3b>(point_dst.y+locate.y, point_dst.x+locate.x) = src.at<cv::Vec3b>(point_src.y, point_src.x);
-	    left_line->at(i).x += 1;
-	}
-
-	//right
-	for (int i = 0; i < right_line->size(); i++)
-	{
-	    point_src = right_line->at(i);
-	    point_dst.x = (int)round(right_start.x);
-
-	    if (right_line->size() > 1)
-	    {
-		point_dst.y = (int)round(right_start.y + (right_end.y-right_start.y)*i/(right_line->size()-1));
-	    }
-	    else
-	    {
-		point_dst.y = (int)round((right_start.y + right_end.y)/2);
-	    }
-
-	    std::cout << "right" << "(" <<  point_dst.x << "," <<  point_dst.y << ")" << std::endl;
-	    dst.at<cv::Vec3b>(point_dst.y+locate.y, point_dst.x+locate.x) = src.at<cv::Vec3b>(point_src.y, point_src.x);
-	    right_line->at(i).x -= 1;
-	}
-#if 0
-	if (top_line->size() > 0 && left_line->size() > 0 && top_line->at(0) != left_line->at(0))
-	{
-	    if (top_line->at(0).y > left_line->at(0).y)
-	    {
-		top_line->insert(top_line->begin(), left_line->at(0));
-		top_start.x -= top_dist;
-	    }
-	    else
-	    {
-                left_line->insert(left_line->begin(), top_line->at(0));
-		left_start.y -= left_dist;
-	    }
-	}
-
-        if (top_line->size() > 0 && left_line->size() > 0 && top_line->at(top_line->size()-1) != right_line->at(0))
-	{
-	    if (top_line->at(top_line->size()-1).y > right_line->at(0).y)
-	    {
-		top_line->push_back(right_line->at(0));
-		top_end.x += top_dist;
-	    }
-	    else
-	    {
-                right_line->insert(right_line->begin(), top_line->at(top_line->size()-1));
-		right_start.y -= right_dist;
-	    }
-	}
-#endif
-        if (top_line->size() > 0)
-	{
-	    top_start.x += top_dist;
-	    top_end.x -= top_dist;
-	    
-	    top_line->erase(top_line->begin());
-	    if (top_line->size() > 0)
-	    {
-		top_line->erase(top_line->begin()+(top_line->size()-1));
-	    }
-	}
-	if (botton_line->size() > 0)
-	{
-	    botton_start.x += botton_dist;
-	    botton_end.x -= botton_dist;
-
-	    botton_line->erase(botton_line->begin());
-	    if (botton_line->size() > 0)
-	    {
-		botton_line->erase(botton_line->begin()+(botton_line->size()-1));
-	    }
-	}
-
-	if (left_line->size() > 0)
-	{
-            left_start.y += left_dist;
-	    left_end.y -= left_dist;
-	    
-	    left_line->erase(left_line->begin());
-	    if (left_line->size() > 0)
-	    {
-		left_line->erase(left_line->begin()+(left_line->size()-1));
-	    }
-	}
-
-	if (right_line->size() > 0)
-	{
-	    right_start.y += right_dist;
-	    right_end.y -= right_dist;
-	    
-	    right_line->erase(right_line->begin());
-	    if (right_line->size() > 0)
-	    {
-		right_line->erase(right_line->begin()+(right_line->size()-1));
-	    }
-	}
-
-	top_start.y = left_start.y;
-	top_end.y = right_start.y;
-	botton_start.y = left_end.y;
-	botton_end.y = right_end.y;
-	left_start.x = top_start.x;
-	left_end.x = botton_start.x;
-	right_start.x = top_end.x;
-	right_end.x = botton_end.x;	
-    }
-
     delete top_line;
     delete botton_line;
     delete left_line;
     delete right_line;
-
-#endif
-
-#if 0
-    cv::Point2f start;
-    cv::Point2f end;
-    float h;
-    float v;
-
-    std::vector<cv::Point> *top_points = new std::vector<cv::Point>(top);
-    std::vector<cv::Point> *botton_points = new std::vector<cv::Point>(botton);
-    std::vector<cv::Point> *left_points = new std::vector<cv::Point>(left);
-    std::vector<cv::Point> *right_points = new std::vector<cv::Point>(right);
-    
-    cv::Point point_src;
-    cv::Point point_dst;
-    
-    //top
-    start = {0,0};
-    end = {(float)side - 1, 0};
-    h = (float)side/((float)top.size()+(float)botton.size())*2;
-    v = (float)side/((float)top.size()+(float)botton.size())*2;
-
-    while (top_points->size() > 0)
-    {
-	for (int i = 0; i < top_points->size(); i++)
-	{
-	    point_src = top_points->at(i);
-	    point_dst.y = (int)round(start.y);
-	    if (top_points->size() > 1)
-	    {
-	        point_dst.x = (int)round(start.x + (end.x-start.x)*i/(top_points->size()-1));
-	    }
-	    else
-	    {
-		point_dst.x = (int)round((start.x+end.x)/2);
-	    }
-
-	    if (top_points->size() == top.size())
-	    {
-		dst.at<cv::Vec3b>(point_dst.y+locate.y, point_dst.x+locate.x) = src.at<cv::Vec3b>(point_src.y+1, point_src.x);
-	    }
-	    else
-	    {
-                dst.at<cv::Vec3b>(point_dst.y+locate.y, point_dst.x+locate.x) = src.at<cv::Vec3b>(point_src.y, point_src.x);
-	    }
-
-	    top_points->at(i).y += 1;
-	}
-	
-	top_points->erase(top_points->begin());
-	if (top_points->size() > 1)
-	{
-	    top_points->erase(top_points->begin()+(top_points->size()-1));
-	}
-
-	start.x += h;
-	start.y += v;
-	end.x -= h;
-	end.y += v;
-    }
-
-    //botton
-    start = {0,(float)side - 1};
-    end = {(float)side - 1, (float)side - 1};
-    h = (float)side/((float)top.size()+(float)botton.size())*2;
-    v = (float)side/((float)top.size()+(float)botton.size())*2;
-
-    while (botton_points->size() > 0)
-    {
-	for (int i = 0; i < botton_points->size(); i++)
-	{
-	    point_src = botton_points->at(i);
-	    point_dst.y = (int)round(start.y);
-	    if (botton_points->size() > 1)
-	    {
-	        point_dst.x = (int)round(start.x + (end.x-start.x)*i/(botton_points->size()-1));
-	    }
-	    else
-	    {
-		point_dst.x = (int)round((start.x+end.x)/2);
-	    }
-
-	    if (botton_points->size() == botton.size())
-	    {
-		dst.at<cv::Vec3b>(point_dst.y+locate.y, point_dst.x+locate.x) = src.at<cv::Vec3b>(point_src.y -1, point_src.x);
-	    }
-	    else
-	    {
-                dst.at<cv::Vec3b>(point_dst.y+locate.y, point_dst.x+locate.x) = src.at<cv::Vec3b>(point_src.y, point_src.x);
-	    }
-
-	    botton_points->at(i).y -= 1;
-	}
-	
-	botton_points->erase(botton_points->begin());
-	if (botton_points->size() > 1)
-	{
-	    botton_points->erase(botton_points->begin()+(botton_points->size()-1));
-	}
-
-	start.x += h;
-	start.y -= v;
-	end.x -= h;
-	end.y -= v;
-    }
-    
-    //left
-    start = {0, 0};
-    end = {0, (float)side - 1};
-    h = (float)side/((float)left.size()+(float)right.size())*2;
-    v = (float)side/((float)left.size()+(float)right.size())*2;
-
-    while (left_points->size() > 0)
-    {
-	for (int i = 0; i < left_points->size(); i++)
-	{
-	    point_src = left_points->at(i);
-	    point_dst.x = (int)round(start.x);
-	    if (left_points->size() > 1)
-	    {
-	        point_dst.y = (int)round(start.y + (end.y-start.y)*i/(left_points->size()-1));
-	    }
-	    else
-	    {
-		point_dst.y = (int)round((start.y+end.y)/2);
-	    }
-	    
-	    if (left_points->size() == left.size())
-	    {
-		dst.at<cv::Vec3b>(point_dst.y+locate.y, point_dst.x+locate.x) = src.at<cv::Vec3b>(point_src.y, point_src.x + 1);
-	    }
-	    else
-	    {
-                dst.at<cv::Vec3b>(point_dst.y+locate.y, point_dst.x+locate.x) = src.at<cv::Vec3b>(point_src.y, point_src.x);
-	    }
-	    
-	    left_points->at(i).x += 1;
-	}
-	
-	left_points->erase(left_points->begin());
-	if (left_points->size() > 1)
-	{
-	    left_points->erase(left_points->begin()+(left_points->size()-1));
-	}
-
-	start.x += h;
-	start.y += v;
-	end.x += h;
-	end.y -= v;
-    }
-
-    //right
-    start = {(float)side - 1, 0};
-    end = {(float)side - 1, (float)side - 1};
-    h = (float)side/((float)left.size()+(float)right.size())*2;
-    v = (float)side/((float)left.size()+(float)right.size())*2;
-
-    while (right_points->size() > 0)
-    {
-	for (int i = 0; i < right_points->size(); i++)
-	{
-	    point_src = right_points->at(i);
-	    point_dst.x = (int)round(start.x);
-	    if (right_points->size() > 1)
-	    {
-	        point_dst.y = (int)round(start.y + (end.y-start.y)*i/(right_points->size()-1));
-	    }
-	    else
-	    {
-		point_dst.y = (int)round((start.y+end.y)/2);
-	    }
-	    
-	    if (right_points->size() == right.size())
-	    {
-		dst.at<cv::Vec3b>(point_dst.y+locate.y, point_dst.x+locate.x) = src.at<cv::Vec3b>(point_src.y, point_src.x - 1);
-	    }
-	    else
-	    {
-                dst.at<cv::Vec3b>(point_dst.y+locate.y, point_dst.x+locate.x) = src.at<cv::Vec3b>(point_src.y, point_src.x);
-	    }
-	    
-	    right_points->at(i).x -= 1;
-	}
-	
-	right_points->erase(right_points->begin());
-	if (right_points->size() > 1)
-	{
-	    right_points->erase(right_points->begin()+(right_points->size()-1));
-	}
-
-	start.x -= h;
-	start.y += v;
-	end.x -= h;
-	end.y -= v;
-    }
-    delete top_points;
-    delete botton_points;
-    delete left_points;
-    delete right_points;
-#endif
-
-#if 0
-    for (int i = 0; i < dst.rows; i++)
-    {
-	for (int j = 0; j < dst.cols; j++)
-	{
-	    if (dst.at<cv::Vec3b>(i, j) == cv::Vec3b(0,0,0))
-	    {
-		//dst.at<cv::Vec3b>(i, j) = dst.at<cv::Vec3b>(center_dst.y, center_dst.x);
-	    }
-	    //dst.at<cv::Vec3b>(i, j) = dst.at<cv::Vec3b>(center_dst.y, center_dst.x);
-	}
-    }
-#endif
+    delete mask;
 }
 
 void getChessboardGrids(cv::Mat dst, cv::Size size, int side, cv::Mat src, std::vector<cv::Point> *rowL, std::vector<cv::Point> *colL)
 {
-    for (int i = 0; i < 1/*size.height*/; i++)
+    for (int i = 0; i < size.height; i++)
     {
-	for (int j = 0; j < 1/*size.width*/; j++)
+	for (int j = 0; j < size.width; j++)
 	{
 	    cv::Point locate = {side*(size.width-1-j), side*(size.height-1-i)};
-	    //cv::Mat grid = cv::Mat::zeros(side, side, src.type());
 	    getChessboardGrid(dst, locate, side, src, *(rowL+size.width*(i+1)+j), *(rowL+size.width*i+j), *(colL + (size.width+1)*i+j+1), *(colL+(size.width+1)*i+j));
-	    //IplImage ipl_grid = IplImage(grid);
-	    //IplImage ipl_grids = IplImage(dst);
-	    //CvRect roi_grid =cvRect(0, 0, side, side);
-	    //CvRect roi_grids =cvRect(side*(size.width-1-j), side*(size.height-1-i), side, side);
-	    //cvSetImageROI(&ipl_grid, roi_grid);
-	    //cvSetImageROI(&ipl_grids, roi_grids);
-	    //cvCopy(&ipl_grid, &ipl_grids); 
 	}
     }
 }
@@ -1141,22 +967,6 @@ void getChessboardRectanglePoints(cv::Mat mat, std::vector<cv::Point2f> *corners
 
 void sortChessboardSidePoints(std::vector<cv::Point> *rowL, std::vector<cv::Point> *colL, cv::Size size)
 {
-    struct 
-    {
-	bool operator()(cv::Point a, cv::Point b)
-	{
-	    return a.x < b.x;
-	}
-    } xLess;
-
-    struct 
-    {
-	bool operator()(cv::Point a, cv::Point b)
-	{
-	    return a.y < b.y;
-	}
-    } yLess;
-
     int rows = size.height;
     int cols = size.width;
     std::vector<cv::Point> *line = NULL;
