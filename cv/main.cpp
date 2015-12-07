@@ -610,69 +610,8 @@ void getChessboardGrid(cv::Mat dst, cv::Point locate, int side, cv::Mat src,
 	{
             h = h_size * c / side_f;
 	    v = v_size * r / side_f;
-#if 0
+            
 	    if (r == 0)
-	    {
-                i_top = (top.size()-1)*h/h_size;
-                point = top.at(i_top);
-	    }
-	    else if (r == side_f)
-	    {
-		i_botton = (botton.size()-1)*h/h_size;
-		point = botton.at(i_botton);
-	    }
-	    else if (c == 0)
-	    {
-		i_left = (left.size()-1)*v/v_size;
-		point = left.at(i_left);
-	    }
-	    else if (c == side_f)
-	    {
-		i_right = (right.size()-1)*v/v_size;
-                point = right.at(i_right);
-	    }
-	    else
-	    {
-		i_top = (int)round((top.size()-1)*h/h_size);
-		i_botton = (int)round((botton.size()-1)*h/h_size);
-		i_left = (int)round((left.size()-1)*v/v_size);
-		i_right = (int)round((right.size()-1)*v/v_size);
-		top_point = top.at(i_top);
-		botton_point = botton.at(i_botton);
-		left_point = left.at(i_left);
-		right_point = right.at(i_right);
-
-                if (top_point.x == botton_point.x)
-		{
-                    point.x = top_point.x;
-		    point.y = top_point.y + (botton_point.y - top_point.y) * v / v_size;
-		}
-		else
-		{
-		    k_h = ((float)(top_point.y-botton_point.y))/((float)(top_point.x-botton_point.x));
-		    k_v = ((float)(left_point.y-right_point.y))/((float)(left_point.x-right_point.x));
-		    b_h = top_point.y - k_h*top_point.x;
-		    b_v = left_point.y - k_v*left_point.x;
-
-		    
-		    if (k_h == k_v)
-		    {
-			continue;
-		    }
-
-		    x = (b_v - b_h) / (k_h - k_v);
-		    y = (b_h * k_v - b_v * k_h) / (k_v - k_h);
-		    point.x = (int)round(x);
-		    point.y = (int)round(y);
-		}
-
-		if (mask->at<uchar>(point.y, point.x) != 255)
-		{
-		    continue;
-		}
-	    }
-#else
-            if (r == 0)
 	    {
                 i_top = (top_line->size()-1)*h/h_size;
                 point = top_line->at(i_top);
@@ -729,11 +668,52 @@ void getChessboardGrid(cv::Mat dst, cv::Point locate, int side, cv::Mat src,
 
 		if (mask->at<uchar>(point.y, point.x) != 255)
 		{
-		    continue;
+		    if (point.x > right_point.x)
+		    {
+                        point.x = right_point.x - sqrt((h_size-h)*(h_size-h) / (k_v*k_v + 1));
+			point.y = right_point.y + (k_v > 0 ? 1.0 : -1.0) * sqrt((h_size-h)*(h_size-h)*k_v*k_v/(1 + k_v*k_v));
+			if (mask->at<uchar>(point.y, point.x) != 255)
+			{
+                            point.x = right_point.x;
+			    point.y = right_point.y;
+			}
+		    }
+		    else if (point.x < left_point.x)
+		    {
+			point.x = left_point.x + sqrt(h*h / (k_v*k_v + 1));
+			point.y = left_point.y + (k_v > 0 ? 1.0 : -1.0) * sqrt((h_size-h)*(h_size-h)*k_v*k_v/(1 + k_v*k_v));
+                        if (mask->at<uchar>(point.y, point.x) != 255)
+			{
+                            point.x = left_point.x;
+			    point.y = left_point.y;
+			}
+		    }
+		    else if (point.y > botton_point.y)
+		    {
+			point.x = botton_point.x + (k_h > 0 ? 1.0 : -1.0) * sqrt((v_size-v)*(v_size-v) / (k_h*k_h + 1));
+			point.y = botton_point.y - sqrt((v_size-v)*(v_size-v)*k_h*k_h/(1 + k_h*k_h));
+                        if (mask->at<uchar>(point.y, point.x) != 255)
+			{
+                            point.x = botton_point.x;
+			    point.y = botton_point.y;
+			}
+		    }
+		    else if (point.y < top_point.y)
+		    {
+			point.x = top_point.x + (k_h > 0 ? 1.0 : -1.0) * sqrt(v*v / (k_h*k_h + 1));
+			point.y = top_point.y + sqrt((v_size-v)*(v_size-v)*k_h*k_h/(1 + k_h*k_h));
+                        if (mask->at<uchar>(point.y, point.x) != 255)
+			{
+                            point.x = top_point.x;
+			    point.y = top_point.y;
+			}
+		    }
+		    else
+		    {
+			continue;
+		    }
 		}
 	    }
-
-#endif
 
             dst.at<cv::Vec3b>(r+locate.y, c+locate.x) = src.at<cv::Vec3b>(point.y, point.x);
 	}
@@ -1131,7 +1111,34 @@ int main(int argc, char **argv)
     cv::namedWindow("warp");
     cv::imshow("warp", warp);
 #endif
-    cv::putText(gray, "Hello world", {gray.cols/2 - 300, gray.rows/2 - 50 }, 0, 2, {0,0,255}, 8);
+    int min_x = gray.cols;
+    int max_x = 0;
+    int min_y = gray.rows;
+    int max_y = 0;
+    for (auto point : points)
+    {
+	if (point.x < min_x)
+	{
+	    min_x = point.x;
+	}
+
+	if (point.x > max_x)
+	{
+	    max_x = point.x;
+	}
+
+	if (point.y < min_y)
+	{
+	    min_y = point.y;
+	}
+
+	if (point.y > max_y)
+	{
+	    max_y = point.y;
+	}
+    }
+
+    cv::putText(gray, "Hello world", {min_x + (max_x - min_x)/6, min_y + (max_y - min_y)/2}, 0, 2, {0,0,255}, 8);
     cv::namedWindow("gray");
     cv::imshow("gray", gray);
     cv::Mat grids = cv::Mat::zeros(500, 800, gray.type());
