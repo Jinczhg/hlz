@@ -181,136 +181,226 @@ void getChessboardLinePoints(std::vector<cv::Point> *rectPoints,
         //left
 	for (int i = 0; i < rows; i++)
 	{
-            float k, k1, k2, b1, b2;
-	    
-	    k = (corners->at(i)->at(0).y - corners->at(i)->at(1).y)
-		/ (corners->at(i)->at(0).x - corners->at(i)->at(1).x);
-	    
-	    if ((1+k)/(1-k) > 0)
+            float k1, k2, b1, b2;
+	    if (i < rows - 1)
 	    {
-		k1 = (k + 1) / (1 - k);
-		k2 = (k - 1) / (1 + k);
+		if (corners->at(i)->at(0).x == corners->at(i+1)->at(1).x)
+		{
+		    k1 = tan(70);
+		}
+		else
+		{
+		    k1 = (corners->at(i+1)->at(1).y - corners->at(i)->at(0).y)
+			/ (corners->at(i+1)->at(1).x - corners->at(i)->at(0).x);
+		}
 	    }
 	    else
 	    {
-                k1 = (k - 1) / (1 + k);
-		k2 = (k + 1) / (1 - k);
+		if (corners->at(i-1)->at(0).x == corners->at(i)->at(1).x)
+		{
+		    k1 = tan(70);
+		}
+		else
+		{
+		    k1 = (corners->at(i)->at(1).y - corners->at(i-1)->at(0).y)
+		        / (corners->at(i)->at(1).x - corners->at(i-1)->at(0).x);
+		}
 	    }
 
-            b1 = corners->at(i)->at(0).y - k1 * corners->at(i)->at(0).x;
-	    b2 = corners->at(i)->at(0).y - k2 * corners->at(i)->at(0).x;
-	    
-	    if (point.x < corners->at(i)->at(0).x 
-		&& point.y >= (k1 * point.x + b1) && point.y <= (k2 * point.x + b2))
+	    if (i > 0)
+	    {
+		if (corners->at(i)->at(0).x == corners->at(i-1)->at(1).x)
 		{
-		    remove = true;
-		    goto out;
+		    k2 = tan(110);
 		}
-	}
+		else
+		{
+		    k2 = (corners->at(i-1)->at(1).y - corners->at(i)->at(0).y)
+			/ (corners->at(i-1)->at(1).x - corners->at(i)->at(0).x);
+		}
+	    }
+	    else
+	    {
+                if (corners->at(i+1)->at(0).x == corners->at(i)->at(1).x)
+		{
+		    k2 = tan(110);
+		}
+		else
+		{
+		    k2 = (corners->at(i)->at(1).y - corners->at(i+1)->at(0).y)
+		        / (corners->at(i)->at(1).x - corners->at(i+1)->at(0).x);
+		}
+	    }
 
+	    b1 = corners->at(i)->at(0).y - k1 * corners->at(i)->at(0).x;
+	    b2 = corners->at(i)->at(0).y - k2 * corners->at(i)->at(0).x;
+            
+	    if (point.x < corners->at(i)->at(0).x)
+	    {
+		    if (point.x <= (point.y - b1) / k1 && point.x <= (point.y - b2) / k2)
+		    {
+			remove = true;
+			goto out;
+		    }
+	    }
+	}
+	
 	//right
 	for (int i = 0; i < rows; i++)
 	{
-	    float k, k1, k2, b1, b2;
-	    
-	    k = (corners->at(i)->at(cols-1).y - corners->at(i)->at(cols-2).y)
-		/ (corners->at(i)->at(cols-1).x - corners->at(i)->at(cols-2).x);
-	    
-	    if ((1+k)/(1-k) > 0)
+	    float k1, k2, b1, b2;
+            
+	    if (i < rows - 1)
 	    {
-		k1 = (k + 1) / (1 - k);
-		k2 = (k - 1) / (1 + k);
+		if (corners->at(i)->at(cols-1).x == corners->at(i+1)->at(cols-2).x)
+		{
+		    k1 = tan(110);
+		}
+		else
+		{
+		    k1 = (corners->at(i+1)->at(cols-2).y - corners->at(i)->at(cols-1).y)
+			/ (corners->at(i+1)->at(cols-2).x - corners->at(i)->at(cols-1).x);
+		}
 	    }
 	    else
 	    {
-                k1 = (k - 1) / (1 + k);
-		k2 = (k + 1) / (1 - k);
+		k1 = (corners->at(i)->at(cols-2).y - corners->at(i-1)->at(cols-1).y)
+		    / (corners->at(i)->at(cols-2).x - corners->at(i-1)->at(cols-1).x);
+	    }
+
+	    if (i > 0)
+	    {
+		if (corners->at(i)->at(cols-1).x == corners->at(i-1)->at(cols-2).x)
+		{
+		    k2 = tan(70);
+		}
+		else
+		{
+		    k2 = (corners->at(i-1)->at(cols-2).y - corners->at(i)->at(cols-1).y)
+			/ (corners->at(i-1)->at(cols-2).x - corners->at(i)->at(cols-1).x);
+		}
+	    }
+	    else
+	    {
+		k2 = (corners->at(i)->at(cols-2).y - corners->at(i+1)->at(cols-1).y)
+		    / (corners->at(i)->at(cols-2).x - corners->at(i+1)->at(cols-1).x);
 	    }
 
 	    b1 = corners->at(i)->at(cols-1).y - k1 * corners->at(i)->at(cols-1).x;
 	    b2 = corners->at(i)->at(cols-1).y - k2 * corners->at(i)->at(cols-1).x;
-
-	    
-	    if (point.x > corners->at(i)->at(cols-1).x 
-		&& point.y >= (k2 * point.x + b2) && point.y <= (k1 * point.x + b1))
-		{
-		    remove = true;
-		    goto out;
-		} 
+            
+	    if (point.x > corners->at(i)->at(cols-1).x)
+	    {
+		    if (point.x >= (point.y - b1) / k1 && point.x >= (point.y - b2) / k2)
+		    {
+			remove = true;
+			goto out;
+		    }
+	    }
 	}
 
 	//botton
 	for (int i = 0; i < cols; i++)
 	{
-            float k, k1, k2, b1, b2;
-	    
-	    if (corners->at(rows-1)->at(i).x == corners->at(rows-2)->at(i).x)
+            float k1, k2, b1, b2;
+            
+	    if (i < cols -1)
 	    {
-		k1 = 1;
-		k2 = -1;
-	    }
-	    else
-	    {
-		k = (corners->at(rows-1)->at(i).y - corners->at(rows-2)->at(i).y)
-		    / (corners->at(rows-1)->at(i).x - corners->at(rows-2)->at(i).x);
-	        if ((1+k)/(1-k) > 0)
+		if (corners->at(rows-1)->at(i).x == corners->at(rows-2)->at(i+1).x)
 		{
-		    k1 = (k + 1) / (1 - k);
-		    k2 = (k - 1) / (1 + k);
+		    k1 = tan(110);
 		}
 		else
 		{
-		    k1 = (k - 1) / (1 + k);
-		    k2 = (k + 1) / (1 - k);
+		    k1 = (corners->at(rows-2)->at(i+1).y - corners->at(rows-1)->at(i).y)
+			/ (corners->at(rows-2)->at(i+1).x - corners->at(rows-1)->at(i).x);
 		}
 	    }
+	    else
+	    {
+		k1 = (corners->at(rows-2)->at(i).y - corners->at(rows-1)->at(i-1).y)
+		    / (corners->at(rows-2)->at(i).x - corners->at(rows-1)->at(i-1).x);
+	    }
 
-            b1 = corners->at(rows-1)->at(i).y - k1 * corners->at(rows-1)->at(i).x; 
-            b2 = corners->at(rows-1)->at(i).y - k2 * corners->at(rows-1)->at(i).x; 
-	    
-	    if (point.y > corners->at(rows-1)->at(i).y 
-		&& point.x >= (point.y - b2) / k2 && point.x <= (point.y - b1) / k1)
+	    if (i > 0)
+	    {
+		if (corners->at(rows-1)->at(i).x == corners->at(rows-2)->at(i-1).x)
 		{
-		    remove = true;
-		    goto out;
+		    k2 = tan(70);
 		}
+		else
+		{
+		    k2 = (corners->at(rows-2)->at(i-1).y - corners->at(rows-1)->at(i).y)
+			/ (corners->at(rows-2)->at(i-1).x - corners->at(rows-1)->at(i).x);
+		}
+	    }
+	    else
+	    {
+		k2 = (corners->at(rows-2)->at(i).y - corners->at(rows-1)->at(i+1).y)
+		    / (corners->at(rows-2)->at(i).x - corners->at(rows-1)->at(i+1).x);
+	    }
+
+	    b1 = corners->at(rows-1)->at(i).y - k1 * corners->at(rows-1)->at(i).x;
+	    b2 = corners->at(rows-1)->at(i).y - k2 * corners->at(rows-1)->at(i).x;
+            
+	    if (point.y > corners->at(rows-1)->at(i).y
+		    && point.x >= (point.y - b1) / k1 && point.x <= (point.y - b2) / k2)
+	    {
+		remove = true;
+		goto out;
+	    }
 	}
 
 	//top
         for (int i = 0; i < cols; i++)
 	{
-            float k, k1, k2, b1, b2;
-	    if (corners->at(0)->at(i).x == corners->at(1)->at(i).x)
+            float k1, k2, b1, b2;
+
+	    if (i < cols -1)
 	    {
-                k1 = 1;
-		k2 = -1;
-	    }
-            else
-	    {
-		k = (corners->at(0)->at(i).y - corners->at(1)->at(i).y)
-		    / (corners->at(0)->at(i).x - corners->at(1)->at(i).x);
-		 
-		if ((1+k)/(1-k) > 0)
+		if (corners->at(0)->at(i).x == corners->at(1)->at(i+1).x)
 		{
-		    k1 = (k + 1) / (1 - k);
-		    k2 = (k - 1) / (1 + k);
+		    k1 = tan(70);
 		}
 		else
 		{
-		    k1 = (k - 1) / (1 + k);
-		    k2 = (k + 1) / (1 - k);
+		    k1 = (corners->at(1)->at(i+1).y - corners->at(0)->at(i).y)
+			/ (corners->at(1)->at(i+1).x - corners->at(0)->at(i).x);
 		}
 	    }
-	    
-	    b1 = corners->at(0)->at(i).y - k1 * corners->at(0)->at(i).x;
-            b2 = corners->at(0)->at(i).y - k2 * corners->at(0)->at(i).x;
-	    
-	    if (point.y < corners->at(0)->at(i).y 
-		&& point.x >= (point.y - b1) / k1 && point.x <= (point.y - b2) / k2)
+	    else
+	    {
+		k1 = (corners->at(1)->at(i).y - corners->at(0)->at(i-1).y)
+		    / (corners->at(1)->at(i).x - corners->at(0)->at(i-1).x);
+	    }
+
+	    if (i > 0)
+	    {
+		if (corners->at(0)->at(i).x == corners->at(1)->at(i-1).x)
 		{
-		    remove = true;
-		    goto out;
+		    k2 = tan(110);
 		}
+		else
+		{
+		    k2 = (corners->at(1)->at(i-1).y - corners->at(0)->at(i).y)
+			/ (corners->at(1)->at(i-1).x - corners->at(0)->at(i).x);
+		}
+	    }
+	    else
+	    {
+		k2 = (corners->at(1)->at(i).y - corners->at(0)->at(i+1).y)
+		    / (corners->at(1)->at(i).x - corners->at(0)->at(i+1).x);
+	    }
+
+	    b1 = corners->at(0)->at(i).y - k1 * corners->at(0)->at(i).x;
+	    b2 = corners->at(0)->at(i).y - k2 * corners->at(0)->at(i).x;
+            
+	    if (point.y < corners->at(0)->at(i).y
+		    && point.x >= (point.y - b1) / k1 && point.x <= (point.y - b2) / k2)
+	    {
+		remove = true;
+		goto out;
+	    }
 	}
 
 out:
@@ -331,9 +421,13 @@ void initChessboardLines(std::vector<std::vector<std::vector<cv::Point>*>*> *row
     {
 	for (int c = 0; c < patternSize.width - 1; c++)
 	{
-	    rowLines->at(r)->at(c)->push_back({(int)round(corners->at(r)->at(c).x),
+	    rowLines->at(r)->at(c)->insert(rowLines->at(r)->at(c)->begin(),
+		    {(int)round(corners->at(r)->at(c).x),
 		    (int)round(corners->at(r)->at(c).y)});
-	    rowLines->at(r)->at(c)->push_back({(int)round(corners->at(r)->at(c + 1).x),
+	    
+	    rowLines->at(r)->at(c)->insert(rowLines->at(r)->at(c)->begin()
+		    + rowLines->at(r)->at(c)->size()-1,
+		    {(int)round(corners->at(r)->at(c + 1).x),
 		    (int)round(corners->at(r)->at(c + 1).y)});
 	}
     }
@@ -342,13 +436,16 @@ void initChessboardLines(std::vector<std::vector<std::vector<cv::Point>*>*> *row
     {
 	for (int c = 0; c < patternSize.width; c++)
 	{
-	    colLines->at(c)->at(r)->push_back({(int)round(corners->at(r)->at(c).x),
+	    colLines->at(c)->at(r)->insert(colLines->at(c)->at(r)->begin(),
+		    {(int)round(corners->at(r)->at(c).x),
 		    (int)round(corners->at(r)->at(c).y)});
-	    colLines->at(c)->at(r)->push_back({(int)round(corners->at(r + 1)->at(c).x),
+	    
+	    colLines->at(c)->at(r)->insert(colLines->at(c)->at(r)->begin()
+		    + colLines->at(c)->at(r)->size(),
+		    {(int)round(corners->at(r + 1)->at(c).x),
 		    (int)round(corners->at(r + 1)->at(c).y)});
 	}
     }
-
 }
 
 void fixChessboardLines(std::vector<std::vector<std::vector<cv::Point>*>*> *rowLines,
@@ -376,6 +473,11 @@ void fixChessboardLines(std::vector<std::vector<std::vector<cv::Point>*>*> *rowL
 	    {
 		p1 = side->at(j);
 		p2 = tmp_points->at(tmp_points->size()-1);
+
+		if (abs(p1.y - p2.y) > 3)
+		{
+		    continue;
+		}
 		
 		if (p1.x == p2.x && tmp_points->size() > 1)
 		{
@@ -432,6 +534,11 @@ void fixChessboardLines(std::vector<std::vector<std::vector<cv::Point>*>*> *rowL
 	    {
 		p1 = side->at(j);
 		p2 = tmp_points->at(tmp_points->size()-1);
+
+		if (abs(p1.x - p2.x) > 3)
+		{
+		    continue;
+		}
 		
 		if (p1.y == p2.y && tmp_points->size() > 1)
 		{
@@ -482,17 +589,30 @@ void fillChessboardLines(std::vector<cv::Point> *points,
 	std::vector<std::vector<cv::Point2f>*> *corners,
 	cv::Size patternSize)
 {
+#if 0
+    float distance = std::numeric_limits<float>::max();
+    int row = 0;
+    int col = 0;
+    float tmp = 0; 
+    float a1 = 0;
+    float a2 = 0;
+    float b1 = 0;
+    float b2 = 0;
+    float k, b;
+    float d;
+    const float d_max = 5; 
+    
     //fill
     for (auto point : *points)
     {
-	float distance = std::numeric_limits<float>::max();
-	int row = 0;
-	int col = 0;
-	float tmp = 0; 
-	float a1 = 0;
-	float a2 = 0;
-	float b1 = 0;
-	float b2 = 0;
+	distance = std::numeric_limits<float>::max();
+	row = 0;
+	col = 0;
+	tmp = 0; 
+	a1 = 0;
+	a2 = 0;
+	b1 = 0;
+	b2 = 0;
 
 	for (int i = 0; i < patternSize.height; i++)
 	{
@@ -500,13 +620,116 @@ void fillChessboardLines(std::vector<cv::Point> *points,
 	    {
                 tmp = std::pow(point.x - corners->at(i)->at(j).x, 2)
 		    + std::pow(point.y - corners->at(i)->at(j).y, 2);
+		
 		if (distance > tmp)
 		{
-		    distance = tmp;
-		    row = i;
-		    col = j;
+		    //the distance of point to line
+		    if (i > 0)
+		    {
+			if (corners->at(i-1)->at(j).x == corners->at(i)->at(j).x)
+			{
+			    d = abs(point.x - corners->at(i)->at(j).x);
+			}
+			else
+			{
+			    k = (corners->at(i-1)->at(j).y - corners->at(i)->at(j).y)
+			        / (corners->at(i-1)->at(j).x - corners->at(i)->at(j).x);
+			    
+			    b = corners->at(i)->at(j).y - k * corners->at(i)->at(j).x;
+                            
+			    d = abs((k * point.x - point.y + b)/sqrt(k * k + 1));
+			}
+		    
+			if (d < d_max)
+			{
+			    distance = tmp;
+			    row = i;
+			    col = j;
+			    continue;
+			}
+		    }
+
+		    if (i < patternSize.height - 1)
+		    {
+			if (corners->at(i+1)->at(j).x == corners->at(i)->at(j).x)
+			{
+			    d = abs(point.x - corners->at(i)->at(j).x);
+			}
+			else
+			{
+			    k = (corners->at(i+1)->at(j).y - corners->at(i)->at(j).y)
+			        / (corners->at(i+1)->at(j).x - corners->at(i)->at(j).x);
+			    
+			    b = corners->at(i)->at(j).y - k * corners->at(i)->at(j).x;
+                            
+			    d = abs((k * point.x - point.y + b)/sqrt(k * k + 1));
+			}
+		    
+			if (d < d_max)
+			{
+			    distance = tmp;
+			    row = i;
+			    col = j;
+			    continue;
+			}
+		    }
+
+                    if (j > 0)
+		    {
+			if (corners->at(i)->at(j-1).y == corners->at(i)->at(j).y)
+			{
+			    d = abs(point.y - corners->at(i)->at(j).y);
+			}
+			else
+			{
+			    k = (corners->at(i)->at(j-1).y - corners->at(i)->at(j).y)
+			        / (corners->at(i)->at(j-1).x - corners->at(i)->at(j).x);
+			    
+			    b = corners->at(i)->at(j).y - k * corners->at(i)->at(j).x;
+                            
+			    d = abs((k * point.x - point.y + b)/sqrt(k * k + 1));
+			}
+		    
+			if (d < d_max)
+			{
+			    distance = tmp;
+			    row = i;
+			    col = j;
+			    continue;
+			}
+		    }
+
+                    if (j < patternSize.width - 1)
+		    {
+			if (corners->at(i)->at(j+1).y == corners->at(i)->at(j).y)
+			{
+			    d = abs(point.y - corners->at(i)->at(j).y);
+			}
+			else
+			{
+			    k = (corners->at(i)->at(j+1).y - corners->at(i)->at(j).y)
+			        / (corners->at(i)->at(j+1).x - corners->at(i)->at(j).x);
+			    
+			    b = corners->at(i)->at(j).y - k * corners->at(i)->at(j).x;
+                            
+			    d = abs((k * point.x - point.y + b)/sqrt(k * k + 1));
+			}
+		    
+			if (d < d_max)
+			{
+			    distance = tmp;
+			    row = i;
+			    col = j;
+			    continue;
+			}
+		    }
 	        }
 	    }
+	}
+
+	if (distance == std::numeric_limits<float>::max())
+	{
+	    continue;
 	}
 
 	//center
@@ -521,26 +744,79 @@ void fillChessboardLines(std::vector<cv::Point> *points,
 		/ (corners->at(row+1)->at(col-1).x - corners->at(row)->at(col).x);
             b2 = corners->at(row)->at(col).y - a2 * corners->at(row)->at(col).x;
             
-	    if (point.y > a1*point.x + b1)
+	    if (a1 > 0 && a2 < 0)
 	    {
-		if (point.y > a2*point.x + b2)
+		if (point.y > a1*point.x + b1)
 		{
-		    colLines->at(col)->at(row)->push_back(point);
+		    if (point.y > a2*point.x + b2)
+		    {
+			colLines->at(col)->at(row)->push_back(point);
+		    }
+		    else
+		    {
+			rowLines->at(row)->at(col-1)->push_back(point);
+		    }
 		}
 		else
 		{
-		    rowLines->at(row)->at(col-1)->push_back(point);
+		    if (point.y > a2*point.x + b2)
+		    {
+			rowLines->at(row)->at(col)->push_back(point);
+		    }
+		    else
+		    {
+			colLines->at(col)->at(row-1)->push_back(point);
+		    }
 		}
 	    }
-	    else
+	    else if (a1 < 0 && a2 < 0)
 	    {
-		if (point.y > a2*point.x + b2)
+                if (point.y > a1*point.x + b1)
 		{
-		    rowLines->at(row)->at(col)->push_back(point);
+		    if (point.y > a2*point.x + b2)
+		    {
+			rowLines->at(row)->at(col-1)->push_back(point);
+		    }
+		    else
+		    {
+			colLines->at(col)->at(row)->push_back(point);
+		    }
 		}
 		else
 		{
-		    colLines->at(col)->at(row-1)->push_back(point);
+		    if (point.y > a2*point.x + b2)
+		    {
+			colLines->at(col)->at(row-1)->push_back(point);
+		    }
+		    else
+		    {
+			rowLines->at(row)->at(col)->push_back(point);
+		    }
+		}
+	    }
+	    else if (a1 > 0 && a2 > 0)
+	    {
+                if (point.y > a1*point.x + b1)
+		{
+		    if (point.y > a2*point.x + b2)
+		    {
+			rowLines->at(row)->at(col)->push_back(point);
+		    }
+		    else
+		    {
+			colLines->at(col)->at(row-1)->push_back(point);
+		    }
+		}
+		else
+		{
+		    if (point.y > a2*point.x + b2)
+		    {
+			colLines->at(col)->at(row)->push_back(point); 
+		    }
+		    else
+		    {
+			rowLines->at(row)->at(col-1)->push_back(point);
+		    }
 		}
 	    }
 	}
@@ -556,19 +832,59 @@ void fillChessboardLines(std::vector<cv::Point> *points,
 		/ (corners->at(row-1)->at(col+1).x - corners->at(row)->at(col).x);
             b2 = corners->at(row)->at(col).y - a2 * corners->at(row)->at(col).x;
 
-	    if (point.y > a1*point.x + b1)
+	    if (a1 > 0 && a2 < 0)
 	    {
-		colLines->at(col)->at(row)->push_back(point);
-	    }
-	    else
-	    {
-                if (point.y > a2*point.x + b2)
+		if (point.y > a1*point.x + b1)
 		{
-		    rowLines->at(row)->at(col)->push_back(point);
+		    colLines->at(col)->at(row)->push_back(point);
 		}
 		else
 		{
-		    colLines->at(col)->at(row-1)->push_back(point);
+		    if (point.y > a2*point.x + b2)
+		    {
+			rowLines->at(row)->at(col)->push_back(point);
+		    }
+		    else
+		    {
+			colLines->at(col)->at(row-1)->push_back(point);
+		    }
+		}
+	    }
+	    else if (a1 < 0 && a2 < 0)
+	    {
+                if (point.y > a1*point.x + b1)
+		{
+		    if (point.y > a2*point.x + b2)
+		    {
+			rowLines->at(row)->at(col)->push_back(point);
+		    }
+		    else
+		    {
+			colLines->at(col)->at(row-1)->push_back(point);
+		    }
+		}
+		else
+		{
+		    colLines->at(col)->at(row)->push_back(point);
+		}
+		
+	    }
+	    else if (a1 > 0 && a2 > 0)
+	    {
+                if (point.y > a1*point.x + b1)
+		{
+		    if (point.y > a2*point.x + b2)
+		    {
+			rowLines->at(row)->at(col)->push_back(point);
+		    }
+		    else
+		    {
+			colLines->at(col)->at(row-1)->push_back(point);
+		    }
+		}
+		else
+		{
+		    colLines->at(col)->at(row)->push_back(point);
 		}
 	    }
 	}
@@ -585,20 +901,59 @@ void fillChessboardLines(std::vector<cv::Point> *points,
 		/ (corners->at(row+1)->at(col-1).x - corners->at(row)->at(col).x);
             b2 = corners->at(row)->at(col).y - a2 * corners->at(row)->at(col).x;
 
-	    if (point.y > a1*point.x + b1)
+	    if (a1 > 0 && a2 < 0)
 	    {
-		if (point.y > a2*point.x + b2)
+		if (point.y > a1*point.x + b1)
 		{
-		    colLines->at(col)->at(row)->push_back(point);
+		    if (point.y > a2*point.x + b2)
+		    {
+			colLines->at(col)->at(row)->push_back(point);
+		    }
+		    else
+		    {
+			rowLines->at(row)->at(col-1)->push_back(point);
+		    }
 		}
 		else
 		{
-		    rowLines->at(row)->at(col-1)->push_back(point);
+		    colLines->at(col)->at(row-1)->push_back(point);
 		}
 	    }
-	    else
+	    else if (a1 > 0 && a2 > 0)
 	    {
-		colLines->at(col)->at(row-1)->push_back(point);
+                if (point.y > a1*point.x + b1)
+		{
+		    if (point.y > a2*point.x + b2)
+		    {
+			rowLines->at(row)->at(col-1)->push_back(point);
+		    }
+		    else
+		    {
+			colLines->at(col)->at(row)->push_back(point);
+		    }
+		}
+		else
+		{
+		    colLines->at(col)->at(row-1)->push_back(point);
+		}
+	    }
+	    else if (a1 < 0 && a2 < 0)
+	    {
+                if (point.y > a1*point.x + b1)
+		{
+		    colLines->at(col)->at(row-1)->push_back(point);
+		}
+		else
+                {
+		    if (point.y > a2*point.x + b2)
+		    {
+			colLines->at(col)->at(row)->push_back(point);
+		    }
+		    else
+		    {
+			rowLines->at(row)->at(col-1)->push_back(point);
+		    }
+		}
 	    }
 	}
 	
@@ -613,19 +968,58 @@ void fillChessboardLines(std::vector<cv::Point> *points,
 		/ (corners->at(row-1)->at(col+1).x - corners->at(row)->at(col).x);
             b2 = corners->at(row)->at(col).y - a2 * corners->at(row)->at(col).x;
 
-	    if (point.y > a1*point.x + b1)
+	    if (a1 > 0 && a2 < 0)
 	    {
-		rowLines->at(row)->at(col-1)->push_back(point);
-	    }
-	    else
-	    {
-		if (point.y > a2*point.x + b2)
+		if (point.y > a1*point.x + b1)
 		{
-		    rowLines->at(row)->at(col)->push_back(point);
+		    rowLines->at(row)->at(col-1)->push_back(point);
 		}
 		else
 		{
-		    colLines->at(col)->at(row-1)->push_back(point);
+		    if (point.y > a2*point.x + b2)
+		    {
+			rowLines->at(row)->at(col)->push_back(point);
+		    }
+		    else
+		    {
+			colLines->at(col)->at(row-1)->push_back(point);
+		    }
+		}
+	    }
+	    else if (a1 > 0 && a2 > 0)
+	    {
+                if (point.y > a1*point.x + b1)
+		{
+		    rowLines->at(row)->at(col-1)->push_back(point);
+		}
+		else
+		{
+		    if (point.y > a2*point.x + b2)
+		    {
+                        colLines->at(col)->at(row-1)->push_back(point);
+		    }
+		    else
+		    {	
+                        rowLines->at(row)->at(col)->push_back(point);
+		    }
+		}
+	    }
+	    else if (a1 < 0 && a2 < 0)
+	    {
+                if (point.y > a1*point.x + b1)
+		{
+		    if (point.y > a2*point.x + b2)
+		    {
+                        rowLines->at(row)->at(col)->push_back(point);
+		    }
+		    else
+		    {	
+                        colLines->at(col)->at(row-1)->push_back(point);
+		    }
+		}
+		else
+                {
+		    rowLines->at(row)->at(col-1)->push_back(point);
 		}
 	    }
 	}
@@ -641,20 +1035,59 @@ void fillChessboardLines(std::vector<cv::Point> *points,
 		/ (corners->at(row+1)->at(col-1).x - corners->at(row)->at(col).x);
             b2 = corners->at(row)->at(col).y - a2 * corners->at(row)->at(col).x;
 
-	    if (point.y > a1*point.x + b1)
+	    if (a1 > 0 && a2 < 0)
 	    {
-		if (point.y > a2*point.x + b2)
+		if (point.y > a1*point.x + b1)
 		{
-		    colLines->at(col)->at(row)->push_back(point);
+		    if (point.y > a2*point.x + b2)
+		    {
+			colLines->at(col)->at(row)->push_back(point);
+		    }
+		    else
+		    {
+			rowLines->at(row)->at(col-1)->push_back(point);
+		    }
 		}
 		else
 		{
-		    rowLines->at(row)->at(col-1)->push_back(point);
+		    rowLines->at(row)->at(col)->push_back(point);
 		}
 	    }
-	    else
+	    else if (a1 > 0 && a2 > 0)
 	    {
-		rowLines->at(row)->at(col)->push_back(point);
+                if (point.y > a1*point.x + b1)
+		{
+		    if (point.y > a2*point.x + b2)
+		    {
+			rowLines->at(row)->at(col-1)->push_back(point);
+		    }
+		    else
+		    {	
+                        colLines->at(col)->at(row)->push_back(point);
+		    }
+		}
+		else
+		{
+		    rowLines->at(row)->at(col)->push_back(point);
+		}
+	    }
+	    else if (a1 < 0 && a2 < 0)
+	    {
+                if (point.y > a1*point.x + b1)
+		{
+		    rowLines->at(row)->at(col)->push_back(point);   
+		}
+		else
+		{
+		    if (point.y > a2*point.x + b2)
+		    {
+			colLines->at(col)->at(row)->push_back(point);
+		    }
+		    else
+		    {	
+                        rowLines->at(row)->at(col-1)->push_back(point);
+		    }
+		}
 	    }
 	}
 
@@ -665,13 +1098,27 @@ void fillChessboardLines(std::vector<cv::Point> *points,
 		/ (corners->at(row-1)->at(col-1).x - corners->at(row)->at(col).x );
 	    b1 = corners->at(row)->at(col).y - a1 * corners->at(row)->at(col).x;
 
-	    if (point.y > a1*point.x + b1)
+	    if (a1 > 0)
 	    {
-		rowLines->at(row)->at(col-1)->push_back(point);
+		if (point.y > a1*point.x + b1)
+		{
+		    rowLines->at(row)->at(col-1)->push_back(point);
+		}
+		else
+		{
+		    colLines->at(col)->at(row-1)->push_back(point);
+		}
 	    }
-	    else
+	    else if (a1 < 0)
 	    {
-		colLines->at(col)->at(row-1)->push_back(point);
+                if (point.y > a1*point.x + b1)
+		{
+		    colLines->at(col)->at(row-1)->push_back(point);
+		}
+		else
+		{
+		    rowLines->at(row)->at(col-1)->push_back(point);
+		}
 	    }
 	}
 
@@ -682,13 +1129,27 @@ void fillChessboardLines(std::vector<cv::Point> *points,
 		/ (corners->at(row-1)->at(col+1).x - corners->at(row)->at(col).x);
             b2 = corners->at(row)->at(col).y - a2 * corners->at(row)->at(col).x;
 
-	    if (point.y > a2*point.x + b2)
+	    if (a2 < 0)
 	    {
-		rowLines->at(row)->at(col)->push_back(point);
+		if (point.y > a2*point.x + b2)
+		{
+		    rowLines->at(row)->at(col)->push_back(point);
+		}
+		else
+		{
+		    colLines->at(col)->at(row-1)->push_back(point);
+		}
 	    }
-	    else
+	    else if (a2 > 0)
 	    {
-		colLines->at(col)->at(row-1)->push_back(point);
+                if (point.y > a2*point.x + b2)
+		{
+		    colLines->at(col)->at(row-1)->push_back(point);
+		}
+		else
+		{
+		    rowLines->at(row)->at(col)->push_back(point);
+		}
 	    }
 	}
 
@@ -699,13 +1160,27 @@ void fillChessboardLines(std::vector<cv::Point> *points,
 		/ (corners->at(row+1)->at(col-1).x - corners->at(row)->at(col).x);
             b2 = corners->at(row)->at(col).y - a2 * corners->at(row)->at(col).x;
 	    
-	    if (point.y > a2*point.x + b2)
+	    if (a2 < 0)
 	    {
-		colLines->at(col)->at(row)->push_back(point);
+		if (point.y > a2*point.x + b2)
+		{
+		    colLines->at(col)->at(row)->push_back(point);
+		}
+		else
+		{
+		    rowLines->at(row)->at(col-1)->push_back(point);
+		}
 	    }
-	    else
+	    else if (a2 > 0)
 	    {
-		rowLines->at(row)->at(col-1)->push_back(point);
+                if (point.y > a2*point.x + b2)
+		{
+		    rowLines->at(row)->at(col-1)->push_back(point);
+		}
+		else
+		{
+		    colLines->at(col)->at(row)->push_back(point);
+		}
 	    }
 	}
 
@@ -716,13 +1191,27 @@ void fillChessboardLines(std::vector<cv::Point> *points,
 		/ (corners->at(row+1)->at(col+1).x - corners->at(row)->at(col).x );
 	    b1 = corners->at(row)->at(col).y - a1 * corners->at(row)->at(col).x;
 	    
-	    if (point.y > a1*point.x + b1)
+	    if (a1 > 0)
 	    {
-		colLines->at(col)->at(row)->push_back(point);
+		if (point.y > a1*point.x + b1)
+		{
+		    colLines->at(col)->at(row)->push_back(point);
+		}
+		else
+		{
+		    rowLines->at(row)->at(col)->push_back(point);
+		}
 	    }
-	    else
+	    else if (a1 < 0)
 	    {
-		rowLines->at(row)->at(col)->push_back(point);
+                if (point.y > a1*point.x + b1)
+		{
+		    rowLines->at(row)->at(col)->push_back(point);
+		}
+		else
+		{
+		    colLines->at(col)->at(row)->push_back(point);
+		}
 	    }
 	}
     }
@@ -741,6 +1230,37 @@ void fillChessboardLines(std::vector<cv::Point> *points,
 	for (auto line : *lines)
 	{
 	    std::sort(line->begin(), line->end(), PointYLess);
+	}
+    }
+#endif
+    //insert corners
+    for (int r = 0; r < patternSize.height; r++)
+    {
+	for (int c = 0; c < patternSize.width - 1; c++)
+	{
+	    rowLines->at(r)->at(c)->insert(rowLines->at(r)->at(c)->begin(),
+		    {(int)round(corners->at(r)->at(c).x),
+		    (int)round(corners->at(r)->at(c).y)});
+	    
+	    rowLines->at(r)->at(c)->insert(rowLines->at(r)->at(c)->begin()
+		    + rowLines->at(r)->at(c)->size()-1,
+		    {(int)round(corners->at(r)->at(c + 1).x),
+		    (int)round(corners->at(r)->at(c + 1).y)});
+	}
+    }
+
+    for (int r = 0; r < patternSize.height - 1; r++)
+    {
+	for (int c = 0; c < patternSize.width; c++)
+	{
+	    colLines->at(c)->at(r)->insert(colLines->at(c)->at(r)->begin(),
+		    {(int)round(corners->at(r)->at(c).x),
+		    (int)round(corners->at(r)->at(c).y)});
+	    
+	    colLines->at(c)->at(r)->insert(colLines->at(c)->at(r)->begin()
+		    + colLines->at(c)->at(r)->size(),
+		    {(int)round(corners->at(r + 1)->at(c).x),
+		    (int)round(corners->at(r + 1)->at(c).y)});
 	}
     }
 }
