@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<mode>0</mode>
+
+<front_mapping>front.xml</front_mapping>
+<front_img>img/front.jpg</front_img>
+
+<rear_mapping>rear.xml</rear_mapping>
+<rear_img>img/rear.jpg</rear_img>
+
+<left_mapping>left.xml</left_mapping>
+<left_img>img/left.jpg</left_img>
+
+<right_mapping>right.xml</right_mapping>
+<right_img>img/right.jpg</right_img>
+
+</opencv_storage>

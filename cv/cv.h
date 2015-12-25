@@ -36,11 +36,6 @@ void getChessboardLinePoints(std::vector<cv::Point> *rectPoints,
 	std::vector<std::vector<cv::Point2f>*> *corners,
 	cv::Size patternSize);
 
-void initChessboardLines(std::vector<std::vector<std::vector<cv::Point>*>*> *rowLines,
-	std::vector<std::vector<std::vector<cv::Point>*>*> *colLines,
-	std::vector<std::vector<cv::Point2f>*> *corners,
-	cv::Size patternSize);
-
 void fixChessboardLines(std::vector<std::vector<std::vector<cv::Point>*>*> *rowLines,
 	std::vector<std::vector<std::vector<cv::Point>*>*> *colLines);
 
@@ -58,6 +53,9 @@ void getChessboardGrid(cv::Mat dst, cv::Point locate, int side, cv::Mat src,
 void getChessboardGrids(cv::Mat dst, cv::Size patternSize, int side, cv::Mat src,
 	std::vector<std::vector<std::vector<cv::Point>*>*> *rowLines,
 	std::vector<std::vector<std::vector<cv::Point>*>*> *colLines,
-	std::vector<std::vector<std::vector<cv::Point>*>*> *mapping); 
+	std::vector<std::vector<std::vector<cv::Point>*>*> *mapping);
 
+void saveChessboardGridsMapping(cv::FileStorage fs,
+	std::vector<std::vector<std::vector<cv::Point>*>*> *mapping,
+	double angle);
 #endif
