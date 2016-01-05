@@ -3,6 +3,10 @@
 #include <iostream>
 #include <vector>
 
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+
 int main(int argc, char **argv)
 {
     if (argc < 2)
@@ -22,7 +26,11 @@ int main(int argc, char **argv)
     int col = 0;
     double angle = 0.0;
     bool manual = false;
+    int manual_i = 0;
     bool found = false;
+    std::string mapping_data;
+    int mapping_fd = 0;
+    int len = 0;
 
     
     std::vector<std::string> cameras;
@@ -32,15 +40,31 @@ int main(int argc, char **argv)
     cameras.push_back("right");
     
     char camera_img[32];
+    char camera_manual_img[32];
     char camera_row[32];
     char camera_col[32];
     char camera_angle[32];
     char camera_mapping[32];
     std::string file_img;
-    std::string file_fs;
-    int square_size = 100;
+    std::string file_manual_img;
+    uint16_t square_size = 100;
 
     fs["square_size"] >> square_size;
+    fs["manual"] >> manual_i;
+    fs["data"] >> mapping_data;
+
+    mapping_fd = open(mapping_data.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+
+    if (mapping_fd < 0)
+    {
+	std::cout << "open error:" << strerror(errno) << std::endl;
+	return 0;
+    }
+
+    manual = manual_i == 0 ? false : true;
+
+    len = write(mapping_fd, &square_size, sizeof(square_size));
+
     
     for (auto camera : cameras)
     {
@@ -52,24 +76,26 @@ int main(int argc, char **argv)
 	std::vector<cv::Point> *chessboardPoints;
 
 	sprintf(camera_img, "%s_img", camera.c_str());
+	sprintf(camera_manual_img, "%s_manual_img", camera.c_str());
 	sprintf(camera_row, "%s_row", camera.c_str());
 	sprintf(camera_col, "%s_col", camera.c_str());
 	sprintf(camera_angle, "%s_angle", camera.c_str());
 	sprintf(camera_mapping, "%s_mapping", camera.c_str());
 
 	fs[camera_img] >> file_img;
+	fs[camera_manual_img] >> file_manual_img;
 	fs[camera_row] >> row;
 	fs[camera_col] >> col;
 	fs[camera_angle] >> angle;
-	fs[camera_mapping] >> file_fs;
 
 	cv::Mat mat = cv::imread(file_img);
+	cv::Mat manual_mat = cv::imread(file_manual_img);
+
 	if (mat.cols == 0 || mat.rows == 0)
 	{
 	    std::cout << camera.c_str() << ": Bad file " << file_img << std::endl;
 	    continue;
 	}
-	cv::FileStorage camera_fs(file_fs, cv::FileStorage::WRITE);
 	cv::Size patternSize(col, row);
 	cv::Mat grids = cv::Mat::zeros((row-1)*square_size, (col-1)*square_size, mat.type());
 	
@@ -125,7 +151,7 @@ int main(int argc, char **argv)
 	    }
 	}
 
-	found = findChessboardCorners(mat, patternSize, corners, manual);
+	found = findChessboardCorners(manual ? manual_mat : mat, patternSize, corners, manual);
 	if (!found)
 	{
 	    std::cout << camera.c_str() << ":findChessboardCorners fail..." << std::endl;
@@ -142,7 +168,7 @@ int main(int argc, char **argv)
 
 	getChessboardGrids(grids, {col-1, row-1}, square_size, mat, rowLs, colLs, mapping);
 	
-	saveChessboardGridsMapping(camera_fs, mapping, angle);
+	saveChessboardGridsMapping(mapping_fd, mapping, angle);
 
 	std::cout << camera.c_str() << ": ok......" << std::endl;
 
