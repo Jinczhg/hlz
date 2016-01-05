@@ -1,6 +1,7 @@
 #include "cv.h"
 
 #include <iostream>
+#include <unistd.h>
 
 bool findChessboardCorners(cv::Mat image, cv::Size patternSize,
 	std::vector<std::vector<cv::Point2f>*> *corners, bool manual)
@@ -14,6 +15,7 @@ bool findChessboardCorners(cv::Mat image, cv::Size patternSize,
 	
     int row = patternSize.height;
     int col  = patternSize.width;
+    std::vector<cv::Point2f> corners_tmp;
 
     if (manual)
     {
@@ -44,56 +46,64 @@ bool findChessboardCorners(cv::Mat image, cv::Size patternSize,
 	{
 	    if (points->size() != col)
 	    {
+		std::cout << "points->size() != col..." << points->size() << std::endl; 
 		ret = false;
 		break;
 	    }
             
 	    std::sort(points->begin(), points->end(), PointXLess);
+	    
+	    for (auto point : *points)
+	    {
+		corners_tmp.push_back(point);
+	    }
+
+	    points->clear();
 	}
     }
     else
     {
-	std::vector<cv::Point2f> corners_tmp;
 	ret = cv::findChessboardCorners(image, patternSize, corners_tmp,
 		cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE
-		/*+ cv::CALIB_CB_FILTER_QUADS + cv::CALIB_CB_FAST_CHECK*/);
-	if (ret)
+		/*+ cv::CALIB_CB_FILTER_QUADS + cv::CALIB_CB_FAST_CHECK*/);	
+    }
+
+    if (ret)
+    {
+	cv::Mat *img_gray = new cv::Mat(image.rows, image.cols, CV_8UC1);
+    
+	cv::cvtColor(image, *img_gray, CV_BGR2GRAY);
+	cv::cornerSubPix(*img_gray, corners_tmp, cv::Size(5, 5), cv::Size(-1, -1),
+		cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 500, 0.0001));
+
+	delete img_gray;
+
+	if (corners_tmp.at(0).x > corners_tmp.at(1).x
+		&& corners_tmp.at(0).y > corners_tmp.at(col).y)
 	{
-            cv::Mat *img_gray = new cv::Mat(image.rows, image.cols, CV_8UC1);
-	
-	    cv::cvtColor(image, *img_gray, CV_BGR2GRAY);
-	    cv::cornerSubPix(*img_gray, corners_tmp, cv::Size(5, 5), cv::Size(-1, -1),
-		    cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 500, 0.0001));
-
-	    delete img_gray;
-
-	    if (corners_tmp.at(0).x > corners_tmp.at(1).x
-		    && corners_tmp.at(0).y > corners_tmp.at(col).y)
+	    for (int r = 0; r < row; r++)
 	    {
-                for (int r = 0; r < row; r++)
+		for (int c = 0; c < col; c++)
 		{
-		    for (int c = 0; c < col; c++)
-		    {
-			corners->at(r)->push_back(corners_tmp.at((row - r) * col - c - 1));
-		    }
+		    corners->at(r)->push_back(corners_tmp.at((row - r) * col - c - 1));
 		}
 	    }
-	    else if (corners_tmp.at(0).x < corners_tmp.at(1).x
-		    && corners_tmp.at(0).y < corners_tmp.at(col).y)
+	}
+	else if (corners_tmp.at(0).x < corners_tmp.at(1).x
+		&& corners_tmp.at(0).y < corners_tmp.at(col).y)
+	{
+	    for (int r = 0; r < row; r++)
 	    {
-		for (int r = 0; r < row; r++)
+		for (int c = 0; c < col; c++)
 		{
-		    for (int c = 0; c < col; c++)
-		    {
-			corners->at(r)->push_back(corners_tmp.at(r * col + c));
-		    }
+		    corners->at(r)->push_back(corners_tmp.at(r * col + c));
 		}
 	    }
-	    else
-	    {
-		ret = false;
-		std::cout << "not match" << std::endl;
-	    }
+	}
+	else
+	{
+	    ret = false;
+	    std::cout << "not match" << std::endl;
 	}
     }
 
@@ -1712,4 +1722,148 @@ void saveChessboardGridsMapping(cv::FileStorage fs,
     fs << "grid_row" << rows / size;
     fs << "grid_col" << cols / size;
     fs << "grid_mapping" << mapping_mat_dst;
+}
+
+void saveChessboardGridsMapping(int fd,
+	std::vector<std::vector<std::vector<cv::Point>*>*> *mapping,
+	double angle)
+{
+    uint8_t row = 0;
+    uint8_t col = 0;
+    int size = 0;
+    uint16_t x, y;
+    int len = 0;
+    
+    if (mapping)
+    {
+        row = mapping->size();
+	if (mapping->at(0))
+	{
+            col = mapping->at(0)->size();
+	    if (mapping->at(0)->at(0))
+	    {
+                size = sqrt(mapping->at(0)->at(0)->size());
+	    }
+	}
+    }
+
+    cv::Mat mapping_mat(size*row,size*col, CV_32SC2);
+    cv::Mat mapping_mat_dst;
+    uint16_t rows = row * size;
+    uint16_t cols = col * size;
+
+
+    if (angle == 0.0)
+    {
+	mapping_mat_dst.create(size*row, size*col, CV_32SC2);
+        rows = mapping_mat_dst.rows;
+	cols = mapping_mat_dst.cols;
+        
+	len = write(fd, &rows, sizeof(rows));
+        len = write(fd, &cols, sizeof(cols));
+	
+	for (int r_mat = 0; r_mat < mapping_mat_dst.rows; r_mat++)
+	{
+	    int r = r_mat / size;
+	    int r_m = r_mat % size * size;
+	    for (int c = 0; c < col; c++)
+	    {
+		for (int i = 0; i < size; i++)
+		{
+		    int c_mat = size * c + i;
+
+                    x = mapping->at(r)->at(c)->at(r_m+i).x;
+		    y = mapping->at(r)->at(c)->at(r_m+i).y;
+		    
+		    len = write(fd, &x, 2);
+                    len = write(fd, &y, 2);
+		}
+	    }
+	}
+    }
+    else
+    {
+	for (int r_mat = 0; r_mat < size*row; r_mat++)
+	{
+	    int r = r_mat / size;
+	    int r_m = r_mat % size * size;
+	    for (int c = 0; c < col; c++)
+	    {
+		for (int i = 0; i < size; i++)
+		{
+		    int c_mat = size * c + i;
+		    
+		    mapping_mat.at<cv::Vec2i>(r_mat,c_mat)[0] = 
+			mapping->at(r)->at(c)->at(r_m+i).x;
+		    
+		    mapping_mat.at<cv::Vec2i>(r_mat,c_mat)[1] = 
+			mapping->at(r)->at(c)->at(r_m+i).y;
+		}
+	    }
+	}
+
+	if (angle == 90.0)
+	{
+	    mapping_mat_dst.create(size*col, size*row, CV_32SC2);
+	    rows = mapping_mat_dst.rows;
+	    cols = mapping_mat_dst.cols;
+            
+	    len = write(fd, &rows, sizeof(rows));
+            len = write(fd, &cols, sizeof(cols));
+	    
+	    for (int r = 0; r < rows; r++)
+	    {
+		for (int c = 0; c < cols; c++)
+		{
+		    x = mapping_mat.at<cv::Vec2i>(c,rows-r-1)[0];
+		    y = mapping_mat.at<cv::Vec2i>(c,rows-r-1)[1];
+
+	            len = write(fd, &x, 2);
+                    len = write(fd, &y, 2);
+		}
+	    }
+	}
+	else if (angle == 180.0)
+	{
+            mapping_mat_dst.create(size*row, size*col, CV_32SC2);
+            rows = mapping_mat_dst.rows;
+	    cols = mapping_mat_dst.cols;
+	    
+	    len = write(fd, &rows, sizeof(rows));
+            len = write(fd, &cols, sizeof(cols));    
+	    
+	    for (int r = 0; r < rows; r++)
+	    {
+		for (int c = 0; c < cols; c++)
+		{
+		    x = mapping_mat.at<cv::Vec2i>(rows-1-r,cols-1-c)[0];
+		    y = mapping_mat.at<cv::Vec2i>(rows-1-r,cols-1-c)[1];
+
+	            len = write(fd, &x, 2);
+                    len = write(fd, &y, 2);
+		}
+	    }
+	}
+	else if (angle == 270.0)
+	{
+            mapping_mat_dst.create(size*col, size*row, CV_32SC2);
+            rows = mapping_mat_dst.rows;
+	    cols = mapping_mat_dst.cols;
+            
+	    len = write(fd, &rows, sizeof(rows));
+            len = write(fd, &cols, sizeof(cols));
+
+	    for (int r = 0; r < rows; r++)
+	    {
+		for (int c = 0; c < cols; c++)
+		{
+		    x = mapping_mat.at<cv::Vec2i>(cols-1-c,r)[0];
+		    y = mapping_mat.at<cv::Vec2i>(cols-1-c,r)[1];
+
+	            len = write(fd, &x, 2);
+                    len = write(fd, &y, 2);
+		}
+	    }
+	}
+    }
 }

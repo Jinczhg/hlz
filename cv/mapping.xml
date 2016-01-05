@@ -2,29 +2,34 @@
 <opencv_storage>
 
 <square_size>60</square_size>
+<manual>1</manual>
+<data>camera.dat</data>
 
-<front_img>chessboard/front.jpg</front_img>
+<front_img>/home/ryan/test/openCV/1230/front.jpg</front_img>
+<front_manual_img>/home/ryan/test/openCV/1230/front_canny_done.jpg</front_manual_img>
 <front_row>5</front_row>
 <front_col>13</front_col>
-<front_angle>0.0</front_angle>
+<front_angle>90.0</front_angle>
 <front_mapping>front.xml</front_mapping>
 
-<rear_img>chessboard/rear.jpg</rear_img>
+<rear_img>/home/ryan/test/openCV/1230/rear.jpg</rear_img>
+<rear_manual_img>/home/ryan/test/openCV/1230/rear_canny_done.jpg</rear_manual_img>
 <rear_row>5</rear_row>
 <rear_col>13</rear_col>
-<rear_angle>180.0</rear_angle>
-<rear_mapping>rear.xml</rear_mapping>
+<rear_angle>270.0</rear_angle>
 
-<left_img>chessboard/left.jpg</left_img>
-<left_row>5</left_row>
-<left_col>12</left_col>
-<left_angle>90.0</left_angle>
+<left_img>/home/ryan/test/openCV/1230/left.jpg</left_img>
+<left_manual_img>/home/ryan/test/openCV/1230/left_canny_done.jpg</left_manual_img>
+<left_row>4</left_row>
+<left_col>10</left_col>
+<left_angle>180.0</left_angle>
 <left_mapping>left.xml</left_mapping>
 
-<right_img>chessboard/right.jpg</right_img>
-<right_row>5</right_row>
-<right_col>12</right_col>
-<right_angle>270.0</right_angle>
+<right_img>/home/ryan/test/openCV/1230/right.jpg</right_img>
+<right_manual_img>/home/ryan/test/openCV/1230/right_canny_done.jpg</right_manual_img>
+<right_row>4</right_row>
+<right_col>10</right_col>
+<right_angle>0.0</right_angle>
 <right_mapping>right.xml</right_mapping>
 
 </opencv_storage>
