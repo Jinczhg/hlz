@@ -47,11 +47,34 @@ int main(int argc, char **argv)
     char camera_mapping[32];
     std::string file_img;
     std::string file_manual_img;
-    uint16_t square_size = 100;
 
+    uint16_t square_size = 100;
+    int img_width = 1280;
+    int img_height = 800;
+    int grid_row = 0;
+    int grid_col = 0;
+    int width_cut = 0;
+    int height_cut = 0;
+
+    fs["img_width"] >> img_width;
+    fs["img_height"] >> img_height;
     fs["square_size"] >> square_size;
+    fs["grid_row"] >> grid_row;
+    fs["grid_col"] >> grid_col;
     fs["manual"] >> manual_i;
     fs["data"] >> mapping_data;
+
+    width_cut = grid_col * square_size - img_width;
+    height_cut = grid_row * square_size - img_height;
+
+    if (width_cut < 0 || height_cut < 0)
+    {
+	std::cout << "grid_row or grid_col or square_size is too small" << std::endl;
+	std::cout << "grid_row:" << grid_row << ", grid_col:" << grid_col
+	    << ", square_size:" << square_size << std::endl;
+	std::cout << "img_width:" << img_width << ", img_height:" << img_height << std::endl;
+	return 0;
+    }
 
     mapping_fd = open(mapping_data.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 
@@ -157,18 +180,24 @@ int main(int argc, char **argv)
 	    std::cout << camera.c_str() << ":findChessboardCorners fail..." << std::endl;
 	    goto out;
 	}
+	std::cout << "findChessboardCorners OK" << std::endl; 
 
 	getChessboardRectanglePoints(mat, corners, rectPoints);
-
+	std::cout << "getChessboardRectanglePoints OK" << std::endl;
 
 	getChessboardLinePoints(rectPoints, chessboardPoints, corners, patternSize);
+	std::cout << "getChessboardLinePoints OK" << std::endl;
 
 	fillChessboardLines(chessboardPoints, rowLs, colLs, corners, patternSize);
+	std::cout << "fillChessboardLines OK" << std::endl;
+
 	fixChessboardLines(rowLs, colLs);
+	std::cout << "fixChessboardLines OK" << std::endl;
 
 	getChessboardGrids(grids, {col-1, row-1}, square_size, mat, rowLs, colLs, mapping);
+	std::cout << "getChessboardGrids OK" << std::endl;
 	
-	saveChessboardGridsMapping(mapping_fd, mapping, angle);
+	saveChessboardGridsMapping(mapping_fd, mapping, angle, width_cut, height_cut);
 
 	std::cout << camera.c_str() << ": ok......" << std::endl;
 

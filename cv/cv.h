@@ -57,6 +57,8 @@ void getChessboardGrids(cv::Mat dst, cv::Size patternSize, int side, cv::Mat src
 
 void saveChessboardGridsMapping(int fd,
 	std::vector<std::vector<std::vector<cv::Point>*>*> *mapping,
-	double angle);
+	double angle,
+	int width_cut,
+	int height_cut);
 
 #endif

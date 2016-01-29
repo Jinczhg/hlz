@@ -1726,7 +1726,9 @@ void saveChessboardGridsMapping(cv::FileStorage fs,
 
 void saveChessboardGridsMapping(int fd,
 	std::vector<std::vector<std::vector<cv::Point>*>*> *mapping,
-	double angle)
+	double angle,
+	int width_cut,
+	int height_cut)
 {
     uint8_t row = 0;
     uint8_t col = 0;
@@ -1749,121 +1751,113 @@ void saveChessboardGridsMapping(int fd,
 
     cv::Mat mapping_mat(size*row,size*col, CV_32SC2);
     cv::Mat mapping_mat_dst;
-    uint16_t rows = row * size;
-    uint16_t cols = col * size;
+    uint16_t rows, cols;
 
+    for (int r_mat = 0; r_mat < size*row; r_mat++)
+    {
+	int r = r_mat / size;
+	int r_m = r_mat % size * size;
+	for (int c = 0; c < col; c++)
+	{
+	    for (int i = 0; i < size; i++)
+	    {
+		int c_mat = size * c + i;
+		
+		mapping_mat.at<cv::Vec2i>(r_mat,c_mat)[0] = 
+		    mapping->at(r)->at(c)->at(r_m+i).x;
+		
+		mapping_mat.at<cv::Vec2i>(r_mat,c_mat)[1] = 
+		    mapping->at(r)->at(c)->at(r_m+i).y;
+	    }
+	}
+    }
 
     if (angle == 0.0)
     {
 	mapping_mat_dst.create(size*row, size*col, CV_32SC2);
-        rows = mapping_mat_dst.rows;
-	cols = mapping_mat_dst.cols;
-        
-	len = write(fd, &rows, sizeof(rows));
-        len = write(fd, &cols, sizeof(cols));
+	rows = mapping_mat_dst.rows - height_cut / 2;
+	cols = mapping_mat_dst.cols - width_cut;
 	
-	for (int r_mat = 0; r_mat < mapping_mat_dst.rows; r_mat++)
+	len = write(fd, &rows, sizeof(rows));
+	len = write(fd, &cols, sizeof(cols));
+	
+	for (int r = height_cut / 2; r < rows + height_cut / 2; r++)
 	{
-	    int r = r_mat / size;
-	    int r_m = r_mat % size * size;
-	    for (int c = 0; c < col; c++)
+	    for (int c = width_cut / 2; c < cols + width_cut / 2; c++)
 	    {
-		for (int i = 0; i < size; i++)
-		{
-		    int c_mat = size * c + i;
+		x = mapping_mat.at<cv::Vec2i>(r,c)[0];
+		y = mapping_mat.at<cv::Vec2i>(r,c)[1];
 
-                    x = mapping->at(r)->at(c)->at(r_m+i).x;
-		    y = mapping->at(r)->at(c)->at(r_m+i).y;
-		    
-		    len = write(fd, &x, 2);
-                    len = write(fd, &y, 2);
-		}
+		len = write(fd, &x, 2);
+		len = write(fd, &y, 2);
 	    }
 	}
     }
-    else
+    else if (angle == 90.0)
     {
-	for (int r_mat = 0; r_mat < size*row; r_mat++)
+	mapping_mat_dst.create(size*col, size*row, CV_32SC2);
+	rows = mapping_mat_dst.rows - height_cut;
+	cols = mapping_mat_dst.cols - width_cut / 2;
+	
+	len = write(fd, &rows, sizeof(rows));
+	len = write(fd, &cols, sizeof(cols));
+	
+	for (int r = height_cut / 2; r < rows + height_cut / 2; r++)
 	{
-	    int r = r_mat / size;
-	    int r_m = r_mat % size * size;
-	    for (int c = 0; c < col; c++)
+	    for (int c = width_cut / 2; c < cols + width_cut / 2; c++)
 	    {
-		for (int i = 0; i < size; i++)
-		{
-		    int c_mat = size * c + i;
-		    
-		    mapping_mat.at<cv::Vec2i>(r_mat,c_mat)[0] = 
-			mapping->at(r)->at(c)->at(r_m+i).x;
-		    
-		    mapping_mat.at<cv::Vec2i>(r_mat,c_mat)[1] = 
-			mapping->at(r)->at(c)->at(r_m+i).y;
-		}
-	    }
-	}
+		x = mapping_mat.at<cv::Vec2i>(c,mapping_mat_dst.rows-r-1)[0];
+		y = mapping_mat.at<cv::Vec2i>(c,mapping_mat_dst.rows-r-1)[1];
 
-	if (angle == 90.0)
-	{
-	    mapping_mat_dst.create(size*col, size*row, CV_32SC2);
-	    rows = mapping_mat_dst.rows;
-	    cols = mapping_mat_dst.cols;
-            
-	    len = write(fd, &rows, sizeof(rows));
-            len = write(fd, &cols, sizeof(cols));
-	    
-	    for (int r = 0; r < rows; r++)
-	    {
-		for (int c = 0; c < cols; c++)
-		{
-		    x = mapping_mat.at<cv::Vec2i>(c,rows-r-1)[0];
-		    y = mapping_mat.at<cv::Vec2i>(c,rows-r-1)[1];
-
-	            len = write(fd, &x, 2);
-                    len = write(fd, &y, 2);
-		}
-	    }
-	}
-	else if (angle == 180.0)
-	{
-            mapping_mat_dst.create(size*row, size*col, CV_32SC2);
-            rows = mapping_mat_dst.rows;
-	    cols = mapping_mat_dst.cols;
-	    
-	    len = write(fd, &rows, sizeof(rows));
-            len = write(fd, &cols, sizeof(cols));    
-	    
-	    for (int r = 0; r < rows; r++)
-	    {
-		for (int c = 0; c < cols; c++)
-		{
-		    x = mapping_mat.at<cv::Vec2i>(rows-1-r,cols-1-c)[0];
-		    y = mapping_mat.at<cv::Vec2i>(rows-1-r,cols-1-c)[1];
-
-	            len = write(fd, &x, 2);
-                    len = write(fd, &y, 2);
-		}
-	    }
-	}
-	else if (angle == 270.0)
-	{
-            mapping_mat_dst.create(size*col, size*row, CV_32SC2);
-            rows = mapping_mat_dst.rows;
-	    cols = mapping_mat_dst.cols;
-            
-	    len = write(fd, &rows, sizeof(rows));
-            len = write(fd, &cols, sizeof(cols));
-
-	    for (int r = 0; r < rows; r++)
-	    {
-		for (int c = 0; c < cols; c++)
-		{
-		    x = mapping_mat.at<cv::Vec2i>(cols-1-c,r)[0];
-		    y = mapping_mat.at<cv::Vec2i>(cols-1-c,r)[1];
-
-	            len = write(fd, &x, 2);
-                    len = write(fd, &y, 2);
-		}
+		len = write(fd, &x, 2);
+		len = write(fd, &y, 2);
 	    }
 	}
     }
+    else if (angle == 180.0)
+    {
+	mapping_mat_dst.create(size*row, size*col, CV_32SC2);
+	rows = mapping_mat_dst.rows - height_cut / 2;
+	cols = mapping_mat_dst.cols - width_cut;
+	
+	len = write(fd, &rows, sizeof(rows));
+	len = write(fd, &cols, sizeof(cols));    
+	
+	for (int r = 0; r < rows; r++)
+	{
+	    for (int c = width_cut / 2; c < cols + width_cut / 2; c++)
+	    {
+		x = mapping_mat.at<cv::Vec2i>(mapping_mat_dst.rows-1-r,
+			mapping_mat_dst.cols-1-c)[0];
+		y = mapping_mat.at<cv::Vec2i>(mapping_mat_dst.rows-1-r,
+			mapping_mat_dst.cols-1-c)[1];
+
+		len = write(fd, &x, 2);
+		len = write(fd, &y, 2);
+	    }
+	}
+    }
+    else if (angle == 270.0)
+    {
+	mapping_mat_dst.create(size*col, size*row, CV_32SC2);
+	rows = mapping_mat_dst.rows - height_cut;
+	cols = mapping_mat_dst.cols - width_cut / 2;
+	
+	len = write(fd, &rows, sizeof(rows));
+	len = write(fd, &cols, sizeof(cols));
+
+	for (int r = height_cut / 2; r < rows + height_cut / 2; r++)
+	{
+	    for (int c = 0; c < cols; c++)
+	    {
+		x = mapping_mat.at<cv::Vec2i>(mapping_mat_dst.cols-1-c,r)[0];
+		y = mapping_mat.at<cv::Vec2i>(mapping_mat_dst.cols-1-c,r)[1];
+
+		len = write(fd, &x, 2);
+		len = write(fd, &y, 2);
+	    }
+	}
+    }
+
+    std::cout << "rows:" << rows << ", cols:" << cols << std::endl;
 }
