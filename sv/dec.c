@@ -1,13 +1,18 @@
 /*
  * Copyright (c) 2016, Shanghai Hinge Electronic Technology Co.,Ltd
  * All rights reserved.
+ *
+ * Data: 2016-06-01
+ * Author: ryan
  */
 
+#include <fcntl.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/neutrino.h>
+#include <sys/time.h>
 
 #include <xdc/std.h>
 #include <ti/sdo/codecs/h264vdec/ih264vdec.h>
@@ -18,9 +23,35 @@
 #include "output.h"
 #include "sv.h"
 
+#ifdef CALC_ALGO_TIME
+#include "calc.h"
+#endif
+
 static decode *decs[CHANNEL_NUM_MAX] = {0};
 
 static int s_exit = 0;
+
+static int s_padded_width = 0, s_padded_height = 0, s_y_offset = 0, s_uv_offset = 0;
+
+int decode_padded_width()
+{
+    return s_padded_width;
+}
+
+int decode_padded_height()
+{
+    return s_padded_height;
+}
+
+int decode_y_offset()
+{
+    return s_y_offset;
+}
+
+int decode_uv_offset()
+{
+    return s_uv_offset;
+}
 
 int decode_init()
 {
@@ -29,8 +60,13 @@ int decode_init()
     decode *dec = NULL;
     int width = ALIGN2(SV_IMAGE_WIDTH, 4);
     int height = ALIGN2(SV_IMAGE_HEIGHT, 4);
-    int padded_width = ALIGN2(width + (2 * PADX_H264), 7);
-    int padded_height = height + 4 * PADY_H264;
+    s_padded_width = ALIGN2(width + (2 * PADX_H264), 7);
+    s_padded_height = height + 4 * PADY_H264;
+    int tw = s_padded_width * s_padded_height;
+    int uv_topLeft = s_padded_width / 2;
+
+    s_y_offset = PADY_H264 * s_padded_width + PADX_H264;
+    s_uv_offset = PADY_H264 * uv_topLeft + tw + PADX_H264;
 
     for (channel = 0; channel < CHANNEL_NUM_MAX; channel++)
     {
@@ -54,8 +90,8 @@ int decode_init()
 	dec->channel = channel;
 	dec->width = width;
 	dec->height = height;
-	dec->padded_width = ALIGN2(width + (2 * PADX_H264), 7);
-	dec->padded_height = height + 4 * PADY_H264;
+	dec->padded_width = s_padded_width;
+	dec->padded_height = s_padded_height;
 
 	pthread_mutex_init(&dec->mutex, NULL);
 	pthread_cond_init(&dec->cond, NULL);
@@ -71,8 +107,6 @@ int decode_init()
 	}
 
 	dec->buf = dec->bufs;
-
-	dec->yuv = gpu_get_buffer(channel);
     }
 
     DEBUG("init OK");
@@ -144,8 +178,8 @@ void* decode_thread(void *arg)
     dec->params->size = sizeof(IH264VDEC_Params);
     dec->params->maxWidth = dec->width;
     dec->params->maxHeight = dec->height;
-    dec->params->maxFrameRate = 68000; // 68 fps
-    dec->params->maxBitRate = 50000000; // 50 Mbps
+    dec->params->maxFrameRate = 30000; // 30 fps
+    dec->params->maxBitRate = 10000000; // 10 Mbps
     dec->params->dataEndianness = XDM_BYTE;
     dec->params->forceChromaFormat = XDM_YUV_420SP;
     dec->params->operatingMode = IVIDEO_DECODE_ONLY;
@@ -163,7 +197,7 @@ void* decode_thread(void *arg)
     h264_params = (IH264VDEC_Params*)dec->params;
     h264_params->dpbSizeInFrames = IH264VDEC_DPB_NUMFRAMES_AUTO;
     h264_params->pConstantMemory = 0;
-    h264_params->presetLevelIdc = IH264VDEC_LEVEL42;
+    h264_params->presetLevelIdc = IH264VDEC_LEVEL41;
     h264_params->errConcealmentMode = IH264VDEC_APPLY_CONCEALMENT;
     h264_params->temporalDirModePred = TRUE;
     h264_params->detectCabacAlignErr = IH264VDEC_DISABLE_CABACALIGNERR_DETECTION;
@@ -309,21 +343,29 @@ out:
 
 int decode_start(decode *dec)
 {
-    OutputBuffer *output = output_alloc(4, dec->padded_width, dec->padded_height);
-    OutputBuffer *buf = NULL;
+    OutputBuffer *output = gpu_get_buffer(dec->channel);
     XDAS_Int32 err;
-    bool output_use = false;
-    int i = 0;
-    XDM_Rect *r = NULL;
     int yoff = 0;
     int uvoff = 0;
     int tw = dec->padded_width * dec->padded_height;
     int uv_topLeft = dec->padded_width / 2;
-    uint8_t *yuv_y = NULL;
-    uint8_t *yuv_uv = NULL;
     dec_buffer *data = dec->bufs;
+
+    yoff = PADY_H264 * dec->padded_width + PADX_H264;
+    uvoff = PADY_H264 * uv_topLeft + tw + PADX_H264;
    
     DEBUG("channel = %d, start to decode", dec->channel);
+    
+    if (!output)
+    {
+	ERROR("channel = %d, no output buffer", dec->channel);
+	return 0;
+    }
+
+    dec->inArgs->inputID = (XDAS_Int32)output;
+    dec->outBufs->descs[0].buf = (XDAS_Int8*)output->y;
+    dec->outBufs->descs[1].buf = (XDAS_Int8*)output->uv;
+    
     while (!s_exit)
     {
 	if (data->read_lock)
@@ -340,18 +382,13 @@ int decode_start(decode *dec)
 
 	INFO("channel = %d, H.264 frame come", dec->channel);
 
-	if (!output)
-	{
-	    ERROR("channel = %d, no free output buffer, skip the decode", dec->channel);
-	    continue;
-	}
+#ifdef CALC_ALGO_TIME
+	calc_dec_frame_start(dec->channel);
+#endif 
         
 	dec->inBufs->descs[0].buf = data->buf;
 	dec->inBufs->descs[0].bufSize.bytes = data->len;
 	dec->inArgs->numBytes = data->len;
-	dec->inArgs->inputID = (XDAS_Int32)output;
-	dec->outBufs->descs[0].buf = (XDAS_Int8*)output->y;
-        dec->outBufs->descs[1].buf = (XDAS_Int8*)output->uv;
 
 	err = VIDDEC3_process(dec->codec, dec->inBufs, dec->outBufs, dec->inArgs, dec->outArgs);
 
@@ -370,35 +407,21 @@ int decode_start(decode *dec)
 		ERROR("channel = %d, XDM_ISFATALERROR", dec->channel);
 		break;
 	    }
+
+	    continue;
 	}
 	else
 	{
 	    INFO("channel = %d, VIDDEC3_process OK", dec->channel);
 	}
-
-	buf = NULL;
-	for (i = 0; dec->outArgs->outputID[i]; i++)
-	{
-            r = &(dec->outArgs->displayBufs.bufDesc[0].activeFrameRegion);
-	    yoff = r->topLeft.y * dec->padded_width + r->topLeft.x;
-	    uvoff = r->topLeft.y * uv_topLeft + tw + r->topLeft.x;
-	    buf = (OutputBuffer*)dec->outArgs->outputID[i];
-            
-	    decode_output(dec->yuv, buf->buf + yoff, buf->buf + uvoff,
-	    	    dec->width, dec->height, dec->padded_width);
 	  
-	    gpu_signal();
-	}
-/*
-	for (i = 0; dec->outArgs->freeBufID[i]; i++)
-	{
-	    buf = (OutputBuffer*)dec->outArgs->freeBufID[i];
-	}
-*/
-	output = output->next;
+	gpu_signal();
+
+#ifdef CALC_ALGO_TIME
+	calc_dec_frame_end(dec->channel);
+#endif
     }
 
-    output_free(output, 4);
     return 0;
 }
 
@@ -413,7 +436,7 @@ int decode_fill(int channel, const uint8_t *data, int len)
 	if (buf->offset > 0)
 	{
 	    INFO("frame len = %d", buf->offset);
-
+	    
 	    buf->len = buf->offset;
 	    buf->offset = 0;
             buf->write_lock = 1;
@@ -422,7 +445,11 @@ int decode_fill(int channel, const uint8_t *data, int len)
 	    pthread_mutex_lock(&dec->mutex);
 	    pthread_cond_signal(&dec->cond);
 	    pthread_mutex_unlock(&dec->mutex);
-        
+
+#ifdef CALC_ALGO_TIME
+	    calc_recv_frame_end(channel);
+#endif
+       
 	    buf = dec->buf->next;
 	    dec->buf = buf;
 	}
@@ -431,6 +458,10 @@ int decode_fill(int channel, const uint8_t *data, int len)
 	{
             memcpy(buf->buf, data, len);
 	    buf->offset += len;
+
+#ifdef CALC_ALGO_TIME
+	calc_recv_frame_start(channel);
+#endif 
 	}
 	else
 	{
@@ -440,7 +471,28 @@ int decode_fill(int channel, const uint8_t *data, int len)
     else if (buf->offset > 0)
     {
 	memcpy(buf->buf + buf->offset, data, len);
-	buf->offset += len; 
+	buf->offset += len;
+
+	if (len != 992) //992 is max payload len
+	{
+            INFO("frame len = %d", buf->offset);
+
+	    buf->len = buf->offset;
+	    buf->offset = 0;
+            buf->write_lock = 1;
+	    buf->read_lock = 0;
+
+	    pthread_mutex_lock(&dec->mutex);
+	    pthread_cond_signal(&dec->cond);
+	    pthread_mutex_unlock(&dec->mutex);
+
+#ifdef CALC_ALGO_TIME
+	    calc_recv_frame_end(channel);
+#endif
+       
+	    buf = dec->buf->next;
+	    dec->buf = buf;
+	}
     }
 
     return 0;

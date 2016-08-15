@@ -1,12 +1,16 @@
 /*
  * Copyright (c) 2016, Shanghai Hinge Electronic Technology Co.,Ltd
  * All rights reserved.
+ * 
+ * Date: 2016-06-01
+ * Author: ryan
  */
 
 #include <unistd.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <string.h>
+#include <sys/time.h>
 
 #include <sys/neutrino.h>
 #include <screen/screen.h>
@@ -17,11 +21,15 @@
 #include "sv.h"
 #include "stitchalgo.h"
 
+#ifdef CALC_ALGO_TIME
+#include "calc.h"
+#endif
+
 #define GPU_BUFFER_NUM 4
 
 static pthread_cond_t gpu_cond = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t gpu_mutex = PTHREAD_MUTEX_INITIALIZER;
-static uint8_t *s_buffers[GPU_BUFFER_NUM];
+static OutputBuffer *s_buffers[GPU_BUFFER_NUM];
 static YUVBuffer s_front = {SV_IMAGE_WIDTH, SV_IMAGE_HEIGHT, 0 };
 static YUVBuffer s_rear = {SV_IMAGE_WIDTH, SV_IMAGE_HEIGHT, 0 };
 static YUVBuffer s_left = {SV_IMAGE_WIDTH, SV_IMAGE_HEIGHT, 0 };
@@ -169,32 +177,30 @@ fail:
 int gpu_init()
 {
     int i = 0;
-    int tw = SV_IMAGE_WIDTH * SV_IMAGE_HEIGHT * 3 / 2;
-
-    memset(s_buffers, 0, sizeof(uint8_t*) * GPU_BUFFER_NUM);
+    int tw = decode_padded_width() * decode_padded_height() * 3 / 2;
 
     for (i = 0; i < GPU_BUFFER_NUM; i++)
     {
-	s_buffers[i] = (uint8_t*)malloc(tw);
+	s_buffers[i] = output_alloc(1, decode_padded_width(), decode_padded_height());
 
 	if (!s_buffers[i])
 	{
 	    i--;
 	    while (i != -1)
 	    {
-		free(s_buffers[i]);
+		output_free(s_buffers[i], 1);
 		s_buffers[i] = NULL;
 		i--;
 	    }
 	    return -1;
 	}
-	memset(s_buffers[i], 0, tw);
+	memset(s_buffers[i]->buf, 0, tw);
     }
 
-    s_front.bufYUV = (uint32_t)s_buffers[0];
-    s_rear.bufYUV = (uint32_t)s_buffers[1];
-    s_left.bufYUV = (uint32_t)s_buffers[2];
-    s_right.bufYUV = (uint32_t)s_buffers[3];
+    s_front.bufYUV = (uint32_t)(s_buffers[0]->buf);
+    s_rear.bufYUV = (uint32_t)(s_buffers[1]->buf);
+    s_left.bufYUV = (uint32_t)(s_buffers[2]->buf);
+    s_right.bufYUV = (uint32_t)(s_buffers[3]->buf);
 
     DEBUG("init OK");
     return 0;
@@ -216,7 +222,7 @@ void gpu_deinit()
     DEBUG("deinit OK");
 }
 
-uint8_t* gpu_get_buffer(int channel)
+OutputBuffer* gpu_get_buffer(int channel)
 {
     return s_buffers[channel];
 }
@@ -599,25 +605,54 @@ void* gpu_thread(void *arg)
     s_screen_win_p = &screen_win;
     s_screen_buf_p = screen_buf;
 
+    uint32_t in_stride = decode_padded_width(); 
+    uint32_t y_offset = decode_y_offset();
+    uint32_t uv_offset = decode_uv_offset();
+    float diff = 0;
+
+    initStitching(in_stride, y_offset, uv_offset, SV_IMAGE_WIDTH, SV_IMAGE_HEIGHT, SV_IMAGE_WIDTH, SV_IMAGE_HEIGHT);
+
+    DEBUG("gpu thread is ready");
+
     while (!s_exit)
     {
 	pthread_mutex_lock(&gpu_mutex);
 	pthread_cond_wait(&gpu_cond, &gpu_mutex);     
 	pthread_mutex_unlock(&gpu_mutex);
 
+        //gettimeofday(&ttime, NULL);
+	//DEBUG("cnt %d: b_display time sec:%d,usec:%d\n", s_cnt_c, ttime.tv_sec, ttime.tv_usec);
 	if (s_exit)
 	{
 	    break;
 	}
 
-	//doStitching here
+#ifdef CALC_ALGO_TIME
+	calc_stitch_frame_start();
+#endif
+
 	doStitching(&s_front, &s_rear, &s_left, &s_right, &s_output);
 
+#ifdef CALC_ALGO_TIME
+	calc_stitch_frame_end();
+#endif
+
+#ifdef CALC_ALGO_TIME
+	calc_disp_frame_start();
+#endif
         rc = screen_post_window(screen_win, *screen_buf, 1, rect, 0);
 	if (rc) 
 	{
 	    ERROR("screen_post_window() failed: img_errno: %d\n", rc);
 	}
+
+#ifdef CALC_ALGO_TIME
+	calc_disp_frame_end();
+#endif
+
+#ifdef CALC_ALGO_TIME
+	calc_disp_frame_info();
+#endif
     }
 
 
@@ -641,11 +676,32 @@ void gpu_signal()
     static int frame_cnt = 0;
 
     pthread_mutex_lock(&gpu_mutex);
+
+#ifdef CALC_ALGO_TIME 
+
+#ifdef CAMERA_CHANNEL
+    calc_disp_frame_signal();
+    pthread_cond_signal(&gpu_cond);
+#else
     if (++frame_cnt == CHANNEL_NUM_MAX)
     {
+	calc_disp_frame_signal();
 	pthread_cond_signal(&gpu_cond);
 	frame_cnt = 0;
     }
+#endif //CAMERA_CHANNEL
+
+#else
+
+    if (++frame_cnt == CHANNEL_NUM_MAX)
+    {
+	calc_disp_frame_signal();
+	pthread_cond_signal(&gpu_cond);
+	frame_cnt = 0;
+    }
+
+#endif //CALC_ALGO_TIME
+
     pthread_mutex_unlock(&gpu_mutex);
 }
 

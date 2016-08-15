@@ -1,6 +1,9 @@
 /*
  * Copyright (c) 2016, Shanghai Hinge Electronic Technology Co.,Ltd
  * All rights reserved.
+ *
+ * Date: 2016-06-01
+ * Author: ryan
  */
 
 #include <sys/neutrino.h>
@@ -17,7 +20,7 @@
 #include "avb.h"
 
 #define BPF_NODE "/dev/bpf"
-#define DEFAULT_BUFSIZE 524288 // 0.5M
+#define DEFAULT_BUFSIZE 102400 //524288 // 0.5M
 
 #define AVB_BUFFER_NUM 3
 
@@ -59,6 +62,7 @@ int avb_init()
 	
 	s_bufs[i].buf = NULL;
 	s_bufs[i].read_lock = 1;
+	s_bufs[i].write_lock = 0;
 	s_bufs[i].next = &s_bufs[(i + 1) % AVB_BUFFER_NUM];
     }
 
@@ -138,6 +142,8 @@ void* avb_proc_thread(void *arg)
     register uint8_t *bp, *ep;
     register int caplen, hdrlen;
     uint8_t *datap = NULL;
+    int data = 0x02;
+    //ThreadCtl(_NTO_TCTL_RUNMASK, &data);
 
 #define bhp ((struct bpf_hdr *)bp)
 
@@ -150,29 +156,26 @@ void* avb_proc_thread(void *arg)
 	    pthread_mutex_unlock(&avb_buf_read_mutex);
 	}
 
-	if (buf->len == 0)
+	if (buf->len != 0)
 	{
-	    continue;
+	    bp = buf->buf;
+	    ep = bp + buf->len;
+	    while (bp < ep)
+	    {
+		caplen = bhp->bh_caplen;
+		hdrlen = bhp->bh_hdrlen;
+		datap = bp + hdrlen;
+
+		avb_packet(bhp->bh_datalen, datap);
+
+		bp += BPF_WORDALIGN(caplen + hdrlen);
+	    }
 	}
 
-	bp = buf->buf;
-	ep = bp + buf->len;
-        while (bp < ep)
-	{
-	    caplen = bhp->bh_caplen;
-	    hdrlen = bhp->bh_hdrlen;
-	    datap = bp + hdrlen;
-
-	    avb_packet(bhp->bh_datalen, datap);
-
-	    bp += BPF_WORDALIGN(caplen + hdrlen);
-	}
-
-	buf->write_lock = 0;
+	pthread_mutex_lock(&avb_buf_write_mutex);
+        buf->write_lock = 0;
 	buf->read_lock = 1;
 	buf->len = 0;
-
-        pthread_mutex_lock(&avb_buf_write_mutex);
 	pthread_cond_signal(&avb_buf_write_cond);
 	pthread_mutex_unlock(&avb_buf_write_mutex);
 
@@ -334,9 +337,10 @@ start:
 
     while (s_capture)
     {
-	if (buf->write_lock)
+	while (buf->write_lock)
 	{
 	    DEBUG("proccessing not fast enough");
+
 	    pthread_mutex_lock(&avb_buf_write_mutex);
 	    pthread_cond_wait(&avb_buf_write_cond, &avb_buf_write_mutex);
 	    pthread_mutex_unlock(&avb_buf_write_mutex);
@@ -344,23 +348,24 @@ start:
 
 again:
         read_len = read(fd, buf->buf, buf_len);
-	if (read_len < 0)
+	if (read_len <= 0)
 	{
 	    ERROR("read fail: %s", strerror(errno));
             
 	    if (errno == EINTR && s_capture)
 	    {
-		continue;
+	        goto again;
 	    }
+
+            ERROR("break the recv loop");
 
 	    break;
 	}
 
+        pthread_mutex_lock(&avb_buf_read_mutex);
 	buf->len = read_len;
 	buf->read_lock = 0;
 	buf->write_lock = 1;
-
-        pthread_mutex_lock(&avb_buf_read_mutex);
 	pthread_cond_signal(&avb_buf_read_cond);
 	pthread_mutex_unlock(&avb_buf_read_mutex);
 

@@ -1,6 +1,9 @@
 /*
  * Copyright (c) 2016, Shanghai Hinge Electronic Technology Co.,Ltd
  * All rights reserved.
+ *
+ * Date: 2016-06-01
+ * Author: ryan
  */
 
 #ifndef __STITCHALGO__H
@@ -21,6 +24,12 @@ typedef struct {
 
    算法矫正文件路径为：/usr/local/stitchalgo/CALIB_FILENAME
 
+   in_stride: 解码宽度
+
+   y_offset:
+
+   uv_offset:
+
    in_width：摄像头输入图像宽度
 
    in_hight：摄像头输出图像高度
@@ -31,7 +40,8 @@ typedef struct {
 
 return: >=0为初始化成功；<0为错误代码，具体由算法提供方定义
 */
-int initStitching(uint32_t in_width, uint32_t in_hight, uint32_t out_width, uint32_t out_hight);
+int initStitching(uint32_t in_stride, uint32_t y_offset, uint32_t uv_offset,
+	uint32_t in_width, uint32_t in_hight, uint32_t out_width, uint32_t out_hight);
 
  
 

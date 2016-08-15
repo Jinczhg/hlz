@@ -1,6 +1,9 @@
 /*
  * Copyright (c) 2016, Shanghai Hinge Electronic Technology Co.,Ltd
  * All rights reserved.
+ *
+ * Date: 2016-06-01
+ * Author: ryan
  */
 
 #include <pthread.h>
@@ -14,6 +17,10 @@
 #include "avb.h"
 #include "dec.h"
 #include "gpu.h"
+
+#ifdef CALC_ALGO_TIME
+#include "calc.h"
+#endif
 
 #define PPS_CAMERA_FILE "/pps/hinge-tech/camera"
 
@@ -35,7 +42,7 @@ void signal_fun(int signo)
 int main(int argc, char **argv)
 {
     pthread_t pid_avb_recv = 0, pid_avb_proc;
-    pthread_t pid_dec[CHANNEL_NUM_MAX] = {0};
+    pthread_t pid_dec[CHANNEL_NUM_MAX*2] = {0};
     pthread_t pid_gpu = 0;
 
     fd_set rfd;
@@ -47,38 +54,43 @@ int main(int argc, char **argv)
 
     signal(SIGINT, signal_fun);
 
-    // gpu/display thread
+#ifdef CALC_ALGO_TIME
+    calc_init();
+#endif
+
+    decode_init();
     gpu_init();
+    avb_init();
+
+    // gpu/display thread
     pthread_create(&pid_gpu, NULL, gpu_thread, NULL);
 
     // decode threads
-    decode_init();
     for (i = 0; i < CHANNEL_NUM_MAX; i++)
     {
         pthread_create(&pid_dec[i], NULL, decode_thread, &i);
     }
 
     // avb thread
-    avb_init();
     pthread_create(&pid_avb_proc, NULL, avb_proc_thread, NULL);
     pthread_create(&pid_avb_recv, NULL, avb_recv_thread, NULL);
 
-/*
+
     //prio
-    if (pthread_setschedprio(pid_gpu, 25) != EOK)
+    if (pthread_setschedprio(pid_gpu, 63) != EOK)
     {
 	ERROR("gpu thread: pthread_setschedprio() failed");
     }
 
     for (i = 0; i < CHANNEL_NUM_MAX; i++)
     {
-	if (pthread_setschedprio(pid_dec[i], 25) != EOK)
+	if (pthread_setschedprio(pid_dec[i], 63) != EOK)
 	{
 	    ERROR("dec thread: pthread_setschedprio() failed");
 	}
     }
-*/  
-    if (pthread_setschedprio(pid_avb_proc, 62) != EOK)
+
+    if (pthread_setschedprio(pid_avb_proc, 63) != EOK)
     {
 	ERROR("avb proc thread: pthread_setschedprio() failed");
     }
@@ -87,6 +99,7 @@ int main(int argc, char **argv)
     {
 	ERROR("avb recv thread: pthread_setschedprio() failed");
     }
+  
 /*
     if (pthread_setschedprio(pthread_self(), 25) != EOK)
     {
@@ -128,6 +141,14 @@ int main(int argc, char **argv)
 		    capture = 0;
 		}
 
+#ifdef CALC_ALGO_TIME
+		if (strstr(buf, "calc_flush::1") != NULL)
+		{
+		    write(pps_fd, "calc_flush::0\n", strlen("calc_flush::0\n"));
+		    avb_signal(0);
+                    calc_flush_log();
+		}
+#endif
 		avb_signal(capture);
 		gpu_visuable(capture);
 	    }
@@ -137,7 +158,7 @@ int main(int argc, char **argv)
     DEBUG("to end the threads");
     // threads exit
     avb_signal(0);
-    avb_exit();
+    //avb_exit();
     for (i = 0; i < CHANNEL_NUM_MAX; i++)
     {
 	decode_exit(i);

@@ -1,6 +1,9 @@
 /*
  * Copyright (c) 2016, Shanghai Hinge Electronic Technology Co.,Ltd
  * All rights reserved.
+ *
+ * Date: 2016-06-01
+ * Author: ryan
  */
 
 #ifndef __DEC__H
@@ -10,7 +13,7 @@
 #include <pthread.h>
 #include <libdce.h>
 
-#define DEC_BUFFER_NUM 2
+#define DEC_BUFFER_NUM 3
 #define DEC_BUFFER_LEN 524288 // 0.5M
 
 typedef enum CHANNEL {
@@ -46,18 +49,21 @@ typedef struct decode {
     int height;
     int padded_width;
     int padded_height;
-    uint8_t *yuv; //output buffer for gpu
 
     pthread_mutex_t mutex;
     pthread_cond_t cond;
 
-
-    //int buf_id;  // identify the buf to fill
-    //int buf_len; // len of buf for decode
-    //int buf_offset; // offset of buf for fill
     dec_buffer bufs[DEC_BUFFER_NUM]; // one to be filled data, the others to be decoded, alternately
     dec_buffer *buf; // the current filling buf
 } decode;
+
+int decode_padded_width();
+
+int decode_padded_height();
+
+int decode_y_offset();
+
+int decode_uv_offset();
 
 int decode_init();
 
