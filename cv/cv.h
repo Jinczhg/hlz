@@ -60,5 +60,9 @@ void saveChessboardGridsMapping(int fd,
 	double angle,
 	int width_cut,
 	int height_cut);
+	
+void showChessboardLines(cv::Mat src,
+	std::vector<std::vector<std::vector<cv::Point>*>*> *rowLines,
+	std::vector<std::vector<std::vector<cv::Point>*>*> *colLines);
 
 #endif

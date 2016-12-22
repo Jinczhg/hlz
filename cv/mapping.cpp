@@ -49,8 +49,10 @@ int main(int argc, char **argv)
     std::string file_manual_img;
 
     uint16_t square_size = 100;
-    int img_width = 1280;
-    int img_height = 800;
+    uint16_t img_width = 1280;
+    uint16_t img_height = 800;
+    uint8_t point_type = 0;//0:uint16_t, 1:float
+    uint8_t reserve = 0;
     int grid_row = 0;
     int grid_col = 0;
     int width_cut = 0;
@@ -86,8 +88,10 @@ int main(int argc, char **argv)
 
     manual = manual_i == 0 ? false : true;
 
-    len = write(mapping_fd, &square_size, sizeof(square_size));
-
+    len = write(mapping_fd, &img_width, sizeof(img_width));
+    len = write(mapping_fd, &img_height, sizeof(img_height));
+    len = write(mapping_fd, &point_type, sizeof(point_type));
+    len = write(mapping_fd, &reserve, sizeof(reserve));
     
     for (auto camera : cameras)
     {
@@ -193,6 +197,8 @@ int main(int argc, char **argv)
 
 	fixChessboardLines(rowLs, colLs);
 	std::cout << "fixChessboardLines OK" << std::endl;
+	
+	showChessboardLines(mat, rowLs, colLs);
 
 	getChessboardGrids(grids, {col-1, row-1}, square_size, mat, rowLs, colLs, mapping);
 	std::cout << "getChessboardGrids OK" << std::endl;

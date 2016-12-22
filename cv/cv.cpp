@@ -28,9 +28,10 @@ bool findChessboardCorners(cv::Mat image, cv::Size patternSize,
 		c1 = image.at<cv::Vec3b>(r, c)[0]; //blue
 		c2 = image.at<cv::Vec3b>(r, c)[1]; //green
 		c3 = image.at<cv::Vec3b>(r, c)[2]; //red
-		if (c1 < 5 && c2 < 5)
+		
+		if (c1 < 5 && c2 < 5) //red
 		{
-		    for (int i = 0; i < row; i++)
+		    for (int i = 0; i < 20; i++)
 		    {
 			if (c3 > 250 - 10 * i)
 			{
@@ -39,14 +40,39 @@ bool findChessboardCorners(cv::Mat image, cv::Size patternSize,
 			}
 		    }
 		}
+                
+		if (c1 < 5 && c3 < 5) //green
+		{
+		    for (int i = 0; i < 20; i++)
+		    {
+			if (c2 > 250 - 10 * i)
+			{
+			    corners->at(i + 20)->push_back(cv::Point(c,r));
+			    break;
+			}
+		    }
+		}
+
+                if (c2 < 5 && c3 < 5) //blue
+		{
+		    for (int i = 0; i < 20; i++)
+		    {
+			if (c1 > 250 - 10 * i)
+			{
+			    corners->at(i + 40)->push_back(cv::Point(c,r));
+			    break;
+			}
+		    }
+		}
 	    }
 	}
 
+	int r_count = 0;
 	for (auto points : *corners)
 	{
 	    if (points->size() != col)
 	    {
-		std::cout << "points->size() != col..." << points->size() << std::endl; 
+		std::cout << r_count <<  ": points->size() != col...expect = " << col << ", found = " << points->size() << std::endl; 
 		ret = false;
 		break;
 	    }
@@ -59,6 +85,7 @@ bool findChessboardCorners(cv::Mat image, cv::Size patternSize,
 	    }
 
 	    points->clear();
+	    r_count++;
 	}
     }
     else
@@ -66,18 +93,21 @@ bool findChessboardCorners(cv::Mat image, cv::Size patternSize,
 	ret = cv::findChessboardCorners(image, patternSize, corners_tmp,
 		cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE
 		/*+ cv::CALIB_CB_FILTER_QUADS + cv::CALIB_CB_FAST_CHECK*/);	
+	
+	if (ret)
+	{
+	    cv::Mat *img_gray = new cv::Mat(image.rows, image.cols, CV_8UC1);
+	
+	    cv::cvtColor(image, *img_gray, CV_BGR2GRAY);
+	    cv::cornerSubPix(*img_gray, corners_tmp, cv::Size(5, 5), cv::Size(-1, -1),
+		    cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 500, 0.0001));
+
+	    delete img_gray;
+	}
     }
 
     if (ret)
     {
-	cv::Mat *img_gray = new cv::Mat(image.rows, image.cols, CV_8UC1);
-    
-	cv::cvtColor(image, *img_gray, CV_BGR2GRAY);
-	cv::cornerSubPix(*img_gray, corners_tmp, cv::Size(5, 5), cv::Size(-1, -1),
-		cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 500, 0.0001));
-
-	delete img_gray;
-
 	if (corners_tmp.at(0).x > corners_tmp.at(1).x
 		&& corners_tmp.at(0).y > corners_tmp.at(col).y)
 	{
@@ -1471,31 +1501,37 @@ void getChessboardGrid(cv::Mat dst, cv::Point locate, int side, cv::Mat src,
 		}
 		else
 		{
-		    k_h = ((float)(top_point.y-botton_point.y))
-			/ ((float)(top_point.x-botton_point.x));
-		    k_v = ((float)(left_point.y-right_point.y))
-			/ ((float)(left_point.x-right_point.x));
-		    b_h = top_point.y - k_h*top_point.x;
-		    b_v = left_point.y - k_v*left_point.x;
-
-		    if (k_h != k_v)
+		    if ( top_point.y-botton_point.y != 0 && left_point.x-right_point.x != 0)
 		    {
-                        x = (b_v - b_h) / (k_h - k_v);
-		        y = (b_h * k_v - b_v * k_h) / (k_v - k_h);
-		        point.x = (int)round(x);
-		        point.y = (int)round(y);
+			k_h = ((float)(top_point.y-botton_point.y))
+			    / ((float)(top_point.x-botton_point.x));
+			k_v = ((float)(left_point.y-right_point.y))
+			    / ((float)(left_point.x-right_point.x));
+			b_h = top_point.y - k_h*top_point.x;
+			b_v = left_point.y - k_v*left_point.x;
 
+			if (k_h != k_v)
+			{
+			    x = (b_v - b_h) / (k_h - k_v);
+			    y = (b_h * k_v - b_v * k_h) / (k_v - k_h);
+			    point.x = (int)round(x);
+			    point.y = (int)round(y);
+
+			}
+			else
+			{
+			    point = mapping->at(mapping->size() - 1);
+			}
 		    }
 		    else
 		    {
-			point = mapping->at(mapping->size() - 1);
+                        point = mapping->at(mapping->size() - 1);
 		    }
-
 		}
 
 		if (mask->at<uchar>(point.y, point.x) != 255)
 		{
-		    if (point.x > right_point.x)
+		    if (point.x > right_point.x && (k_v*k_v + 1) != 0)
 		    {
                         point.x = right_point.x - sqrt((h_size-h)*(h_size-h) / (k_v*k_v + 1));
 			point.y = right_point.y + (k_v > 0 ? 1.0 : -1.0)
@@ -1507,7 +1543,7 @@ void getChessboardGrid(cv::Mat dst, cv::Point locate, int side, cv::Mat src,
 			    point.y = right_point.y;
 			}
 		    }
-		    else if (point.x < left_point.x)
+		    else if (point.x < left_point.x && (k_v*k_v + 1) != 0)
 		    {
 			point.x = left_point.x + sqrt(h*h / (k_v*k_v + 1));
 			point.y = left_point.y + (k_v > 0 ? 1.0 : -1.0)
@@ -1519,7 +1555,7 @@ void getChessboardGrid(cv::Mat dst, cv::Point locate, int side, cv::Mat src,
 			    point.y = left_point.y;
 			}
 		    }
-		    else if (point.y > botton_point.y)
+		    else if (point.y > botton_point.y && (k_h*k_h + 1) != 0)
 		    {
 			point.x = botton_point.x + (k_h > 0 ? 1.0 : -1.0) 
 			    * sqrt((v_size-v)*(v_size-v) / (k_h*k_h + 1));
@@ -1532,7 +1568,7 @@ void getChessboardGrid(cv::Mat dst, cv::Point locate, int side, cv::Mat src,
 			    point.y = botton_point.y;
 			}
 		    }
-		    else if (point.y < top_point.y)
+		    else if (point.y < top_point.y && (k_h*k_h + 1) != 0)
 		    {
 			point.x = top_point.x + (k_h > 0 ? 1.0 : -1.0)
 			    * sqrt(v*v / (k_h*k_h + 1));
@@ -1860,4 +1896,44 @@ void saveChessboardGridsMapping(int fd,
     }
 
     std::cout << "rows:" << rows << ", cols:" << cols << std::endl;
+}
+
+void showChessboardLines(cv::Mat src,
+	std::vector<std::vector<std::vector<cv::Point>*>*> *rowLines,
+	std::vector<std::vector<std::vector<cv::Point>*>*> *colLines)
+{
+    cv::Mat mat;
+    src.copyTo(mat);
+#if 1 
+    for (std::vector<std::vector<cv::Point>*>* line : *rowLines)
+    {
+        for (std::vector<cv::Point>* points : *line)
+        {
+            for (cv::Point point : *points)
+            {
+                mat.at<cv::Vec3b>(point.y, point.x)[0] = 0;   //blue
+	        mat.at<cv::Vec3b>(point.y, point.x)[1] = 0;   //green
+	        mat.at<cv::Vec3b>(point.y, point.x)[2] = 255; //red
+	    }
+	}
+    }
+#endif
+#if 1
+    for (std::vector<std::vector<cv::Point>*>* line : *colLines)
+    {
+        for (std::vector<cv::Point>* points : *line)
+        {
+            for (cv::Point point : *points)
+            {
+                mat.at<cv::Vec3b>(point.y, point.x)[0] = 0;   //blue
+	        mat.at<cv::Vec3b>(point.y, point.x)[1] = 0;   //green
+	        mat.at<cv::Vec3b>(point.y, point.x)[2] = 255; //red
+	    }
+	}
+    }
+#endif
+ 
+    cv::imshow("lines", mat);
+    cv::imwrite("tmp.jpg", mat);
+    cv::waitKey();
 }
