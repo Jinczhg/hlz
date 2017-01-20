@@ -1,0 +1,22 @@
+CROSS_COMPILE=/media/ryan/extdisk/project/hinge/AVB/AVB-iMX6/toolchain/bin/arm-fsl-linux-gnueabi-
+#CROSS_COMPILE=/media/ryan/extdisk/project/opensource/freescale/fsl-arm-yocto-bsp/build-fb/tmp/sysroots/x86_64-linux/usr/bin/arm-poky-linux-gnueabi/arm-poky-linux-gnueabi-
+COMMON_INC=/media/ryan/extdisk/project/hinge/AVB/AVB-iMX6/rootfs/base/makedep/include
+KERNEL_INC=/media/ryan/extdisk/project/hinge/AVB/AVB-iMX6/rootfs/base/makedep/src/linux/include
+COMMON_LIB=/media/ryan/extdisk/project/hinge/AVB/AVB-iMX6/rootfs/base/makedep/lib
+#COMMON_LIB=/media/ryan/extdisk/project/opensource/freescale/fsl-arm-yocto-bsp/imx6qsabresd/tmp/sysroots/imx6qsabresd/usr/lib
+CC = $(CROSS_COMPILE)gcc
+CPP = $(CROSS_COMPILE)g++
+LD = $(CROSS_COMPILE)gcc
+
+# CFLAGS
+CFLAGS += -I$(COMMON_INC) -I$(KERNEL_INC) -I/home/ryan/Downloads/opencv_at/git/build/install/include -DLINUX -DTRACE_LEVEL=1
+
+# LDFLAGS
+EXTRA_LDFLAGS = -Wl,--library-path=$(COMMON_LIB),-rpath-link=$(COMMON_LIB) -L/home/ryan/Downloads/opencv_at/git/build/install/lib -L/home/ryan/ffmpeg/2.8.8/lib -L/home/ryan/Downloads/libpng-1.6.16/install/lib -L./
+
+%.o:%.c
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -Wall -c $(@D)/$(<F) -o $(@D)/$(@F) -O2 -g
+
+%.o:%.cpp
+	$(CPP) $(CFLAGS) $(EXTRA_CFLAGS) -Wall -c $(@D)/$(<F) -o $(@D)/$(@F) -O2 -g
+
