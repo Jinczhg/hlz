@@ -31,9 +31,6 @@
 #define VERT_SHADER_FILE "./mxc_vgpu.vert" 
 #define FRAG_SHADER_FILE "./mxc_vgpu.frag"
 
-#ifdef CALC_ALGO_TIME
-#include "calc.h"
-#endif
 
 EGLNativeDisplayType native_display; 
 EGLNativeWindowType  native_window; 
@@ -426,7 +423,7 @@ void* gpu_thread(void *arg)
     gettimeofday(&t_start, NULL);
 #endif
 
-    setpriority(PRIO_PROCESS, 0, -20);
+    setpriority(PRIO_PROCESS, 0, -19);
 
     init();
     
@@ -434,16 +431,12 @@ void* gpu_thread(void *arg)
 
     while (!g_exit)
     {
-        if (s_src == 0)
-        {
-	    pthread_mutex_lock(&gpu_mutex);
-	    pthread_cond_wait(&gpu_cond, &gpu_mutex);    
-	    pthread_mutex_unlock(&gpu_mutex);
-	}
+	pthread_mutex_lock(&gpu_mutex);
+	pthread_cond_wait(&gpu_cond, &gpu_mutex);    
+	pthread_mutex_unlock(&gpu_mutex);
         
 #if 1
         tmp_src = (uint8_t*)s_src;
-	s_src = 0; 
 	if (tmp_src == NULL)
 	{
 	   continue;
@@ -460,7 +453,7 @@ void* gpu_thread(void *arg)
 		src += SV_IMAGE_WIDTH;
 		dst += SV_DISPLAY_WIDTH;
 	    }
-
+            
 	    src = (uint8_t*)tmp_src + src_uv_offset;
 	    dst = (uint8_t*)s_output + dst_uv_offset;
 	    for (h = 0; h < uv_h; h++)

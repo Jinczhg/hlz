@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 {
     pthread_t tid_avtp_recv = 0;
     pthread_t tid_dec[CHANNEL_NUM_MAX] = {0};
-    pthread_t tid_ipu[CHANNEL_NUM_MAX] = {0};
+    pthread_t tid_ipu = 0;
     pthread_t tid_gpu = 0;
     pthread_t tid_stitch = 0;
     int arg_dec[CHANNEL_NUM_MAX] = {0};
@@ -75,6 +75,8 @@ int main(int argc, char **argv)
 
     g_config.channel_display = 0;
     
+    g_config.camera_count = 4;
+    
     pthread_create(&tid_stitch, NULL, stitch_thread, NULL);
     sleep(1);
     
@@ -114,11 +116,8 @@ int main(int argc, char **argv)
         pthread_create(&tid_dec[i], NULL, decode_thread, &arg_dec[i]);
     }
     
-    for (i = 0; i < CHANNEL_NUM_MAX; i++)
-    {
-	arg_ipu[i] = i;
-        pthread_create(&tid_ipu[i], NULL, ipu_thread, &arg_ipu[i]);
-    }
+
+    pthread_create(&tid_ipu, NULL, ipu_thread, NULL);
 
     pthread_create(&tid_gpu, NULL, gpu_thread, NULL);
 
@@ -179,8 +178,9 @@ int main(int argc, char **argv)
     for (i = 0; i < CHANNEL_NUM_MAX; i++)
     {
 	pthread_join(tid_dec[i], NULL);
-	pthread_join(tid_ipu[i], NULL);
     }
+    
+    pthread_join(tid_ipu, NULL);
 
     avtp_deinit();
     gpu_deinit();

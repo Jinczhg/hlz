@@ -20,6 +20,7 @@
 #include <sys/ioctl.h>
 #include <linux/fb.h>
 #include <linux/mxcfb.h> 
+#include "g2d.h"
 
 #include "stitchalgo.h"
 #include "mBVStitch3D_2_0.h"
@@ -33,17 +34,16 @@ extern int g_exit;
 
 static char *s_data[2] = {NULL};
 static int s_index = 0;
+static int s_index_ready = -1;
 static int s_width = 0;
 static int s_height = 0;
 static int s_angle = 0;
-static int s_data_ready = 0;
+static int s_stitching = 0;
 
 static pthread_cond_t stitch_cond = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t stitch_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static pthread_mutex_t move_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-static s_ipu_task_num[IPU_TASK_CHANNEL] = {0};
 
 static int stitch_init()
 {
@@ -69,6 +69,34 @@ static int stitch_init()
     struct mxcfb_gbl_alpha gbl_alpha;
     struct mxcfb_pos pos;
     
+    struct g2d_buf *buf;
+    
+    buf = g2d_alloc(data_len, 0);
+    if (!buf)
+    {
+        printf("Fail to allocate physical memory for src buffer!\n");
+        goto err;
+    }
+    s_data[0] = buf->buf_vaddr;
+    if (!s_data[0])
+    {
+	ERROR("malloc error: %s", strerror(errno));
+	goto err;
+    }
+    
+    buf = g2d_alloc(data_len, 0);
+    if (!buf)
+    {
+        printf("Fail to allocate physical memory for src buffer!\n");
+        goto err;
+    }
+    s_data[1] = buf->buf_vaddr;
+    if (!s_data[1])
+    {
+	ERROR("malloc error: %s", strerror(errno));
+	goto err;
+    }
+      
     fp = open ("/dev/fb0",O_RDWR);  
   
     if (fp < 0)
@@ -139,20 +167,6 @@ static int stitch_init()
     close(fp); 
     
     DEBUG("config fb OK");
-  
-    s_data[0] = malloc(data_len);
-    if (!s_data[0])
-    {
-	ERROR("malloc error: %s", strerror(errno));
-	goto err;
-    }
-    
-    s_data[1] = malloc(data_len);
-    if (!s_data[1])
-    {
-	ERROR("malloc error: %s", strerror(errno));
-	goto err;
-    }
  
     s_width = width;
     s_height = height;
@@ -168,24 +182,24 @@ static int stitch_init()
     {
         ERROR("mBVStitch_2_0_Init fail......");
     }
-    
+  
     return 0;
 
 err:
     return -1;
 }
 
+int stitch_deinit()
+{
+    return 0;
+}
+
 void* stitch_thread(void *arg)
 {
     bool ret = false;
-    int cmd = 0;
-    int cnt = 0;
     int bNeedCar = 1;
-    int value = 0;
-    int angle = 10;
-    int move_switch = 0;
-    ipu_buffer *buf = NULL;
-    int i = 0;
+    int angle = 4;
+    unsigned char *buf = NULL;
     
 #ifdef CALC_ALGO_TIME      
     struct timeval t_start;
@@ -206,40 +220,38 @@ void* stitch_thread(void *arg)
     
     while (1)
     {
-        if (s_data_ready == 0)
+        if (s_index_ready == -1)
         {
             pthread_mutex_lock(&stitch_mutex);
-	    pthread_cond_wait(&stitch_cond, &stitch_mutex);    
+	    pthread_cond_wait(&stitch_cond, &stitch_mutex); 
 	    pthread_mutex_unlock(&stitch_mutex);
 	}
 
-#if 1
-	s_data_ready = 0;
-	
+        s_stitching = 1;
+        buf = s_data[s_index_ready];
+	s_index_ready = -1;
+#if 1	
         if (s_angle < 360)
         {
-            mBVStitch_2_0_MoveCamera(0, 4);
-            s_angle += 4;
+            mBVStitch_2_0_MoveCamera(0, angle);
+            s_angle += angle;
         }
         
         //stitch and draw
 	pthread_mutex_lock(&move_mutex);
-	
-	//ipu_output_lock(s_index);
-        buf = ipu_get_buffer(0, s_index);
         
-        mBVStitch_2_0_StitchImage(buf->output_vaddr, s_width, s_height, VIDEO_FORMAT_UYVY);
+        mBVStitch_2_0_StitchImage(buf, s_width, s_height, VIDEO_FORMAT_NV12);
+        s_stitching = 0;
+        
         ret = mBVStitch_2_0_Draw(bNeedCar);
         if (!ret)
         {
             ERROR("mBVStitch_2_0_Draw fail......");
         }
-
-        //ipu_output_unlock(s_index);
         
 	pthread_mutex_unlock(&move_mutex);
 #endif
-
+        
 #ifdef CALC_ALGO_TIME
 	fcnt++;
 	if(fcnt % 500 == 0)
@@ -263,31 +275,27 @@ out:
     return NULL;
 }
 
-int stitch_deinit()
-{
-    return 0;
-}
-
-void stitch_signal(int channel, int num)
+void stitch_signal()
 {
     static int cnt = 0;
     
-    //s_ipu_task_num[channel] = num;
-    
-    if (++cnt == g_config.camera_count)
+    //if (++cnt == g_config.camera_count)
     {
         cnt = 0;
-        s_index = num;//++s_index % IPU_TASK_NUM;
         pthread_mutex_lock(&stitch_mutex);
-        s_data_ready = 1;
-        pthread_cond_signal(&stitch_cond);
+        if (s_stitching == 0)
+        {
+            s_index_ready = s_index;
+            s_index = s_index == 1 ? 0 : 1;
+            pthread_cond_signal(&stitch_cond);
+        }
         pthread_mutex_unlock(&stitch_mutex);
     }
 }
 
 char* stitch_get_buffer()
 {
-    return s_data[(s_index + 1) % 2];
+    return s_data[s_index];
 }
 
 int stitch_move_camera()

@@ -8,6 +8,7 @@ void yuv_merge(int stride, int height, char *front, char *rear, char *left, char
     int y_half = (stride * height) << 1;
     int uv_half = stride * height;
     int s_2 = stride << 1;
+    int uv_height = height >> 1;
     
     if (!front && !right)
     {
@@ -73,7 +74,7 @@ void yuv_merge(int stride, int height, char *front, char *rear, char *left, char
     {
         if (front)
         {
-            for (i = 0; i < height / 2; i++)
+            for (i = 0; i < uv_height; i++)
             {
 	        memcpy(dst, front, stride);
 	        front += stride;
@@ -83,7 +84,7 @@ void yuv_merge(int stride, int height, char *front, char *rear, char *left, char
 	
 	if (right)
         {
-            for (i = 0; i < height / 2; i++)
+            for (i = 0; i < uv_height; i++)
             {
 	        memcpy(dst, right, stride);
 	        right += stride;
@@ -96,7 +97,7 @@ void yuv_merge(int stride, int height, char *front, char *rear, char *left, char
     {
         if (rear)
         {
-            for (i = 0; i < height / 2; i++)
+            for (i = 0; i < uv_height; i++)
             {
 	        memcpy(dst, rear, stride);
 	        rear += stride;
@@ -106,7 +107,7 @@ void yuv_merge(int stride, int height, char *front, char *rear, char *left, char
 	
 	if (left)
         {
-            for (i = 0; i < height / 2; i++)
+            for (i = 0; i < uv_height; i++)
             {
 	        memcpy(dst, left, stride);
 	        left += stride;

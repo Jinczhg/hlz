@@ -11,7 +11,9 @@
 
 void* stitch_thread(void *arg); 
 
-void stitch_signal(int channel, int num);
+void stitch_signal();
+
+char* stitch_get_buffer();
 
 int stitch_move_camera();
 

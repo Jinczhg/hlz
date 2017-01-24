@@ -542,10 +542,9 @@ static int decode_allocate_framebuffer(decoder *dec)
    frame_buffer *fb_pool = NULL;
    RetCode ret;
    int i = 0;
-   int totalfb = 0, extrafb = IPU_TASK_NUM;
+   int totalfb = 0, extrafb = 3;
    int stride, height, divX, divY, size;
    int delay = -1;
-   ipu_buffer *buf;
 
    dec->extra_fb_count = extrafb;
    totalfb = dec->reg_fb_count + extrafb;
@@ -575,8 +574,6 @@ static int decode_allocate_framebuffer(decoder *dec)
 
    for (i = 0; i < totalfb; i++)
    {
-       if (i < dec->reg_fb_count)
-       {
        fb_pool->mem_desc[i].size = size;
        ret = IOGetPhyMem(&fb_pool->mem_desc[i]);
        if (ret)
@@ -596,23 +593,6 @@ static int decode_allocate_framebuffer(decoder *dec)
        //fb_pool->fb[i].strideY = stride;
        //fb_pool->fb[i].strideC = stride / divX;
        fb_pool->fb[i].bufMvCol = fb_pool->fb[i].bufCr + stride / divX * height / divY;
-       }
-       else
-       {
-       buf = ipu_get_buffer(dec->channel, i - dec->reg_fb_count);
-       fb_pool->mem_desc[i].size = size;
-
-       fb_pool->mem_desc[i].phy_addr = buf->input_paddr;
-       fb_pool->mem_desc[i].virt_uaddr = (unsigned long)buf->input_vaddr;
-
-       fb_pool->fb[i].myIndex = i;
-       fb_pool->fb[i].bufY = fb_pool->mem_desc[i].phy_addr;
-       fb_pool->fb[i].bufCb = fb_pool->fb[i].bufY + stride * height;
-       fb_pool->fb[i].bufCr = fb_pool->fb[i].bufCb + (stride / divX) * (height / divY);
-       //fb_pool->fb[i].strideY = stride;
-       //fb_pool->fb[i].strideC = stride / divX;
-       fb_pool->fb[i].bufMvCol = fb_pool->fb[i].bufCr + stride / divX * height / divY;
-       }
    }
    
    DEBUG("Frame buffer allocation OK");
@@ -666,12 +646,13 @@ static int decode_start(decoder *dec)
     int rot_stride = dec->pic_width;
     int mirror = 0;
     int disp_clr_index = -1;
-    ipu_buffer *buf;
-    int num = 0;
-    
+
+#ifdef CALC_ALGO_TIME    
     struct timeval t_start;
     struct timeval t_end;
     unsigned int t_diff = 0;
+    gettimeofday(&t_start, NULL);
+#endif
 
     decparam.dispReorderBuf = 0;
     decparam.skipframeMode = 0;
@@ -686,19 +667,17 @@ static int decode_start(decoder *dec)
 
     rot_id = dec->reg_fb_count;
    
-#if 1
+#if 0
     vpu_DecGiveCommand(handle, SET_ROTATION_ANGLE, &rot_angle);
     vpu_DecGiveCommand(handle, SET_MIRROR_DIRECTION, &mirror);
     vpu_DecGiveCommand(handle, SET_ROTATOR_STRIDE, &rot_stride);
 #endif
 
     vpu_DecBitBufferFlush(handle);
-    
-    gettimeofday(&t_start, NULL);
 
     while (!s_exit)
     {
-#if 1
+#if 0
 	vpu_DecGiveCommand(handle, SET_ROTATOR_OUTPUT, (void *)&fb[rot_id]);
 	if (frame_id == 0)
 	{
@@ -708,8 +687,9 @@ static int decode_start(decoder *dec)
 #endif	
 	decode_fill_bs_buffer(dec, STREAM_FILL_SIZE);
 	
+#if 0
 	buf = ipu_get_buffer(dec->channel, num);
-#if 1
+
 	if (buf->write_lock)
 	{
 	    DEBUG("channel=%d: IPU thread not fast enough", dec->channel);
@@ -849,7 +829,7 @@ static int decode_start(decoder *dec)
                 //gpu_signal(dec->channel, dec->fb_pool.mem_desc[rot_id].virt_uaddr);
                 gpu_signal(dec->channel, dec->fb_pool.mem_desc[outinfo.indexFrameDisplay].virt_uaddr);
             }
-	        
+#if 0	        
 	    buf->write_lock = 1;
 	    buf->read_lock = 0;
 	    ipu_signal(dec->channel, dec->fb_pool.mem_desc[outinfo.indexFrameDisplay].virt_uaddr);
@@ -861,7 +841,9 @@ static int decode_start(decoder *dec)
 	    }
 	        
 	    num = rot_id - dec->reg_fb_count;
-	    
+#else
+            ipu_signal(dec->channel, dec->fb_pool.mem_desc[outinfo.indexFrameDisplay].virt_uaddr);
+#endif	    
 	    disp_clr_index = outinfo.indexFrameDisplay + 1;
 	    if (disp_clr_index == dec->reg_fb_count)
 	    {
@@ -871,6 +853,8 @@ static int decode_start(decoder *dec)
 	}
 
 	frame_id++;
+	
+#ifdef CALC_ALGO_TIME
 	if(frame_id % 500 == 0)
 	{
             gettimeofday(&t_end, NULL);
@@ -882,6 +866,7 @@ static int decode_start(decoder *dec)
 		500/t_diff);
             gettimeofday(&t_start, NULL);
 	}
+#endif
     }
 
     return 0;
@@ -985,7 +970,7 @@ void* decode_thread(void *arg)
     vpu_mem_desc slice_mem_desc = {0};
     int ret = 0;
     
-    setpriority(PRIO_PROCESS, 0, -20);
+    setpriority(PRIO_PROCESS, 0, -19);
 
     if (!dec)
     {
@@ -1062,7 +1047,7 @@ void* decode_thread(void *arg)
 	goto out;
     }
 
-    g_config.camera_count++;
+    //g_config.camera_count++;
     
     decode_start(dec);
 
