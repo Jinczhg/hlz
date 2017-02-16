@@ -20,7 +20,7 @@
 #define PS_SAVE_SIZE       0x080000
 
 #define DEC_FRAME_NUM 2
-#define DEC_FRAME_SIZE 307200 //300K 
+#define DEC_FRAME_SIZE 512000 //500K 
 
 typedef enum CHANNEL {
     CHANNEL_FRONT = 0,

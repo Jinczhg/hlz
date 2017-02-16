@@ -9,14 +9,14 @@ CPP = $(CROSS_COMPILE)g++
 LD = $(CROSS_COMPILE)gcc
 
 # CFLAGS
-CFLAGS += -I$(COMMON_INC) -I$(KERNEL_INC) -I/home/ryan/Downloads/opencv_at/git/build/install/include -DLINUX -DTRACE_LEVEL=1
+CFLAGS += -I$(COMMON_INC) -I$(KERNEL_INC) -I/home/ryan/Downloads/opencv_at/git/build/install/include -DLINUX -DTRACE_LEVEL=1 -DVERTICAL_SCREEN
 
 # LDFLAGS
 EXTRA_LDFLAGS = -Wl,--library-path=$(COMMON_LIB),-rpath-link=$(COMMON_LIB) -L/home/ryan/Downloads/opencv_at/git/build/install/lib -L/home/ryan/ffmpeg/2.8.8/lib -L/home/ryan/Downloads/libpng-1.6.16/install/lib -L./
 
 %.o:%.c
-	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -Wall -c $(@D)/$(<F) -o $(@D)/$(@F) -O2 -g
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -Wall -c $(@D)/$(<F) -o $(@D)/$(@F) -O2
 
 %.o:%.cpp
-	$(CPP) $(CFLAGS) $(EXTRA_CFLAGS) -Wall -c $(@D)/$(<F) -o $(@D)/$(@F) -O2 -g
+	$(CPP) $(CFLAGS) $(EXTRA_CFLAGS) -Wall -c $(@D)/$(<F) -o $(@D)/$(@F) -O2
 

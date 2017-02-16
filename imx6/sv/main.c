@@ -11,6 +11,8 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "vpu_lib.h"
 #include "dec.h"
@@ -18,9 +20,14 @@
 #include "avtp.h"
 #include "trace.h"
 #include "sv.h"
-#include "stitchalgo.h"
+#include "stitch_3d.h"
+#include "stitch_2d.h"
 
 #include "ipu_test.h"
+
+#ifdef CALC_ALGO_TIME
+#include "calc.h"
+#endif
 
 sv_config g_config;
 int g_exit = 0;
@@ -31,7 +38,8 @@ int main(int argc, char **argv)
     pthread_t tid_dec[CHANNEL_NUM_MAX] = {0};
     pthread_t tid_ipu = 0;
     pthread_t tid_gpu = 0;
-    pthread_t tid_stitch = 0;
+    pthread_t tid_stitch_3d = 0;
+    pthread_t tid_stitch_2d = 0;
     int arg_dec[CHANNEL_NUM_MAX] = {0};
     int arg_ipu[CHANNEL_NUM_MAX] = {0};
 
@@ -41,6 +49,11 @@ int main(int argc, char **argv)
     int i = 0;
     int rc = 0;
     vpu_versioninfo ver;
+    
+    const char *fifo_name = "/tmp/sv_fifo";
+    int pipe_fd = -1; 
+    int nread = 0;
+    char *buf = (char*)malloc(256);
 
     rc = vpu_Init(NULL);
     if (rc)
@@ -77,7 +90,9 @@ int main(int argc, char **argv)
     
     g_config.camera_count = 4;
     
-    pthread_create(&tid_stitch, NULL, stitch_thread, NULL);
+    g_config.display_3d = 1;
+    
+    pthread_create(&tid_stitch_3d, NULL, stitch_3d_thread, NULL);
     sleep(1);
     
     rc = ipu_init();
@@ -107,6 +122,10 @@ int main(int argc, char **argv)
 	DEBUG("avtp_init fail");
 	return -1;
     }
+    
+#ifdef CALC_ALGO_TIME    
+    calc_init();
+#endif
 
     DEBUG("create threads......");
 
@@ -120,6 +139,7 @@ int main(int argc, char **argv)
     pthread_create(&tid_ipu, NULL, ipu_thread, NULL);
 
     pthread_create(&tid_gpu, NULL, gpu_thread, NULL);
+    pthread_create(&tid_stitch_2d, NULL, stitch_2d_thread, NULL);
 
     pthread_create(&tid_avtp_recv, NULL, avtp_recv_thread, NULL);
 
@@ -127,50 +147,60 @@ int main(int argc, char **argv)
 
     avtp_signal(1);
     
-    while (g_exit == 0)
+    if(access(fifo_name, F_OK) == -1)  
+    {  
+        mkfifo(fifo_name, 0777);
+    } 
+    pipe_fd = open(fifo_name, O_RDONLY);
+    if (pipe_fd < 0)
     {
-        if (argc > 1)
-        {
-	    printf("usage:\n");
-	    printf("value[1,2,3,4] is channel to display\n");
+        ERROR("failed to open fifo");
+    }
+    else
+    {
+	{
+            while (g_exit == 0)
+            {
+                pipe_fd = open(fifo_name, O_RDONLY);
+                if (pipe_fd < 0)
+                {
+                    ERROR("failed to open fifo");
+                    break;
+                }
+                nread = read(pipe_fd, buf, 256);
+	        close(pipe_fd);
 	
-	    printf("input value [1,2,3,4]:");
-	    
-	    gets(cmd);
-	    value = atoi(cmd);
+                if (nread >= 1)
+                {
+	            value = buf[0] - '0';
 
-	    if (value > 0 && value <= 4)
-	    {
-	        g_config.channel_display = value - 1;
-	        stitch_move_camera();
-	    }
-	    else
-	    {
-	        printf("the channel %d is not supported.\n", value);
-	    }
+	            if (value > 0 && value <= 4)
+	            {
+	                g_config.channel_display = value - 1;
+	                stitch_3d_move_camera(1);
+	            }
+	            else if (value == 0)
+	            {
+	                g_config.channel_display = 0;
+	                stitch_3d_move_camera(0);
+	            }
+	            else if (value == 5)
+	            {
+	                g_config.display_3d = g_config.display_3d == 0 ? 1 : 0;
+	            }
+#ifdef CALC_ALGO_TIME    
+                    else if (value == 6)
+	            {
+	                calc_flush_log();
+	            }
+#endif
+	            else
+	            {
+	                printf("the cmd %d is not supported.\n", value);
+	            }
+                }
+            }
         }
-        else
-        {
-	    sleep(20);
-	    if (value == 0)
-	    {
-	        value = 2;
-	    }
-	    else if (value == 1)
-	    {
-	        value = 3;
-	    }
-	    else if (value == 2)
-	    {
-	        value = 1;
-	    }
-	    else if (value == 3)
-	    {
-	        value = 0;
-	    }
-	    g_config.channel_display = value;
-	    stitch_move_camera();
-	}
     }
 
     pthread_join(tid_avtp_recv, NULL);
@@ -181,9 +211,13 @@ int main(int argc, char **argv)
     }
     
     pthread_join(tid_ipu, NULL);
+    pthread_join(tid_gpu, NULL);
+    pthread_join(tid_stitch_3d, NULL);
+    pthread_join(tid_stitch_2d, NULL);
 
     avtp_deinit();
     gpu_deinit();
+    stitch_2d_deinit();
     decode_deinit();
     ipu_deinit();
 

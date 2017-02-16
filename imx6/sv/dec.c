@@ -13,17 +13,28 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 
+#include <g2d.h>
+
 #include "trace.h"
 #include "avtp.h"
 #include "dec.h"
 #include "sv.h"
 #include "gpu.h"
+#include "stitch_2d.h"
 #include "ipu_test.h"
+
+#ifdef CALC_ALGO_TIME
+#include "calc.h"
+#endif
 
 #define AVTP_STREAMID_BASE 0x3350
 
 static decoder *decs[CHANNEL_NUM_MAX] = {0};
 static int s_exit = 0;
+
+#ifdef CALC_ALGO_TIME
+static channel_decoding[CHANNEL_NUM_MAX] = {0,0,0,0};
+#endif
 
 extern sv_config g_config;
 
@@ -54,6 +65,13 @@ again:
     }
     
     f = dec->frame_read;
+#ifdef CALC_ALGO_TIME
+            if (channel_decoding[dec->channel])
+            {
+	        //calc_recv_frame_start(channel);
+	        calc_recv_frame_end(dec->channel);
+	    }
+#endif
 
     ret = vpu_DecGetBitstreamBuffer(dec->handle, &pa_read_ptr, &pa_write_ptr, &space);
 
@@ -113,6 +131,183 @@ again:
     if (room_head)
     {
 	memcpy((char*)target_addr, f->buf + f->offset, room_head);
+    }
+
+    //release read frame
+    pthread_mutex_lock(&dec->mutex);
+    dec->frame_read = NULL;
+    dec->frame_reading= 0;
+    pthread_mutex_unlock(&dec->mutex);
+    
+    ret = vpu_DecUpdateBitstreamBuffer(dec->handle, size);
+    if (ret != RETCODE_SUCCESS)
+    {
+	ERROR("vpu_DecUpdateBitstreamBuffer failed");
+	return -1;
+    }
+    return size;
+}
+
+#define H264_HEAD_LEN 5
+static char h264_head[H264_HEAD_LEN] = {0x00, 0x00, 0x00, 0x01, 0x67};
+
+static int decode_fill_bs_buffer_head(decoder *dec)
+{
+    RetCode ret;
+    PhysicalAddress pa_read_ptr, pa_write_ptr;
+    Uint32 target_addr, end_addr, space;
+    int size = 0;
+    int room_head = 0, room_tail = 0;
+    int offset = 0;
+
+    ret = vpu_DecGetBitstreamBuffer(dec->handle, &pa_read_ptr, &pa_write_ptr, &space);
+
+    if (ret != RETCODE_SUCCESS)
+    {
+	ERROR("vpu_DecGetBitstreamBuffer failed");
+	return -1;
+    }
+    
+
+    /* Decoder bitsteam buffer is full */
+    if (space < 5)
+    {  
+	DEBUG("space %lu < head len %d", space, H264_HEAD_LEN);
+	return 0;
+    }
+
+    size = H264_HEAD_LEN;
+    
+    /* Fill the bitstream buffer */
+    target_addr = dec->virt_bs_buf_addr + (pa_write_ptr - dec->phy_bs_buf_addr);
+    end_addr = dec->virt_bs_buf_addr + STREAM_BUF_SIZE;
+    if ((target_addr + size) > end_addr)
+    {
+	room_tail = end_addr - target_addr;
+	room_head = size - room_tail;
+    }
+    else
+    {
+	room_tail = size;
+	room_head = 0;
+    }
+
+    if (room_tail > 0)
+    {
+	memcpy((char*)target_addr, h264_head, room_tail);
+	offset += room_tail;
+    }
+
+    target_addr = dec->virt_bs_buf_addr;
+    if (room_head)
+    {
+	memcpy((char*)target_addr, h264_head + offset, room_head);
+    }
+    
+    ret = vpu_DecUpdateBitstreamBuffer(dec->handle, size);
+    if (ret != RETCODE_SUCCESS)
+    {
+	ERROR("vpu_DecUpdateBitstreamBuffer failed");
+	return -1;
+    }
+    return size;
+}
+
+static int decode_fill_bs_buffer_from_net_adjust_head(decoder *dec, int default_size)
+{
+    RetCode ret;
+    PhysicalAddress pa_read_ptr, pa_write_ptr;
+    Uint32 target_addr, end_addr, space;
+    int size = 0;
+    int room_head = 0, room_tail = 0;
+
+    frame *f = dec->frame_read;
+
+again:
+    if (!dec->frame_read)
+    {
+        pthread_mutex_lock(&dec->mutex);
+	pthread_cond_wait(&dec->cond, &dec->mutex);
+	dec->frame_reading= 1;
+	pthread_mutex_unlock(&dec->mutex);
+	if (!dec->frame_read)
+	{
+	    dec->frame_reading= 0;
+	    ERROR("read frame should be NULL");
+	    goto again;
+	}
+	//DEBUG("dec->frame_read len = %d", dec->frame_read->len);
+    }
+    
+    f = dec->frame_read;
+#ifdef CALC_ALGO_TIME
+            if (channel_decoding[dec->channel])
+            {
+	        //calc_recv_frame_start(channel);
+	        calc_recv_frame_end(dec->channel);
+	    }
+#endif
+
+    ret = vpu_DecGetBitstreamBuffer(dec->handle, &pa_read_ptr, &pa_write_ptr, &space);
+
+    if (ret != RETCODE_SUCCESS)
+    {
+        pthread_mutex_lock(&dec->mutex);
+        dec->frame_read = NULL;
+        dec->frame_reading= 0;
+        pthread_mutex_unlock(&dec->mutex);
+        
+	ERROR("vpu_DecGetBitstreamBuffer failed");
+	return -1;
+    }
+    
+#if 0
+    DEBUG("space=%lu, start_addr=%ld, end_addr=%ld,"
+	    " pa_read_ptr=%ld, pa_write_ptr=%ld, frame_len=%d",
+	    space, dec->phy_bs_buf_addr, dec->phy_bs_buf_addr + STREAM_BUF_SIZE,
+	    pa_read_ptr ,pa_write_ptr, f->len);
+#endif
+
+    /* Decoder bitsteam buffer is full */
+    if (space < f->len)
+    {
+        pthread_mutex_lock(&dec->mutex);
+        dec->frame_read = NULL;
+        dec->frame_reading= 0;
+        pthread_mutex_unlock(&dec->mutex);
+        
+	DEBUG("space %lu < frame len %d", space, f->len);
+	return 0;
+    }
+
+    size = f->len;
+    
+    memcpy(f->buf + f->len, f->buf, H264_HEAD_LEN);
+    
+    /* Fill the bitstream buffer */
+    target_addr = dec->virt_bs_buf_addr + (pa_write_ptr - dec->phy_bs_buf_addr);
+    end_addr = dec->virt_bs_buf_addr + STREAM_BUF_SIZE;
+    if ((target_addr + size) > end_addr)
+    {
+	room_tail = end_addr - target_addr;
+	room_head = size - room_tail;
+    }
+    else
+    {
+	room_tail = size;
+	room_head = 0;
+    }
+
+    if (room_tail > 0)
+    {
+	memcpy((char*)target_addr, f->buf + H264_HEAD_LEN, room_tail);
+	f->offset += room_tail;
+    }
+
+    target_addr = dec->virt_bs_buf_addr;
+    if (room_head)
+    {
+	memcpy((char*)target_addr, f->buf + f->offset + H264_HEAD_LEN, room_head);
     }
 
     //release read frame
@@ -243,6 +438,11 @@ static int decode_fill_bs_buffer(decoder *dec, int default_size)
 #else
     return decode_fill_bs_buffer_from_net(dec, default_size);
 #endif
+}
+
+static int decode_fill_bs_buffer_adjust_head(decoder *dec, int default_size)
+{
+    return decode_fill_bs_buffer_from_net_adjust_head(dec, default_size);
 }
 
 static int decode_open(decoder *dec)
@@ -575,6 +775,7 @@ static int decode_allocate_framebuffer(decoder *dec)
    for (i = 0; i < totalfb; i++)
    {
        fb_pool->mem_desc[i].size = size;
+#if 0
        ret = IOGetPhyMem(&fb_pool->mem_desc[i]);
        if (ret)
        {
@@ -593,6 +794,26 @@ static int decode_allocate_framebuffer(decoder *dec)
        //fb_pool->fb[i].strideY = stride;
        //fb_pool->fb[i].strideC = stride / divX;
        fb_pool->fb[i].bufMvCol = fb_pool->fb[i].bufCr + stride / divX * height / divY;
+#else
+        struct g2d_buf *buf;
+    
+        buf = g2d_alloc(fb_pool->mem_desc[i].size, 1);
+        if (!buf)
+        {
+            ERROR("Fail to allocate physical memory for src buffer!\n");
+            memset(&fb_pool->mem_desc[i], 0, sizeof(vpu_mem_desc));
+            return -1;
+        }
+    
+        fb_pool->mem_desc[i].phy_addr = buf->buf_paddr;
+        fb_pool->mem_desc[i].virt_uaddr = buf->buf_vaddr;
+    
+        fb_pool->fb[i].myIndex = i;
+        fb_pool->fb[i].bufY = fb_pool->mem_desc[i].phy_addr;
+        fb_pool->fb[i].bufCb = fb_pool->fb[i].bufY + stride * height;
+        fb_pool->fb[i].bufCr = fb_pool->fb[i].bufCb + (stride / divX) * (height / divY);
+        fb_pool->fb[i].bufMvCol = fb_pool->fb[i].bufCr + stride / divX * height / divY;
+#endif
    }
    
    DEBUG("Frame buffer allocation OK");
@@ -674,6 +895,11 @@ static int decode_start(decoder *dec)
 #endif
 
     vpu_DecBitBufferFlush(handle);
+    decode_fill_bs_buffer_head(dec);
+    
+#ifdef CALC_ALGO_TIME
+    channel_decoding[dec->channel] = 1;
+#endif
 
     while (!s_exit)
     {
@@ -684,9 +910,12 @@ static int decode_start(decoder *dec)
 	    vpu_DecGiveCommand(handle, ENABLE_ROTATION, 0);
 	    vpu_DecGiveCommand(handle, ENABLE_MIRRORING, 0);
 	}
+#endif
+
+	decode_fill_bs_buffer_adjust_head(dec, STREAM_FILL_SIZE);
+#ifdef CALC_ALGO_TIME	
+        calc_dec_frame_start(dec->channel);
 #endif	
-	decode_fill_bs_buffer(dec, STREAM_FILL_SIZE);
-	
 #if 0
 	buf = ipu_get_buffer(dec->channel, num);
 
@@ -821,29 +1050,26 @@ static int decode_start(decoder *dec)
 
 	    decIndex++;
 	}
-        
+	
+#ifdef CALC_ALGO_TIME	
+        calc_dec_frame_end(dec->channel);
+#endif        
 	if (outinfo.indexFrameDisplay >= 0)
 	{
 	    if (dec->channel == g_config.channel_display)
             {
-                //gpu_signal(dec->channel, dec->fb_pool.mem_desc[rot_id].virt_uaddr);
                 gpu_signal(dec->channel, dec->fb_pool.mem_desc[outinfo.indexFrameDisplay].virt_uaddr);
             }
-#if 0	        
-	    buf->write_lock = 1;
-	    buf->read_lock = 0;
-	    ipu_signal(dec->channel, dec->fb_pool.mem_desc[outinfo.indexFrameDisplay].virt_uaddr);
-	         
-	    rot_id++;
-	    if (rot_id == (dec->reg_fb_count + dec->extra_fb_count))
-	    {
-		rot_id = dec->reg_fb_count;
-	    }
-	        
-	    num = rot_id - dec->reg_fb_count;
-#else
-            ipu_signal(dec->channel, dec->fb_pool.mem_desc[outinfo.indexFrameDisplay].virt_uaddr);
-#endif	    
+
+            if (g_config.display_3d == 1)
+            {
+                ipu_signal(dec->channel, dec->fb_pool.mem_desc[outinfo.indexFrameDisplay].virt_uaddr);
+            }
+            else
+            {
+               stitch_2d_signal(dec->channel, dec->fb_pool.mem_desc[outinfo.indexFrameDisplay].virt_uaddr);
+            }
+                
 	    disp_clr_index = outinfo.indexFrameDisplay + 1;
 	    if (disp_clr_index == dec->reg_fb_count)
 	    {
@@ -970,7 +1196,7 @@ void* decode_thread(void *arg)
     vpu_mem_desc slice_mem_desc = {0};
     int ret = 0;
     
-    setpriority(PRIO_PROCESS, 0, -19);
+    setpriority(PRIO_PROCESS, 0, -20);
 
     if (!dec)
     {
@@ -1082,9 +1308,22 @@ int decode_fill(int channel, uint8_t *data, int len)
 	if (data[0] == 0x0 && data[1] == 0x0 && data[2] == 0x0 && data[3] == 0x1
 		&& (data[4] & 0x1F) == 0x7)
 	{
+#ifdef CALC_ALGO_TIME
+            if (channel_decoding[channel])
+            {
+	        calc_recv_frame_start(channel);
+	        //calc_recv_frame_end(channel);
+	    }
+#endif	    
 	    //there is a finished image data
 	    if (f->offset > 0)
 	    {
+#ifdef CALC_ALGO_TIME
+            if (channel_decoding[channel])
+            { 
+	        //calc_recv_frame_end(channel);
+	    }
+#endif
 		f->len = f->offset;
 		f->offset = 0;
 

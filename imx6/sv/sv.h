@@ -12,8 +12,15 @@
 #define SV_IMAGE_WIDTH 1280
 #define SV_IMAGE_HEIGHT 720
 
-#define SV_DISPLAY_WIDTH 576
+#define SV_DISPLAY_X 592      //16 multiple
+#define SV_DISPLAY_Y 40
+#define SV_DISPLAY_WIDTH 656  //16 multiple
 #define SV_DISPLAY_HEIGHT 720
+
+#define SV_STITCH_X 32       //16 multiple
+#define SV_STITCH_Y 40
+#define SV_STITCH_WIDTH 528  //16 multiple
+#define SV_STITCH_HEIGHT 720
 
 typedef struct _sv_config
 {
@@ -34,6 +41,7 @@ typedef struct _sv_config
     int camera_count;
 
     int channel_display;
+    int display_3d;
 } sv_config;
 
 #endif //__SV_H

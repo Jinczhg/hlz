@@ -2,7 +2,7 @@ include ./makerules
 
 TARGET = sv_demo
 
-OBJ = main.o dec.o avtp.o gpu.o stitchalgo.o yuv.o ipu_test.o
+OBJ = main.o dec.o avtp.o gpu.o stitch_2d.o stitch_3d.o yuv.o ipu_test.o stitchalgo.o
 
 DEST_PATH=$(TARGET_ROOTFS)/bin
 

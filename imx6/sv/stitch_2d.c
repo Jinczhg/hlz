@@ -22,14 +22,13 @@
 #include <EGL/egl.h>
 #include <EGL/eglvivante.h>
 
-#include "gpu.h"
+#include <g2d.h>
+
+#include "stitch_2d.h"
 #include "dec.h"
 #include "trace.h"
 #include "sv.h"
-
-#ifdef CALC_ALGO_TIME
-#include "calc.h"
-#endif
+#include "stitchalgo.h"
 
 #define VERT_SHADER_FILE "./mxc_vgpu.vert" 
 #define FRAG_SHADER_FILE "./mxc_vgpu.frag"
@@ -78,7 +77,7 @@ typedef struct
     int height;
 } gpu_frame_buf;
 
-#define MAX_NUM_TEXELS 2
+#define MAX_NUM_TEXELS 1
 static GLuint texture[MAX_NUM_TEXELS];
 static GLvoid *pTexel[MAX_NUM_TEXELS][3];
 static gpu_frame_buf s_gpuFrameBuffer[MAX_NUM_TEXELS];
@@ -122,10 +121,11 @@ static GLfloat transformMatrix[16] =
     0.0f, 0.0f, 0.0f, 1.0f 
 };  
 
-static pthread_cond_t gpu_cond = PTHREAD_COND_INITIALIZER;
-static pthread_mutex_t gpu_mutex = PTHREAD_MUTEX_INITIALIZER;
-static unsigned long s_src = 0;
-static unsigned long s_output = 0;
+static pthread_cond_t stitch_2d_conf = PTHREAD_COND_INITIALIZER;
+static pthread_mutex_t stitch_2d_mutex = PTHREAD_MUTEX_INITIALIZER;
+static unsigned long s_src[CHANNEL_NUM_MAX] = {0};
+static int s_out_width = 0;
+static int s_out_height = 0;
 static int s_ready = 0;
 
 extern sv_config g_config;
@@ -269,16 +269,18 @@ static int alloc_buffer()
 	glActiveTexture(s_egl_texture[i]);
 	glBindTexture(GL_TEXTURE_2D, texture[i]);
 	
-	glTexDirectVIV(GL_TEXTURE_2D, SV_DISPLAY_WIDTH, SV_DISPLAY_HEIGHT, GL_VIV_NV12, (GLvoid **)&pTexel[i]);
+	glTexDirectVIV(GL_TEXTURE_2D, s_out_width, s_out_height, GL_VIV_NV12, (GLvoid **)&pTexel[i]);
 	s_gpuFrameBuffer[i].yVirt = (unsigned int)pTexel[i][0]; 
 	s_gpuFrameBuffer[i].cbVirt = (unsigned int)pTexel[i][1]; 
 	s_gpuFrameBuffer[i].crVirt = 0;
 
-        s_gpuFrameBuffer[i].width = SV_DISPLAY_WIDTH;  
-	s_gpuFrameBuffer[i].height = SV_DISPLAY_HEIGHT;
+        s_gpuFrameBuffer[i].width = s_out_width;  
+	s_gpuFrameBuffer[i].height = s_out_height;
 	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	memset(s_gpuFrameBuffer[i].yVirt, 0, s_out_width * s_out_height * 3 / 2);
     }
 
     return 0;
@@ -316,12 +318,12 @@ static int init(void)
 
     DEBUG("naiveDisplay width: %d, height: %d", nativeDisplay.width, nativeDisplay.height);
 
-    //native_window  = fbCreateWindow(native_display, nativeDisplay.width / 2, 0,
-	//    nativeDisplay.width / 2, nativeDisplay.height); 
-    native_window  = fbCreateWindow(native_display, SV_DISPLAY_X, SV_DISPLAY_Y,
-	    SV_DISPLAY_WIDTH, SV_DISPLAY_HEIGHT);
+    //native_window  = fbCreateWindow(native_display, 0, 0,
+//	    nativeDisplay.width / 2, nativeDisplay.height); 
+    native_window  = fbCreateWindow(native_display, SV_STITCH_X, SV_STITCH_Y,
+	    SV_STITCH_WIDTH, SV_STITCH_HEIGHT); 
     DEBUG("eglCreateWindowSurface , the window width and height is %d:%d",
-	    SV_DISPLAY_WIDTH, SV_DISPLAY_HEIGHT); 
+	    SV_STITCH_WIDTH, SV_STITCH_HEIGHT); 
     eglsurface = eglCreateWindowSurface(egldisplay, eglconfig, native_window, NULL); 
     assert(eglGetError() == EGL_SUCCESS); 
  
@@ -392,7 +394,7 @@ static void render(texture)
     glFlush(); 
 }
 
-int gpu_init()
+int stitch_2d_init()
 {
     DEBUG("init...");
     //init();
@@ -400,27 +402,42 @@ int gpu_init()
     return 0;
 }
 
-void gpu_deinit()
+void stitch_2d_deinit()
 {
     DEBUG("deinit OK");
 }
 
-void* gpu_thread(void *arg)
+void* stitch_2d_thread(void *arg)
 {
     int frames = 0;
     int texture = 0;
-    
-    int src_y_offset = (SV_IMAGE_WIDTH - SV_DISPLAY_WIDTH) / 2;
-    int src_uv_offset = SV_IMAGE_WIDTH * SV_IMAGE_HEIGHT 
-	+ (SV_IMAGE_WIDTH - SV_DISPLAY_WIDTH) / 2;
+	
+    initStitching(SV_IMAGE_WIDTH, 0, SV_IMAGE_WIDTH * SV_IMAGE_HEIGHT, SV_IMAGE_WIDTH, SV_IMAGE_HEIGHT);
+    getStitchingSize(&s_out_width, &s_out_height);
 
-    int dst_uv_offset = SV_DISPLAY_WIDTH * SV_DISPLAY_HEIGHT;
-    int y_h = SV_DISPLAY_HEIGHT;
-    int uv_h = SV_DISPLAY_HEIGHT / 2;
-    int h = 0;
-    uint8_t *src = NULL;
-    uint8_t *dst = NULL;
-    uint8_t *tmp_src = NULL;
+    YUVBuffer front = {SV_IMAGE_WIDTH, SV_IMAGE_HEIGHT, 0 };
+    YUVBuffer rear = {SV_IMAGE_WIDTH, SV_IMAGE_HEIGHT, 0 };
+    YUVBuffer left = {SV_IMAGE_WIDTH, SV_IMAGE_HEIGHT, 0 };
+    YUVBuffer right = {SV_IMAGE_WIDTH, SV_IMAGE_HEIGHT, 0 };
+    YUVBuffer output = {s_out_width, s_out_height, 0 };
+    
+    int tw = SV_IMAGE_WIDTH * SV_IMAGE_HEIGHT * 3 / 2;
+    
+    struct g2d_buf *buf;
+    
+    buf = g2d_alloc(tw, 1);
+    if (!buf)
+    {
+        ERROR("Fail to allocate physical memory for src buffer!\n");
+    }
+    else
+    {
+        memset(buf->buf_vaddr, 0, tw);
+        s_src[g_config.channel_front] = buf->buf_vaddr;
+        s_src[g_config.channel_rear] = buf->buf_vaddr;
+        s_src[g_config.channel_left] = buf->buf_vaddr;
+        s_src[g_config.channel_right] = buf->buf_vaddr;
+    }
     
 #ifdef CALC_ALGO_TIME   
     struct timeval t_start;
@@ -441,57 +458,28 @@ void* gpu_thread(void *arg)
     {
         if (s_ready == 0)
         {
-	    pthread_mutex_lock(&gpu_mutex);
-	    pthread_cond_wait(&gpu_cond, &gpu_mutex);    
-	    pthread_mutex_unlock(&gpu_mutex);
+	    pthread_mutex_lock(&stitch_2d_mutex);
+	    pthread_cond_wait(&stitch_2d_conf, &stitch_2d_mutex);
+	    pthread_mutex_unlock(&stitch_2d_mutex);
 	}
 	
 	s_ready = 0;
-#ifdef CALC_ALGO_TIME	
-        calc_stitch_frame_start();
-#endif        
-#if 1
-        tmp_src = (uint8_t*)s_src;
-	if (tmp_src == NULL)
-	{
-	   continue;
-	}
 	
-	s_output = s_gpuFrameBuffer[texture].yVirt;
-        if (s_output != 0 && tmp_src != 0)
-	{
-	    src = (uint8_t*)tmp_src + src_y_offset;
-	    dst = (uint8_t*)s_output;
-	    for (h = 0; h < y_h; h++)
-	    {
-		memcpy(dst, src, SV_DISPLAY_WIDTH);
-		src += SV_IMAGE_WIDTH;
-		dst += SV_DISPLAY_WIDTH;
-	    }
-            
-	    src = (uint8_t*)tmp_src + src_uv_offset;
-	    dst = (uint8_t*)s_output + dst_uv_offset;
-	    for (h = 0; h < uv_h; h++)
-	    {
-		memcpy(dst, src, SV_DISPLAY_WIDTH);
-		src += SV_IMAGE_WIDTH;
-		dst += SV_DISPLAY_WIDTH;
-	    }
-	}
-#endif
-#ifdef CALC_ALGO_TIME	
-        calc_stitch_frame_end();
-        calc_disp_frame_start();
-#endif	
+	front.bufYUV = s_src[g_config.channel_front];
+        rear.bufYUV = s_src[g_config.channel_rear];
+        left.bufYUV = s_src[g_config.channel_left];
+        right.bufYUV = s_src[g_config.channel_right];
+        output.bufYUV = s_gpuFrameBuffer[texture].yVirt;
+        
+        doStitching(&front, &rear, &left, &right, &output);
+        	
 	render(texture);
 	eglSwapBuffers(egldisplay, eglsurface);
 	frames++;
 	texture++;
 	texture = texture % MAX_NUM_TEXELS;
 	
-#ifdef CALC_ALGO_TIME
-        calc_disp_frame_end();
-        	
+#ifdef CALC_ALGO_TIME 	
         fcnt++;
 	if(fcnt % 500 == 0)
 	{
@@ -510,18 +498,24 @@ void* gpu_thread(void *arg)
     return 0;
 }
 
-void gpu_signal(int channel, unsigned long addr)
-{
-    pthread_mutex_lock(&gpu_mutex);
-    s_src = addr;
-    s_ready = 1;
-    pthread_cond_signal(&gpu_cond);
-    pthread_mutex_unlock(&gpu_mutex);
+void stitch_2d_signal(int channel, unsigned long addr)
+{    
+    static int cnt = 0;
+    
+    s_src[channel] = addr;
+    if (++cnt == g_config.camera_count)
+    {
+        cnt = 0;
+        pthread_mutex_lock(&stitch_2d_mutex);
+        s_ready = 1;
+        pthread_cond_signal(&stitch_2d_conf);
+        pthread_mutex_unlock(&stitch_2d_mutex);   
+    }
 }
 
-void gpu_exit()
+void stitch_2d_exit()
 {
-    pthread_mutex_lock(&gpu_mutex);
-    pthread_cond_signal(&gpu_cond);
-    pthread_mutex_unlock(&gpu_mutex);
+    pthread_mutex_lock(&stitch_2d_mutex);
+    pthread_cond_signal(&stitch_2d_conf);
+    pthread_mutex_unlock(&stitch_2d_mutex);
 }
