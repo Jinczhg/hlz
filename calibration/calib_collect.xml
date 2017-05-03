@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<opencv_storage>
+
+<calib_bord_x>6</calib_bord_x>
+<calib_bord_y>4</calib_bord_y>
+<d1>2.0</d1>
+<d2>2.0</d2>
+<front_rear>5.0</front_rear>
+<left_right>20.0</left_right>
+<car_length>54.0</car_length>
+<car_width>24.0</car_width>
+<scale>0.165</scale>
+
+</opencv_storage>
