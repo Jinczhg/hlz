@@ -165,6 +165,34 @@ struct car_mapping
     struct offset_data *col_offset;
 };
 
+struct camera_undistorted_mapping
+{
+    uint16_t row;
+    uint16_t col;
+    uint16_t *data;
+
+    int **y_offset;  //offset from camera mapping data, for input
+    int **uv_offset; //offset fromt camera mapping data, for input
+};
+
+struct camera_undistorted_data
+{
+    int width_normal;
+    int height_normal;
+    int size_normal;
+    int width_wide;
+    int height_wide;
+    int size_wide;
+
+    struct camera_undistorted_mapping front;
+    struct camera_undistorted_mapping rear;
+    struct camera_undistorted_mapping left_front;
+    struct camera_undistorted_mapping right_front;
+    struct camera_undistorted_mapping left_rear;
+    struct camera_undistorted_mapping right_rear;
+};
+
+
 typedef struct _stitch_control
 {
     int value[CONTROL_MAX_NUM];
@@ -176,6 +204,7 @@ static uint16_t *s_car_data = NULL;
 static char *s_car_img_data = NULL;
 static struct camera_data s_camera;
 static struct car_mapping s_car;
+static struct camera_undistorted_data s_camera_undistorted; 
 static int *dst_y_row_offset = NULL;
 static int *dst_uv_row_offset = NULL;
 static int s_car_is_fill = 0;
@@ -610,6 +639,89 @@ static int parseCameraData(uint16_t *data, struct camera_data *camera)
     return ret_val;
 }
 
+static int parseCameraUndistortedData(uint16_t *data, struct camera_undistorted_data *camera)
+{
+    int ret_val = 0;
+
+    if (data)
+    {
+	//front
+	camera->front.row = *data;
+	data++;
+	camera->front.col = *data;
+	data++;
+	camera->front.data = data;
+	data += camera->front.row * camera->front.col * 2;
+
+        DEBUG("front: row=%d, col=%d", camera->front.row, camera->front.col);
+
+	//rear
+	camera->rear.row = *data;
+	data++;
+	camera->rear.col = *data;
+	data++;
+	camera->rear.data = data;
+	data += camera->rear.row * camera->rear.col * 2;
+
+	DEBUG("rear: row=%d, col=%d", camera->rear.row, camera->rear.col);
+	
+	//left_front
+	camera->left_front.row = *data;
+	data++;
+	camera->left_front.col = *data;
+	data++;
+	camera->left_front.data = data;
+	data += camera->left_front.row * camera->left_front.col * 2;
+
+	DEBUG("left_front: row=%d, col=%d", camera->left_front.row, camera->left_front.col);
+	
+	//right_front
+	camera->right_front.row = *data;
+	data++;
+	camera->right_front.col = *data;
+	data++;
+	camera->right_front.data = data;
+	data += camera->right_front.row * camera->right_front.col * 2;
+
+	DEBUG("right_front: row=%d, col=%d", camera->right_front.row, camera->right_front.col);
+
+        //left_rear
+	camera->left_rear.row = *data;
+	data++;
+	camera->left_rear.col = *data;
+	data++;
+	camera->left_rear.data = data;
+	data += camera->left_rear.row * camera->left_rear.col * 2;
+
+	DEBUG("left_rear: row=%d, col=%d", camera->left_rear.row, camera->left_rear.col);
+	
+	//right_front
+	camera->right_rear.row = *data;
+	data++;
+	camera->right_rear.col = *data;
+	data++;
+	camera->right_rear.data = data;
+	data += camera->right_rear.row * camera->right_rear.col * 2;
+
+	DEBUG("right_rear: row=%d, col=%d", camera->right_rear.row, camera->right_rear.col);
+
+	camera->width_normal = camera->rear.col;
+	camera->height_normal = camera->rear.row;
+	camera->size_normal = camera->width_normal *  camera->height_normal; 
+
+	camera->width_wide = camera->front.col;
+	camera->height_wide = camera->front.row;
+        camera->size_wide = camera->width_wide *  camera->height_wide; 
+    }
+    else
+    {
+	ret_val = -1;
+    }
+
+    return ret_val;
+}
+
+
 static int parseCarData(uint16_t *data, struct car_mapping *car)
 {
     int ret_val = 0;
@@ -911,6 +1023,77 @@ static int setCarMappingOffset(struct car_mapping *mapping)
 out:
     return ret_val;
 }
+
+static int setUndistortedMappingOffset(struct camera_undistorted_mapping *mapping)
+{
+    int r = 0;
+    int c = 0;
+    uint16_t *row_data = mapping->data;
+    int c_offset = 0;
+    int r_offset = 0;
+
+    int ret_val = 0;
+
+    mapping->y_offset = (int**)malloc(sizeof(int*) * mapping->row);
+    if (!mapping->y_offset)
+    {
+	ERROR("malloc error:%s", strerror(errno));
+	goto out;
+    }
+
+    mapping->uv_offset = (int**)malloc(sizeof(int*) * (mapping->row >> 1));
+    if (!mapping->uv_offset)
+    {
+	ERROR("malloc error:%s", strerror(errno));
+	goto out;
+    }
+
+    for (r = 0; r < mapping->row; r++)
+    {
+	mapping->y_offset[r] = (int*)malloc(sizeof(int) * mapping->col);
+	if (!mapping->y_offset[r])
+	{
+	    ERROR("malloc error:%s", strerror(errno));
+	    goto out;
+	}
+
+	if (r % 2 == 0)
+	{
+	    mapping->uv_offset[r>>1] = (int*)malloc(sizeof(int) * (mapping->col >> 1));
+	    if (!mapping->uv_offset[r>>1])
+	    {
+		ERROR("malloc error:%s", strerror(errno));
+		goto out;
+	    }
+	}
+
+	for (c = 0; c < mapping->col; c++)
+	{
+	    c_offset = *row_data; //x
+	    r_offset = *(row_data + 1);//y
+	    
+	    if (c_offset >= s_in_width)
+	    {
+	        c_offset = s_in_width - 1;
+	    }
+	    if (r_offset >= s_in_height)
+	    {
+	        r_offset = s_in_height -1;
+	    }
+	    row_data += 2;
+	    mapping->y_offset[r][c] = r_offset * s_in_stride + c_offset;
+
+	    if (r % 2 == 0 && c % 2 == 0)
+	    {
+		mapping->uv_offset[r>>1][c>>1] = (r_offset >> 1) * (s_in_stride >> 1) + (c_offset >> 1);
+	    }
+	}
+    }
+    
+out:
+    return ret_val;
+}
+
 
 static int setCarRefillMappingOffset(struct car_mapping *mapping)
 {
@@ -2942,4 +3125,68 @@ int deInitStitching(void)
 int controlStitching(ControlType type, int value)
 {
     s_control.value[type] = value;
+
+    return 0;
+}
+
+int undistorted_front(int view, YUVBuffer *front, YUVBuffer *output)
+{
+    int col_begin = 0;
+    int col_end = 0;
+    int row = 0;
+
+    int r = 0;
+    int c = 0;
+    int offset = 0;
+
+    uint8_t *src = (uint8_t*)front->bufYUV;
+    uint8_t *dst = (uint8_t*)output->bufYUV;
+
+    uint8_t *y = src + s_y_offset;
+    uint16_t *uv = (uint16_t*)(src + s_uv_offset);
+
+    uint8_t *dst_y = dst;
+    uint16_t *dst_uv = (uint16_t*)(dst + (view == 0 ? s_camera_undistorted.size_normal : s_camera_undistorted.size_wide));
+
+    if (view == 0) //normal view
+    {
+	col_begin = (s_camera_undistorted.width_wide - s_camera_undistorted.width_normal) >> 1;
+	col_end = s_camera_undistorted.width_wide - col_begin;
+
+	row = s_camera_undistorted.height_normal;
+    }
+    else if (view == 1) //wide view
+    {
+	col_begin = 0;
+	col_end = s_camera_undistorted.width_wide;
+
+	row = s_camera_undistorted.height_wide;
+    }
+
+    for (r = 0; r < row; r++)
+    {
+	for (c = col_begin; c < col_end; c++)
+	{
+	    offset = s_camera_undistorted.front.y_offset[r][c];
+	    *dst_y++ = y[offset];
+
+	    if ((r % 2 == 0) && (c % 2 == 0))
+	    {
+		offset = s_camera_undistorted.front.uv_offset[r >> 1][c >> 1];
+		*dst_uv++ = uv[offset];
+	    }
+	}
+    }
+
+    return 0;
+}
+
+int undistorted_rear(YUVBuffer *rear, YUVBuffer *output)
+{
+    return 0;
+}
+
+int undistorted_left_and_right(int view, YUVBuffer *left, YUVBuffer *right, YUVBuffer *output)
+{
+    return 0;
 }
