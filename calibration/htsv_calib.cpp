@@ -3,7 +3,7 @@
 
 Surveying_system  ADAS;
 
-int htsv_2d_calib(char *front_file, char *rear_file, char *left_file, char *right_file, char *output_file)
+int htsv_2d_calib(char *config_file, char *camera_para_file, calib_2d_offset offset, char *front_file, char *rear_file, char *left_file, char *right_file, char *output_file)
 {
     printf("\n*******************************************\n");
     printf("\%s build on %s\n", "htsv lib", __DATE__);
@@ -28,12 +28,12 @@ int htsv_2d_calib(char *front_file, char *rear_file, char *left_file, char *righ
         ADAS.V_image.push_back(image);
     }
     
-    if (!ADAS.Init_Ex_calib_collcet())
+    if (!ADAS.Init_Ex_calib(config_file))
     {
         return -1;
     }
     
-    if (!ADAS.Init_Ex_calib_space())
+    if (!ADAS.Read_Caream_paraters(camera_para_file))
     {
         return -1;
     }
@@ -52,38 +52,6 @@ int htsv_2d_calib(char *front_file, char *rear_file, char *left_file, char *righ
     {
         return -1;
     }
-    
-    float maxy = V_Coners[2][0].y;
-	float maxx = V_Coners[3][0].x;
-	//float alp = ADAS.ex_calib_collect.scale;
-	double alp = 1.0 * ADAS.ex_calib_space.width / ADAS.ex_calib_space.scene_width;
-	for (int i = 0; i < (int)V_Coners.size(); i++)
-	{
-        for (int j = 0; j < (int)V_Coners[i].size(); j++)
-        {
-            //V_Coners[i][j].x = V_Coners[i][j].x / alp + (ADAS.ex_calib_space.width / 2 - maxx / (1.9 * alp));
-            //V_Coners[i][j].y = V_Coners[i][j].y / alp + (ADAS.ex_calib_space.height / 2 - maxy / (2 * alp));
-            V_Coners[i][j].x = 1.0 * V_Coners[i][j].x * alp + 0.5 * (ADAS.ex_calib_space.scene_width - (maxx + ADAS.ex_calib_collect.d1)) * alp;
-            V_Coners[i][j].y = 1.0 * V_Coners[i][j].y * alp + 0.5 * (ADAS.ex_calib_space.scene_height - (maxy + ADAS.ex_calib_collect.d2)) * alp;
-        }
-	}
-	
-				
-	ADAS.ex_calib_space.front_row = 1.0 * (ADAS.ex_calib_collect.calib_bord_y + 1) * ADAS.ex_calib_collect.d2 * alp 
-	                                + 0.5 * (ADAS.ex_calib_space.scene_height - (maxy + ADAS.ex_calib_collect.d2)) * alp;
-	                                
-	ADAS.ex_calib_space.left_col = 1.0 * (ADAS.ex_calib_collect.calib_bord_y + 1) * ADAS.ex_calib_collect.d2 * alp 
-	                               + 0.5 * (ADAS.ex_calib_space.scene_width - (maxx + ADAS.ex_calib_collect.d2)) * alp;
-	
-    ADAS.ex_calib_space.front_row = ADAS.ex_calib_space.front_row >> 2 << 2;
-    ADAS.ex_calib_space.left_col = ADAS.ex_calib_space.left_col >> 2 << 2;
-    
-	ADAS.ex_calib_space.front_col = ADAS.ex_calib_space.width;
-	ADAS.ex_calib_space.rear_row = ADAS.ex_calib_space.front_row;
-	ADAS.ex_calib_space.rear_col = ADAS.ex_calib_space.front_col;
-	ADAS.ex_calib_space.left_row = ADAS.ex_calib_space.height;
-	ADAS.ex_calib_space.right_row = ADAS.ex_calib_space.left_row;
-	ADAS.ex_calib_space.right_col = ADAS.ex_calib_space.left_col;
 
     ADAS.Init_caram_data(ADAS.ImageSize.height, ADAS.ImageSize.width, ADAS.ex_calib_space.height, ADAS.ex_calib_space.width);
 	int number;
@@ -95,10 +63,8 @@ int htsv_2d_calib(char *front_file, char *rear_file, char *left_file, char *righ
 	    ADAS.V_image[i-1].copyTo(imageun);
 
 		Bconers = V_Coners[i - 1];
-		Mat intr;
-		Mat dist;
 		
-		if (ADAS.Image_calibration(i, 0, imageun, intr, dist, Bconers, mapx, mapy))
+		if (ADAS.calibration_by_ployfit(i, 0, imageun, Bconers, mapx, mapy))
 		{
 		    switch (i)
 			{
@@ -127,7 +93,8 @@ int htsv_2d_calib(char *front_file, char *rear_file, char *left_file, char *righ
 
 
 			ADAS.Image_remap(1, i, imageun, mapx, mapy, udist_transed);
-			ADAS.Image_fusion(0, udist_transed, registim);					
+			ADAS.Image_fusion(0, udist_transed, registim);
+			udist_transed.release();					
         }		
         else
 		{

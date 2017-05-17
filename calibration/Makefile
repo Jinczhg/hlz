@@ -7,6 +7,9 @@ all: $(BIN)
 
 $(BIN): $(OBJ)
 	g++ -o $(BIN) $(OBJ) $(LDFLAGS)
+	
+camera_undistorted: camera_undistorted.o ADAS_algorithm.o htsv_undistorted.o
+	g++ -o camera_undistorted camera_undistorted.o ADAS_algorithm.o htsv_undistorted.o $(LDFLAGS)
 
 %.o:%.c
 	gcc $(CFLAGS) -DVERTICAL_SCREEN -c $(@D)/$(<F) -o $(@D)/$(@F) -O2 -g
@@ -17,4 +20,4 @@ $(BIN): $(OBJ)
 .PHONY: clean
 
 clean:
-	rm -f $(BIN) $(OBJ)
+	rm -f $(BIN) $(OBJ) camera_undistorted *.o
