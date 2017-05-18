@@ -3,13 +3,16 @@
 
 Surveying_system  ADAS;
 
-int htsv_camera_undistorted(char *config_file, char *output_file)
+int htsv_camera_undistorted(char *camera_para_file, char *config_file, char *output_file)
 {
     printf("\n*******************************************\n");
     printf("\%s build on %s\n", "htsv lib", __DATE__);
     printf("*******************************************\n\n");
     
-
+    if (!ADAS.Read_Caream_paraters(camera_para_file))
+    {
+        return -1;
+    }
     
     if (!ADAS.Init_camera_undistorted_config(config_file))
     {

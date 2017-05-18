@@ -201,6 +201,7 @@ typedef struct _stitch_control
 static uint32_t s_in_stride = 0, s_y_offset = 0, s_uv_offset, s_in_width = 0, s_in_height = 0, s_img_size = 0; 
 static uint16_t *s_data = NULL;
 static uint16_t *s_car_data = NULL;
+static uint16_t *s_undistorted_data = NULL;
 static char *s_car_img_data = NULL;
 static struct camera_data s_camera;
 static struct car_mapping s_car;
@@ -2820,11 +2821,13 @@ int initStitching(uint32_t in_stride, uint32_t y_offset, uint32_t uv_offset,
 {
     int data_fd = -1;
     int car_fd = -1;
+    int undistorted_data_fd = -1;
     struct stat statbuf;
     int file_len = 0;
     char path[PATH_MAX + 1] = {0};
     char exefile[PATH_MAX] = {0};
     char carfile[PATH_MAX] = {0};
+    char undistortedfile[PATH_MAX] = {0};
     int i = 0;
     int ret_val = 0;
     int len = 0;
@@ -2872,6 +2875,7 @@ int initStitching(uint32_t in_stride, uint32_t y_offset, uint32_t uv_offset,
     strcat(path, "camera.dat");
     
     sprintf(carfile, "%s/%s", s_dir, "car.dat");
+    sprintf(undistortedfile, "%s/%s", s_dir, "camera_undistorted.dat");
 
     data_fd = open(path, O_RDONLY);
     if (data_fd < 0)
@@ -2995,6 +2999,52 @@ int initStitching(uint32_t in_stride, uint32_t y_offset, uint32_t uv_offset,
     setCarMappingOffset(&s_car);
     setCarRefillMappingOffset(&s_car);
 
+    //undistorted data
+    undistorted_data_fd = open(undistortedfile, O_RDONLY);
+    if (car_fd < 0)
+    {
+	ERROR("open error: %s--%s", strerror(errno), carfile);
+	ret_val = -1;
+	goto out;
+    }
+
+    if (stat(undistortedfile, &statbuf) < 0)
+    {
+	ERROR("stat error: %s--%s", strerror(errno), carfile);
+	ret_val = -1;
+	goto out;
+    }
+
+    file_len = statbuf.st_size;
+    s_undistorted_data = (uint16_t*)malloc(file_len);
+    if (!s_car_data)
+    {
+	ERROR("malloc error: %s", strerror(errno));
+	ret_val = -1;
+	goto out;
+    }
+
+    if (read(undistorted_data_fd, s_undistorted_data, file_len) != file_len)
+    {
+	ERROR("read error: %s", strerror(errno));
+	ret_val = -1;
+	goto out;
+    }
+   
+    memset(&s_camera_undistorted, 0, sizeof(struct camera_undistorted_data));
+    if (parseCameraUndistortedData(s_undistorted_data, &s_camera_undistorted) == -1)
+    {
+	ret_val = -1;
+	goto out;
+    }
+
+    setUndistortedMappingOffset(&s_camera_undistorted.front);
+    setUndistortedMappingOffset(&s_camera_undistorted.rear);
+    setUndistortedMappingOffset(&s_camera_undistorted.left_front);
+    setUndistortedMappingOffset(&s_camera_undistorted.right_front);
+    setUndistortedMappingOffset(&s_camera_undistorted.left_rear);
+    setUndistortedMappingOffset(&s_camera_undistorted.right_rear);
+
 out:
     if (data_fd != -1)
     {
@@ -3006,6 +3056,12 @@ out:
     {
 	close(car_fd);
 	car_fd = -1;
+    }
+
+    if (undistorted_data_fd != -1)
+    {
+	close(undistorted_data_fd);
+	undistorted_data_fd = -1;
     }
 
     DEBUG("initStitching OK");
@@ -3183,10 +3239,131 @@ int undistorted_front(int view, YUVBuffer *front, YUVBuffer *output)
 
 int undistorted_rear(YUVBuffer *rear, YUVBuffer *output)
 {
+    int col_begin = 0;
+    int col_end = 0;
+    int row = 0;
+
+    int r = 0;
+    int c = 0;
+    int offset = 0;
+
+    uint8_t *src = (uint8_t*)rear->bufYUV;
+    uint8_t *dst = (uint8_t*)output->bufYUV;
+
+    uint8_t *y = src + s_y_offset;
+    uint16_t *uv = (uint16_t*)(src + s_uv_offset);
+
+    uint8_t *dst_y = dst;
+    uint16_t *dst_uv = (uint16_t*)(dst + s_camera_undistorted.size_normal);
+
+    col_begin = 0;
+    col_end = 800;//s_camera_undistorted.width_normal;
+    row = 560;//s_camera_undistorted.height_normal;
+
+    for (r = 0; r < row; r++)
+    {
+	for (c = col_begin; c < col_end; c++)
+	{
+	    offset = s_camera_undistorted.rear.y_offset[r][c];
+	    *dst_y++ = y[offset];
+
+	    if ((r % 2 == 0) && (c % 2 == 0))
+	    {
+		offset = s_camera_undistorted.rear.uv_offset[r >> 1][c >> 1];
+		*dst_uv++ = uv[offset];
+	    }
+	}
+    }
+
     return 0;
 }
 
 int undistorted_left_and_right(int view, YUVBuffer *left, YUVBuffer *right, YUVBuffer *output)
 {
+    int col_begin = 0;
+    int col_end = 0;
+    int row = 0;
+
+    int r = 0;
+    int c = 0;
+    int c_diff = 0;
+    int offset = 0;
+
+    uint8_t *src_left = (uint8_t*)left->bufYUV;
+    uint8_t *src_right = (uint8_t*)right->bufYUV;
+    uint8_t *dst = (uint8_t*)output->bufYUV;
+
+    uint8_t *y_left = src_left + s_y_offset;
+    uint8_t *y_right = src_right + s_y_offset;
+    uint16_t *uv_left = (uint16_t*)(src_left + s_uv_offset);
+    uint16_t *uv_right = (uint16_t*)(src_right + s_uv_offset);
+
+    uint8_t *dst_y = dst;
+    uint16_t *dst_uv = (uint16_t*)(dst + s_camera_undistorted.size_normal);
+   
+    col_begin = 0;
+    col_end = s_camera_undistorted.width_normal;
+    row = s_camera_undistorted.height_normal;
+
+    if (view == 0)
+    {
+	for (r = 0; r < row; r++)
+	{
+	    for (c = col_begin; c < s_camera_undistorted.left_front.col; c++)
+	    {
+		offset = s_camera_undistorted.left_front.y_offset[r][c];
+		*dst_y++ = y_left[offset];
+
+		if ((r % 2 == 0) && (c % 2 == 0))
+		{
+		    offset = s_camera_undistorted.left_front.uv_offset[r >> 1][c >> 1];
+		    *dst_uv++ = uv_left[offset];
+		}
+	    }
+
+            for (c = s_camera_undistorted.left_front.col; c < col_end; c++)
+	    {
+		c_diff = c - s_camera_undistorted.left_front.col;
+		offset = s_camera_undistorted.right_front.y_offset[r][c_diff];
+		*dst_y++ = y_right[offset];
+
+		if ((r % 2 == 0) && (c % 2 == 0))
+		{
+		    offset = s_camera_undistorted.right_front.uv_offset[r >> 1][c_diff >> 1];
+		    *dst_uv++ = uv_right[offset];
+		}
+	    }
+	}
+    }
+    else if (view == 1)
+    {
+        for (r = 0; r < row; r++)
+	{
+            for (c = col_begin; c < s_camera_undistorted.left_rear.col; c++)
+	    {
+		offset = s_camera_undistorted.left_rear.y_offset[r][c];
+		*dst_y++ = y_left[offset];
+
+		if ((r % 2 == 0) && (c % 2 == 0))
+		{
+		    offset = s_camera_undistorted.left_rear.uv_offset[r >> 1][c >> 1];
+		    *dst_uv++ = uv_left[offset];
+		}
+	    }
+
+            for (c = s_camera_undistorted.left_rear.col; c < col_end; c++)
+	    {
+		c_diff = c - s_camera_undistorted.left_rear.col;
+		offset = s_camera_undistorted.right_rear.y_offset[r][c_diff];
+		*dst_y++ = y_right[offset];
+
+		if ((r % 2 == 0) && (c % 2 == 0))
+		{
+		    offset = s_camera_undistorted.right_rear.uv_offset[r >> 1][c_diff >> 1];
+		    *dst_uv++ = uv_right[offset];
+		}
+	    }
+	}
+    }
     return 0;
 }

@@ -60,6 +60,8 @@ int main(int argc, char** argv)
     unsigned char *left = NULL;
     unsigned char *right = NULL;
     unsigned char *dst = NULL;
+    unsigned char *dst_normal = NULL;
+    unsigned char *dst_wide = NULL;
     int size = 0;
     int out_size = 0;
     int fd = -1;
@@ -104,6 +106,12 @@ int main(int argc, char** argv)
     cv::Mat img(out_height, out_width, CV_8UC3);
     unsigned char *rgb = img.data;
 
+    cv::Mat img_normal(560, 800, CV_8UC3);
+    unsigned char *rgb_normal = img_normal.data;
+
+    cv::Mat img_wide(560, 1200, CV_8UC3);
+    unsigned char *rgb_wide = img_wide.data;
+
     size = in_width * in_height * 3 / 2;
     out_size = out_width * out_height * 3 / 2;
     front = (unsigned char*)malloc(size);
@@ -111,6 +119,8 @@ int main(int argc, char** argv)
     left = (unsigned char*)malloc(size);
     right = (unsigned char*)malloc(size);
     dst = (unsigned char*)malloc(out_size);
+    dst_normal = (unsigned char*)malloc(800*560*3/2);
+    dst_wide = (unsigned char*)malloc(1200*560*3/2);
     memset(dst, 0, out_size);
 
     //front
@@ -207,6 +217,55 @@ int main(int argc, char** argv)
     close(fd_w);
     
     imshow("Image View", img);
+    cv::waitKey();
+
+    //front
+    dst_yuv.bufYUV = (long)dst_normal;
+    undistorted_front(0, &front_yuv, &dst_yuv);
+
+    yuv2rgb(dst_normal, rgb_normal, 800, 560);
+
+    imwrite("front_normal.jpg", img_normal);
+    imshow("Image View", img_normal);
+    cv::waitKey();
+
+    dst_yuv.bufYUV = (long)dst_wide;
+    undistorted_front(1, &front_yuv, &dst_yuv);
+
+    yuv2rgb(dst_wide, rgb_wide, 1200, 560);
+
+    imwrite("front_wide.jpg", img_wide);
+    imshow("Image View", img_wide);
+    cv::waitKey();
+
+    //rear
+    dst_yuv.bufYUV = (long)dst_normal;
+    undistorted_rear(&rear_yuv, &dst_yuv);
+
+    yuv2rgb(dst_normal, rgb_normal, 800, 560);
+
+    imwrite("rear_normal.jpg", img_normal);
+    imshow("image view", img_normal);
+    cv::waitKey();
+
+    //left_right front
+    dst_yuv.bufYUV = (long)dst_normal;
+    undistorted_left_and_right(0, &left_yuv, &right_yuv, &dst_yuv);
+
+    yuv2rgb(dst_normal, rgb_normal, 800, 560);
+
+    imwrite("left_right_front.jpg", img_normal);
+    imshow("image view", img_normal);
+    cv::waitKey();
+
+    //left_right rear
+    dst_yuv.bufYUV = (long)dst_normal;
+    undistorted_left_and_right(1, &left_yuv, &right_yuv, &dst_yuv);
+
+    yuv2rgb(dst_normal, rgb_normal, 800, 560);
+
+    imwrite("left_right_rear.jpg", img_normal);
+    imshow("image view", img_normal);
     cv::waitKey();
 
 out:

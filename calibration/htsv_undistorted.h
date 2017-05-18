@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-int htsv_camera_undistorted(char *config_file, char *output_file);
+int htsv_camera_undistorted(char *camera_para_file, char *config_file, char *output_file);
 
 #ifdef __cplusplus
 }

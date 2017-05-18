@@ -1387,6 +1387,7 @@ bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
     double a5 = caream_paraters.k5;
     int width = camera_undistorted.image_width;
     int height = camera_undistorted.image_height;
+    int offset = 0;
     
     int cx = width / 2;
     int cy = height / 2;
@@ -1403,14 +1404,24 @@ bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
 	    double r = sqrt((x - cx)*(x - cx) + (y - cy)*(y - cy));
 	    double angle = 180 * atan(r / f) / pi;
 	    double R = a5 + a4*angle + a3*angle*angle + a2*angle*angle*angle + a1*angle*angle*angle*angle;
-	    double X = ((x - cx) / r)*(R / dx) + CX;
-	    double Y = ((y - cy) / r)*(R / dy) + CY;
+	    double X = 0.0;
+	    double Y = 0.0;
+	    if (r != 0)
+	    {
+	        X = ((x - cx) / r)*(R / dx) + CX;
+	        Y = ((y - cy) / r)*(R / dy) + CY;
+	    }
+	    else
+	    {
+		X = CX;
+		Y = CY;
+	    }
 
 	    vfx.push_back((float)X);
 	    vfy.push_back((float)Y);
 
-	    vsx.push_back((short)X);
-	    vsy.push_back((int)Y);
+	    vsx.push_back((short)(X + 0.5));
+	    vsy.push_back((short)(Y + 0.5));
 	}
     }
 
@@ -1422,7 +1433,7 @@ bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
     {
         for (int c = 0; c < camera_undistorted.front.width; c++)
 	{
-	    int offset = (r + camera_undistorted.front.offset_y) * width + (c + camera_undistorted.front.offset_x);
+	    offset = (r + camera_undistorted.front.offset_y) * width + (c + camera_undistorted.front.offset_x);
 	    fwrite(&vsx[offset], sizeof(short), 1, fp);
             fwrite(&vsy[offset], sizeof(short), 1, fp);
 	}
@@ -1436,7 +1447,7 @@ bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
     {
         for (int c = 0; c < camera_undistorted.rear.width; c++)
 	{
-	    int offset = (r + camera_undistorted.rear.offset_y) * width + (c + camera_undistorted.rear.offset_x);
+	    offset = (r + camera_undistorted.rear.offset_y) * width + (c + camera_undistorted.rear.offset_x);
 	    fwrite(&vsx[offset], sizeof(short), 1, fp);
             fwrite(&vsy[offset], sizeof(short), 1, fp);
 	}
@@ -1450,7 +1461,7 @@ bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
     {
         for (int c = 0; c < camera_undistorted.left_front.width; c++)
 	{
-	    int offset = (width - 1 - (c + camera_undistorted.left_front.offset_x)) * width + (r + camera_undistorted.left_front.offset_y);
+	    offset = (c + camera_undistorted.left_front.offset_x) * width + (width - 1 - (r + camera_undistorted.left_front.offset_y));
 	    fwrite(&vsx[offset], sizeof(short), 1, fp);
             fwrite(&vsy[offset], sizeof(short), 1, fp);
 	}
@@ -1464,7 +1475,7 @@ bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
     {
         for (int c = 0; c < camera_undistorted.right_front.width; c++)
 	{
-	    int offset = (c + camera_undistorted.right_front.offset_x) * width + (height - 1 - (r + camera_undistorted.right_front.offset_y));
+	    offset = (height - 1 - (c + camera_undistorted.right_front.offset_x)) * width + (r + camera_undistorted.right_front.offset_y); 
 	    fwrite(&vsx[offset], sizeof(short), 1, fp);
             fwrite(&vsy[offset], sizeof(short), 1, fp);
 	}
@@ -1478,7 +1489,7 @@ bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
     {
         for (int c = 0; c < camera_undistorted.left_rear.width; c++)
 	{
-	    int offset = (width - 1 - (c + camera_undistorted.left_rear.offset_x)) * width + (r + camera_undistorted.left_rear.offset_y);
+	    offset = (c + camera_undistorted.left_rear.offset_x) * width + (width - 1 - (r + camera_undistorted.left_rear.offset_y));
 	    fwrite(&vsx[offset], sizeof(short), 1, fp);
             fwrite(&vsy[offset], sizeof(short), 1, fp);
 	}
@@ -1492,7 +1503,7 @@ bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
     {
         for (int c = 0; c < camera_undistorted.right_rear.width; c++)
 	{
-	    int offset = (c + camera_undistorted.right_rear.offset_x) * width + (height - 1 - (r + camera_undistorted.right_rear.offset_y));
+	    offset = (height - 1 - (c + camera_undistorted.right_rear.offset_x)) * width + (r + camera_undistorted.right_rear.offset_y); 
 	    fwrite(&vsx[offset], sizeof(short), 1, fp);
             fwrite(&vsy[offset], sizeof(short), 1, fp);
 	}
