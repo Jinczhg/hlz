@@ -122,6 +122,8 @@ int main(int argc, char** argv)
     dst_normal = (unsigned char*)malloc(800*560*3/2);
     dst_wide = (unsigned char*)malloc(1200*560*3/2);
     memset(dst, 0, out_size);
+    memset(dst_normal, 0, 800*560*3/2);
+    memset(dst_wide, 0, 1200*560*3/2);
 
     //front
     fd = open(front_file.c_str(), O_RDONLY);
@@ -239,6 +241,7 @@ int main(int argc, char** argv)
     cv::waitKey();
 
     //rear
+    memset(dst_normal, 0, 800*560*3/2);
     dst_yuv.bufYUV = (long)dst_normal;
     undistorted_rear(&rear_yuv, &dst_yuv);
 
@@ -249,6 +252,7 @@ int main(int argc, char** argv)
     cv::waitKey();
 
     //left_right front
+    memset(dst_normal, 0, 800*560*3/2);
     dst_yuv.bufYUV = (long)dst_normal;
     undistorted_left_and_right(0, &left_yuv, &right_yuv, &dst_yuv);
 
@@ -259,6 +263,7 @@ int main(int argc, char** argv)
     cv::waitKey();
 
     //left_right rear
+    memset(dst_normal, 0, 800*560*3/2);
     dst_yuv.bufYUV = (long)dst_normal;
     undistorted_left_and_right(1, &left_yuv, &right_yuv, &dst_yuv);
 

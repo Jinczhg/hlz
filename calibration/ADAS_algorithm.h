@@ -123,6 +123,8 @@ struct Camera_undistorted
 {
     int image_width;
     int image_height;
+    int undist_image_width;
+    int undist_image_height;
 
     Camera_undistorted_area front;
     Camera_undistorted_area rear;

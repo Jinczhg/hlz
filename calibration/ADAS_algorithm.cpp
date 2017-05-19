@@ -1047,7 +1047,9 @@ bool Surveying_system::Init_camera_undistorted_config(char *file_name)
 	
 	fs["image_width"] >> camera_undistorted.image_width;
 	fs["image_height"] >> camera_undistorted.image_height;
-	
+	fs["undist_image_width"] >> camera_undistorted.undist_image_width;
+	fs["undist_image_height"] >> camera_undistorted.undist_image_height;
+
 	fs["front_width"] >> camera_undistorted.front.width;
 	fs["front_height"] >> camera_undistorted.front.height;
 	fs["front_offset_x"] >> camera_undistorted.front.offset_x;
@@ -1058,27 +1060,26 @@ bool Surveying_system::Init_camera_undistorted_config(char *file_name)
 	fs["rear_offset_x"] >> camera_undistorted.rear.offset_x;
 	fs["rear_offset_y"] >> camera_undistorted.rear.offset_y;
 
-	fs["left_front_width"] >> camera_undistorted.left_front.width;
-	fs["left_front_height"] >> camera_undistorted.left_front.height;
+	fs["left_width"] >> camera_undistorted.left_front.width;
+	fs["left_height"] >> camera_undistorted.left_front.height;
 	fs["left_front_offset_x"] >> camera_undistorted.left_front.offset_x;
 	fs["left_front_offset_y"] >> camera_undistorted.left_front.offset_y;
-
-
-	fs["right_front_width"] >> camera_undistorted.right_front.width;
-	fs["right_front_height"] >> camera_undistorted.right_front.height;
-	fs["right_front_offset_x"] >> camera_undistorted.right_front.offset_x;
-	fs["right_front_offset_y"] >> camera_undistorted.right_front.offset_y;
-
-	fs["left_rear_width"] >> camera_undistorted.left_rear.width;
-	fs["left_rear_height"] >> camera_undistorted.left_rear.height;
-	fs["left_rear_offset_x"] >> camera_undistorted.left_rear.offset_x;
+        fs["left_rear_offset_x"] >> camera_undistorted.left_rear.offset_x;
 	fs["left_rear_offset_y"] >> camera_undistorted.left_rear.offset_y;
 
-	fs["right_rear_width"] >> camera_undistorted.right_rear.width;
-	fs["right_rear_height"] >> camera_undistorted.right_rear.height;
-	fs["right_rear_offset_x"] >> camera_undistorted.right_rear.offset_x;
+	fs["right_width"] >> camera_undistorted.right_front.width;
+	fs["right_height"] >> camera_undistorted.right_front.height;
+	fs["right_front_offset_x"] >> camera_undistorted.right_front.offset_x;
+	fs["right_front_offset_y"] >> camera_undistorted.right_front.offset_y;
+        fs["right_rear_offset_x"] >> camera_undistorted.right_rear.offset_x;
 	fs["right_rear_offset_y"] >> camera_undistorted.right_rear.offset_y;
 
+	camera_undistorted.left_rear.width = camera_undistorted.left_front.width;
+	camera_undistorted.left_rear.height = camera_undistorted.left_front.height;
+
+	camera_undistorted.right_rear.width = camera_undistorted.right_front.width;
+	camera_undistorted.right_rear.height = camera_undistorted.right_front.height;
+	
 	fs.release();
     }
     else
@@ -1387,19 +1388,21 @@ bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
     double a5 = caream_paraters.k5;
     int width = camera_undistorted.image_width;
     int height = camera_undistorted.image_height;
+    int undist_width = camera_undistorted.undist_image_width;
+    int undist_height = camera_undistorted.undist_image_height;
     int offset = 0;
     
-    int cx = width / 2;
-    int cy = height / 2;
+    int cx = undist_width / 2;
+    int cy = undist_height / 2;
     int CX = width / 2;
     int CY = height / 2;
     
     vector<short> vsx, vsy;
     vector<float> vfx, vfy;
 
-    for (int y = 0; y < height; y++)
+    for (int y = 0; y < undist_height; y++)
     {
-	for (int x = 0; x < width; x++)
+	for (int x = 0; x < undist_width; x++)
 	{
 	    double r = sqrt((x - cx)*(x - cx) + (y - cy)*(y - cy));
 	    double angle = 180 * atan(r / f) / pi;

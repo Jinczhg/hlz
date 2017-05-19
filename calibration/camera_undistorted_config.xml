@@ -1,36 +1,33 @@
 <?xml version="1.0"?>
 <opencv_storage>
 
-<image_width>800</image_width>
-<image_height>560</image_height>
+<image_width>1280</image_width>
+<image_height>720</image_height>
+
+<undist_image_width>1280</undist_image_width>
+<undist_image_height>600</undist_image_height>
 
 <front_width>1200</front_width>
 <front_height>560</front_height>
 <front_offset_x>40</front_offset_x>
-<front_offset_y>80</front_offset_y>
+<front_offset_y>40</front_offset_y>
 
 <rear_width>800</rear_width>
 <rear_height>560</rear_height>
 <rear_offset_x>240</rear_offset_x>
-<rear_offset_y>80</rear_offset_y>
+<rear_offset_y>40</rear_offset_y>
 
-<left_front_width>400</left_front_width>
-<left_front_height>560</left_front_height>
+<left_width>392</left_width>
+<left_height>560</left_height>
 <left_front_offset_x>180</left_front_offset_x>
 <left_front_offset_y>80</left_front_offset_y>
-
-<right_front_width>400</right_front_width>
-<right_front_height>560</right_front_height>
-<right_front_offset_x>180</right_front_offset_x>
-<right_front_offset_y>80</right_front_offset_y>
-
-<left_rear_width>400</left_rear_width>
-<left_rear_height>560</left_rear_height>
 <left_rear_offset_x>180</left_rear_offset_x>
 <left_rear_offset_y>640</left_rear_offset_y>
 
-<right_rear_width>400</right_rear_width>
-<right_rear_height>560</right_rear_height>
+<right_width>392</right_width>
+<right_height>560</right_height>
+<right_front_offset_x>180</right_front_offset_x>
+<right_front_offset_y>80</right_front_offset_y>
 <right_rear_offset_x>180</right_rear_offset_x>
 <right_rear_offset_y>640</right_rear_offset_y>
 
