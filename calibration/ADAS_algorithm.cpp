@@ -1049,6 +1049,8 @@ bool Surveying_system::Init_camera_undistorted_config(char *file_name)
 	fs["image_height"] >> camera_undistorted.image_height;
 	fs["undist_image_width"] >> camera_undistorted.undist_image_width;
 	fs["undist_image_height"] >> camera_undistorted.undist_image_height;
+        
+	fs["scale"] >> camera_undistorted.scale;
 
 	fs["front_width"] >> camera_undistorted.front.width;
 	fs["front_height"] >> camera_undistorted.front.height;
@@ -1367,6 +1369,41 @@ bool Surveying_system::Save_singleCam_udistfile(char*file, Mat image)
 
 }
 
+bool Surveying_system::Create_camera_calib_model(vector<Point2d> &coord, float scale, int width, int height)
+{
+    int calib_bord_x = ex_calib_collect.calib_bord_x;
+    int calib_bord_y = ex_calib_collect.calib_bord_y;
+    float d1 = ex_calib_collect.d1;
+    float d2 = ex_calib_collect.d2;
+
+    Point2d temp;
+
+    float x = 0;
+    float y = 0;
+
+    for (int i = 0; i < calib_bord_y; i++)
+    {
+	for (int j = 0; j < calib_bord_x; j++)
+	{
+	    temp.x = j * d1 * scale;
+	    temp.y = i * d2 * scale;
+	    coord.push_back(temp);
+	}
+    }
+
+    x = width / 2 - (coord[calib_bord_x - 1].x - coord[0].x) / 2;
+    y = height / 2;
+
+    for (int i = 0; i < calib_bord_y; i++)
+    {
+	for (int j = 0; j < calib_bord_x; j++)
+	{
+	    coord[i*calib_bord_x + j].x += x;
+	    coord[i*calib_bord_x + j].y += y;
+	}
+    }
+}
+
 bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
 {
     FILE *fp;
@@ -1436,7 +1473,7 @@ bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
     {
         for (int c = 0; c < camera_undistorted.front.width; c++)
 	{
-	    offset = (r + camera_undistorted.front.offset_y) * width + (c + camera_undistorted.front.offset_x);
+	    offset = (r + camera_undistorted.front.offset_y) * undist_width + (c + camera_undistorted.front.offset_x);
 	    fwrite(&vsx[offset], sizeof(short), 1, fp);
             fwrite(&vsy[offset], sizeof(short), 1, fp);
 	}
@@ -1450,12 +1487,13 @@ bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
     {
         for (int c = 0; c < camera_undistorted.rear.width; c++)
 	{
-	    offset = (r + camera_undistorted.rear.offset_y) * width + (c + camera_undistorted.rear.offset_x);
+	    offset = (r + camera_undistorted.rear.offset_y) * undist_width + (c + camera_undistorted.rear.offset_x);
 	    fwrite(&vsx[offset], sizeof(short), 1, fp);
             fwrite(&vsy[offset], sizeof(short), 1, fp);
 	}
     }
 
+#if 0
     //left_front
     fwrite(&camera_undistorted.left_front.height, sizeof(short), 1, fp);
     fwrite(&camera_undistorted.left_front.width, sizeof(short), 1, fp);
@@ -1464,7 +1502,7 @@ bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
     {
         for (int c = 0; c < camera_undistorted.left_front.width; c++)
 	{
-	    offset = (c + camera_undistorted.left_front.offset_x) * width + (width - 1 - (r + camera_undistorted.left_front.offset_y));
+	    offset = (c + camera_undistorted.left_front.offset_x) * undist_width + (undist_width - 1 - (r + camera_undistorted.left_front.offset_y));
 	    fwrite(&vsx[offset], sizeof(short), 1, fp);
             fwrite(&vsy[offset], sizeof(short), 1, fp);
 	}
@@ -1478,7 +1516,7 @@ bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
     {
         for (int c = 0; c < camera_undistorted.right_front.width; c++)
 	{
-	    offset = (height - 1 - (c + camera_undistorted.right_front.offset_x)) * width + (r + camera_undistorted.right_front.offset_y); 
+	    offset = (undist_height - 1 - (c + camera_undistorted.right_front.offset_x)) * undist_width + (r + camera_undistorted.right_front.offset_y); 
 	    fwrite(&vsx[offset], sizeof(short), 1, fp);
             fwrite(&vsy[offset], sizeof(short), 1, fp);
 	}
@@ -1492,7 +1530,7 @@ bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
     {
         for (int c = 0; c < camera_undistorted.left_rear.width; c++)
 	{
-	    offset = (c + camera_undistorted.left_rear.offset_x) * width + (width - 1 - (r + camera_undistorted.left_rear.offset_y));
+	    offset = (c + camera_undistorted.left_rear.offset_x) * undist_width + (undist_width - 1 - (r + camera_undistorted.left_rear.offset_y));
 	    fwrite(&vsx[offset], sizeof(short), 1, fp);
             fwrite(&vsy[offset], sizeof(short), 1, fp);
 	}
@@ -1506,13 +1544,126 @@ bool Surveying_system::Save_Camera_undistorted_file(char *file_name)
     {
         for (int c = 0; c < camera_undistorted.right_rear.width; c++)
 	{
-	    offset = (height - 1 - (c + camera_undistorted.right_rear.offset_x)) * width + (r + camera_undistorted.right_rear.offset_y); 
+	    offset = (undist_height - 1 - (c + camera_undistorted.right_rear.offset_x)) * undist_width + (r + camera_undistorted.right_rear.offset_y); 
 	    fwrite(&vsx[offset], sizeof(short), 1, fp);
             fwrite(&vsy[offset], sizeof(short), 1, fp);
 	}
     }
+#else
+    Mat umapx, umapy, tr_mapx, tr_mapy, H;
+    Mat undistIm;
+    Mat left_mapx, left_mapy;
+    Mat right_mapx, right_mapy;
+    vector<Point2d> corners, m_corners;
+    
+    Create_camera_calib_model(m_corners, camera_undistorted.scale, 1280 * 4, 720);
+    
+
+    if (!UdistImge_ployfit(4, 1, V_image[1], undistIm, umapx, umapy))
+    {
+
+	return false;
+    }
+
+    corners.clear();
+    if (ConerDetect(board_size, undistIm, corners)) //coners detection
+    {
+	H = findHomography(m_corners, corners, 0 /*CV_FM_RANSAC*/);
+        Warp_tran(H, tr_mapx, tr_mapy);
+	Udist_warp_TransMap(0, umapx, umapy, tr_mapx, tr_mapy, left_mapx, left_mapy);
+    }
+    else
+    {
+	printf("no code points\n");
+	return false;
+    }
+
+    if (!UdistImge_ployfit(4, 1, V_image[3], undistIm, umapx, umapy))
+    {
+	return false;
+    }
+
+    corners.clear();
+    if (ConerDetect(board_size, undistIm, corners)) //coners detection
+    {
+	H = findHomography(m_corners, corners, 0 /*CV_FM_RANSAC*/);
+        Warp_tran(H, tr_mapx, tr_mapy);
+	Udist_warp_TransMap(0, umapx, umapy, tr_mapx, tr_mapy, right_mapx, right_mapy);
+    }
+    else
+    {
+	printf("no code points\n");
+	return false;
+    }
+
+    //left_front
+    fwrite(&camera_undistorted.left_front.height, sizeof(short), 1, fp);
+    fwrite(&camera_undistorted.left_front.width, sizeof(short), 1, fp);
+
+    for (int r = 0; r < camera_undistorted.left_front.height; r++)
+    {
+        for (int c = 0; c < camera_undistorted.left_front.width; c++)
+	{
+	    int x = (int)left_mapx.ptr<float>(c + camera_undistorted.left_front.offset_x)[1280 * 4 - 1 -  (r + camera_undistorted.left_front.offset_y)];
+	    int y = (int)left_mapy.ptr<float>(c + camera_undistorted.left_front.offset_x)[1280 * 4 - 1 -  (r + camera_undistorted.left_front.offset_y)];
+
+	    fwrite(&x, sizeof(short), 1, fp);
+            fwrite(&y, sizeof(short), 1, fp);
+	}
+    }
+
+    //right_front
+    fwrite(&camera_undistorted.right_front.height, sizeof(short), 1, fp);
+    fwrite(&camera_undistorted.right_front.width, sizeof(short), 1, fp);
+
+    for (int r = 0; r < camera_undistorted.right_front.height; r++)
+    {
+        for (int c = 0; c < camera_undistorted.right_front.width; c++)
+	{
+	    int x = (int)right_mapx.ptr<float>(720 - 1 - (c + camera_undistorted.right_front.offset_x))[r + camera_undistorted.right_front.offset_y];
+	    int y = (int)right_mapy.ptr<float>(720 - 1 - (c + camera_undistorted.right_front.offset_x))[r + camera_undistorted.right_front.offset_y];
+
+	    fwrite(&x, sizeof(short), 1, fp);
+            fwrite(&y, sizeof(short), 1, fp);
+	}
+    }
+
+    //left_rear
+    fwrite(&camera_undistorted.left_rear.height, sizeof(short), 1, fp);
+    fwrite(&camera_undistorted.left_rear.width, sizeof(short), 1, fp);
+
+    for (int r = 0; r < camera_undistorted.left_rear.height; r++)
+    {
+        for (int c = 0; c < camera_undistorted.left_rear.width; c++)
+	{
+            int x = (int)left_mapx.ptr<float>(c + camera_undistorted.left_rear.offset_x)[1280 * 4 - 1 -  (r + camera_undistorted.left_rear.offset_y)];
+	    int y = (int)left_mapy.ptr<float>(c + camera_undistorted.left_rear.offset_x)[1280 * 4 - 1 -  (r + camera_undistorted.left_rear.offset_y)];
+
+	    fwrite(&x, sizeof(short), 1, fp);
+            fwrite(&y, sizeof(short), 1, fp);
+	}
+    }
+
+    //right_rear
+    fwrite(&camera_undistorted.right_rear.height, sizeof(short), 1, fp);
+    fwrite(&camera_undistorted.right_rear.width, sizeof(short), 1, fp);
+
+    for (int r = 0; r < camera_undistorted.right_rear.height; r++)
+    {
+        for (int c = 0; c < camera_undistorted.right_rear.width; c++)
+	{
+	    int x = (int)right_mapx.ptr<float>(720 - 1 - (c + camera_undistorted.right_rear.offset_x))[r + camera_undistorted.right_rear.offset_y];
+	    int y = (int)right_mapy.ptr<float>(720 - 1 - (c + camera_undistorted.right_rear.offset_x))[r + camera_undistorted.right_rear.offset_y];
+
+	    fwrite(&x, sizeof(short), 1, fp);
+            fwrite(&y, sizeof(short), 1, fp);
+	}
+    }
+#endif
 
     fclose(fp);
+
+    return true;
 }
 
 bool Surveying_system::Read_singlecam(char*file,Mat image)

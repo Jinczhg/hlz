@@ -125,6 +125,7 @@ struct Camera_undistorted
     int image_height;
     int undist_image_width;
     int undist_image_height;
+    float scale;
 
     Camera_undistorted_area front;
     Camera_undistorted_area rear;
@@ -174,6 +175,7 @@ public:
 	bool Write_stitch_calibdata(int flag, char*filename, int number, Caream_data caram_data);
 	bool Save_singleCam_udistfile(char*file,Mat image);
 	bool Save_Camera_undistorted_file(char *file_name);
+	bool Create_camera_calib_model(vector<Point2d> &coord, float scale, int width, int height);
 
 	bool Image_fusion(int index,  Mat im,  Mat &regist_im);
 	bool Remap(Mat im, Mat mapx, Mat mapy, int flag,Mat &remap_iamge);
