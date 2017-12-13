@@ -276,6 +276,7 @@ namespace ara
 				std::condition_variable	_M_cond;
 				std::atomic_flag		_M_retrieved;
 				std::once_flag			_M_once;
+				std::function<void()> _M_result_handler;
 
 			public:
 				_State_base() noexcept : _M_result(), _M_retrieved(ATOMIC_FLAG_INIT) { }
@@ -323,6 +324,10 @@ namespace ara
 					std::call_once(_M_once, &_State_base::_M_do_set, this, std::ref(__res), std::ref(__set));
 					if (!__set)
 					std::__throw_future_error(int(future_errc::promise_already_satisfied));
+					if (_M_result_handler)
+					{
+						_M_result_handler();
+					}
 				}
 
 				void _M_break_promise(_Ptr_type __res)
@@ -345,6 +350,11 @@ namespace ara
 				{
 					if (_M_retrieved.test_and_set())
 						std::__throw_future_error(int(future_errc::future_already_retrieved));
+				}
+				
+				void _M_set_result_handler(std::function<void()> handler)
+				{
+					_M_result_handler = handler;
 				}
 
 				template<typename _Res, typename _Arg>
@@ -590,6 +600,12 @@ namespace ara
 			explicit __basic_future(Future<_Res>&&) noexcept;
 
 			constexpr __basic_future() noexcept : _M_state() { }
+			
+			void set_continuation(std::function<void()> handler)
+			{
+				_State_base::_S_check(_M_state);
+				_M_state->_M_set_result_handler(handler);
+			}
 
 			struct _Reset
 			{
@@ -666,6 +682,12 @@ namespace ara
 				if (this->is_ready())
 				{
 					func(std::move(*this));
+				}
+				else
+				{
+					this->set_continuation([&func,this](){
+						func(std::move(*this));
+					});
 				}
 				
 				return Future<decltype(func(std::move(*this)))>();
