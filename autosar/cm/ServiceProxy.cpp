@@ -6,20 +6,23 @@
  * Author: ryan
  */
  
-#include "ServiceRequester.h"
+#include "ServiceProxy.h"
+#include "ManagementFactory.h"
 
 namespace ara
 {
 namespace com
 {
 
-ServiceRequester::ServiceRequester(uint16_t serviceId, uint16_t instanceId, Configuration *conf)
+uint16_t ServiceProxy::getServiceId() const
 {
+	return m_serviceId;
 }
 			
-ServiceRequester::~ServiceRequester()
+uint16_t ServiceProxy::getInstanceId() const
 {
+	return m_instanceId;
 }
-			
+
 } // namespace com
 } // namespace ara

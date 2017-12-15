@@ -12,6 +12,8 @@
 #include "DataTypes.h"
 #include "Configuration.h"
 
+#include <map>
+
 namespace ara
 {
 	namespace com

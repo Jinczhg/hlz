@@ -6,18 +6,18 @@
  * Author: ryan
  */
  
-#include "ServiceRequester.h"
+#include "SomeIpSd.h"
 
 namespace ara
 {
 namespace com
 {
 
-ServiceRequester::ServiceRequester(uint16_t serviceId, uint16_t instanceId, Configuration *conf)
+SomeIpSd::SomeIpSd()
 {
 }
 			
-ServiceRequester::~ServiceRequester()
+SomeIpSd::~SomeIpSd()
 {
 }
 			

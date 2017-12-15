@@ -6,18 +6,18 @@
  * Author: ryan
  */
  
-#include "ServiceRequester.h"
+#include "ServiceProvider.h"
 
 namespace ara
 {
 namespace com
 {
 
-ServiceRequester::ServiceRequester(uint16_t serviceId, uint16_t instanceId, Configuration *conf)
+ServiceProvider::ServiceProvider(uint16_t serviceId, uint16_t instanceId, Configuration *conf)
 {
 }
 			
-ServiceRequester::~ServiceRequester()
+ServiceProvider::~ServiceProvider()
 {
 }
 			

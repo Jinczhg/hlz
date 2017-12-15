@@ -19,6 +19,9 @@ namespace ara
 	{
 		class ManagementFactory
 		{
+			std::map<uint32_t, ServiceProvider*> m_serviceProviders;
+			std::map<uint32_t, ServiceRequester*> m_serviceRequesters;
+			
 			ManagementFactory();
 			
 		public:

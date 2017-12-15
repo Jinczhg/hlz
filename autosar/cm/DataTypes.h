@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <memory>
 
 namespace ara
 {
@@ -24,8 +25,16 @@ namespace ara
             static const InstanceIdentifier Any;
             explicit InstanceIdentifier(std::string value);
             std::string toString() const;
-            bool operator== (const InstanceIdentifiler& other) const;
+            bool operator== (const InstanceIdentifier& other) const;
             bool operator< (const InstanceIdentifier& other) const;
+            
+            uint16_t getId() const
+            {
+            	return m_id;
+            }
+            
+        private:
+        	uint16_t m_id;
         };
         
         template <typename T>

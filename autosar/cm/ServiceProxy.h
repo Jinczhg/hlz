@@ -5,11 +5,12 @@
  * Date: 2017-12-14
  * Author: ryan
  */
-P
+
 #ifndef ARA_COM_SERVICEPROXY_H_
 #define ARA_COM_SERVICEPROXY_H_
 
 #include "DataTypes.h"
+#include "Configuration.h"
 
 namespace ara
 {

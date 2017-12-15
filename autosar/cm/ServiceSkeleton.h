@@ -10,6 +10,9 @@
 #define ARA_COM_SERVICESKELETON_H_
 
 #include "DataTypes.h"
+#include "Configuration.h"
+
+#include <semaphore.h>
 
 namespace ara
 {
@@ -18,7 +21,7 @@ namespace ara
 		class ServiceSkeleton
 		{
 		public:
-			explicit ServiceSkeleton(InstanceIdentifier instance, MethodCallProcessingMode mode = MethodCallProcessingMode::kEvent);
+			explicit ServiceSkeleton(uint16_t serviceId, InstanceIdentifier instance, MethodCallProcessingMode mode = MethodCallProcessingMode::kEvent);
 			virtual ~ServiceSkeleton();
 			
 			bool Init(Configuration* conf);
@@ -34,6 +37,7 @@ namespace ara
 			uint16_t m_serviceId;
 			uint16_t m_instanceId;
 			MethodCallProcessingMode m_mode;
+			sem_t* m_sem;
 		};
 	} // namespace com
 } // namespace ara
