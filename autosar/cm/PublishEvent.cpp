@@ -7,6 +7,7 @@
  */
  
  #include "PublishEvent.h"
+ #include "ManagementFactory.h"
  
 namespace ara
 {
@@ -24,7 +25,11 @@ PublishEvent::~PublishEvent()
 
 void PublishEvent::Send(uint8_t *data, uint32_t len)
 {
-	//TODO
+	ServiceProvider *sp = ManagementFactory::get()->getServiceProvider(m_owner->getServiceId(), m_owner->getInstanceId());
+	
+	std::shared_ptr<Payload> payload(new Payload(len, data)); 
+	
+	sp->notify(m_eventId, payload);
 }
 			
 } // namespace com

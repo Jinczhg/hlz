@@ -31,12 +31,12 @@ namespace ara
 			
 			void unsubscribe(uint16_t eventId);
 			
-			void setEventSubscribeHandler(uint16_t eventId, std::function<void(std::shared_ptr<PayLoad>)> handler);
+			void setEventSubscribeHandler(uint16_t eventId, std::function<void(std::shared_ptr<Payload>)> handler);
 			
-			void onMessage(NetWorkBindingType type, Message msg);
+			void onMessage(NetWorkBindingType type, std::shared_ptr<Message> msg);
 			
 		private:
-			std::map<uint16_t, std::function<void(std::shared_ptr<PayLoad>)>> m_eventSubscribeHandlers;
+			std::map<uint16_t, std::function<void(std::shared_ptr<Payload>)>> m_eventSubscribeHandlers;
 		};
 	} // namespace com
 } // namespace ara

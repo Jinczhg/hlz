@@ -34,7 +34,7 @@ namespace ara
 			uint16_t m_eventId;
 			EventCacheUpdatePolicy m_policy;
 			size_t m_cacheSize;
-			std::vector<std::shared_ptr<PayLoad>> m_data;
+			std::vector<std::shared_ptr<Payload>> m_data;
 			EventReceiveHandler m_handler;
 			std::mutex m_mutex;
 		};

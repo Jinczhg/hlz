@@ -14,6 +14,7 @@
 #include <vector>
 #include <functional>
 #include <memory>
+#include <cstring>
 
 namespace ara
 {
@@ -77,10 +78,31 @@ namespace ara
             kEventSingleThread
         };
         
-        struct PayLoad
+        class Payload
         {
-        	std::shared_ptr<uint8_t> data;
-        	uint32_t size;
+        	uint32_t m_size;
+        	std::shared_ptr<uint8_t> m_data;
+        	
+        public:
+        	Payload(uint32_t size, uint8_t *data)
+        	: m_size(size), m_data(std::shared_ptr<uint8_t>(new uint8_t[size], std::default_delete<uint8_t[]>()))
+        	{
+        		std::memcpy(m_data.get(), data, m_size);
+        	}
+        	
+        	~Payload()
+        	{
+        	}
+        	
+        	uint32_t getSize() const
+        	{
+        		return m_size;
+        	}
+        	
+        	std::shared_ptr<uint8_t> getData() const
+        	{
+        		return m_data;
+        	}
         };
         
         enum class NetWorkBindingType
@@ -119,17 +141,31 @@ namespace ara
 			E_UNKNOWN = 0xFF
 		};
         
-        struct Message
+        struct MessageHeader
         {
-        	uint16_t m_serviceId;
+			uint16_t m_serviceId;
         	uint16_t m_methodId;
         	uint16_t m_clientId;
         	uint16_t m_instanceId;
         	uint16_t m_session;
         	MessageType m_type;
         	ReturnCode m_code;
-        	std::shared_ptr<PayLoad> m_payload;
+        	uint32_t m_len;
         };
+        
+        struct Message
+        {
+			MessageHeader m_header;
+        	uint8_t m_payload[0];
+        };
+        
+        struct Endpoint
+        {
+        };
+        
+        using RequestReceiveHandler = std::function<void (std::shared_ptr<Message>)>;
+        using MessageReceiveHandler = std::function<void (std::shared_ptr<Message>)>;
+        
 	} // namespace com
 } // namespace ara
 

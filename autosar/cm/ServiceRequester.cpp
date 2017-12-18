@@ -20,6 +20,22 @@ ServiceRequester::ServiceRequester(uint16_t serviceId, uint16_t instanceId, Conf
 ServiceRequester::~ServiceRequester()
 {
 }
+
+void ServiceRequester::subscribe(uint16_t eventId)
+{
+}
+			
+void ServiceRequester::unsubscribe(uint16_t eventId)
+{
+}
+			
+void ServiceRequester::setEventSubscribeHandler(uint16_t eventId, std::function<void(std::shared_ptr<Payload>)> handler)
+{
+}
+			
+void ServiceRequester::onMessage(NetWorkBindingType type, std::shared_ptr<Message> msg)
+{
+}
 			
 } // namespace com
 } // namespace ara

@@ -24,6 +24,19 @@ namespace ara
 			
 		public:
 			virtual ~ServiceProvider();
+			
+			void addSubscriber(uint16_t eventgroupId, Endpoint endpoint);
+			void delSubscriber(uint16_t eventgroupId, Endpoint endpoint);
+			
+			void notify(uint16_t eventId, std::shared_ptr<Payload>);
+			
+			void response(uint16_t methodId, uint32_t request, std::shared_ptr<Payload>);
+			
+			void setRequestReceiveHandler(uint16_t methodId, RequestReceiveHandler handler);
+			void unsetRequestReceiveHandler(uint16_t methodId);
+			
+			void onMessage(NetWorkBindingType type, std::shared_ptr<Message> msg);
+			
 		};
 	} // namespace com
 } // namespace ara
