@@ -1,11 +1,12 @@
-CC = QCC
-CFLAGS += -Vgcc_ntoarmv7le_gpp
+#CC = QCC
+#CFLAGS += -Vgcc_ntoarmv7le_gpp
+CC = g++
 
 TARGET = test
-OBJ = test.o
+OBJ = test.o ManagementFactory.o SubscribeEvent.o Configuration.o PublishEvent.o ServiceProvider.o ServiceProxy.o ServiceRequester.o ServiceSkeleton.o SomeIpSd.o SomeIpBinding.o DataTypes.o
 LIBS +=
-CFLAGS += -std=c++0x
-LDFLAGS += 
+CFLAGS += -std=c++0x -I.
+LDFLAGS += -lpthread
 
 all: $(TARGET)
 
@@ -16,4 +17,4 @@ $(TARGET): $(OBJ)
 	$(CC) $(CFLAGS) -Wall -c $(@D)/$(<F) -o $(@D)/$(@F)
 
 clean:
-	rm $(TARGET) $(OBJ)
+	rm -f $(TARGET) $(OBJ)

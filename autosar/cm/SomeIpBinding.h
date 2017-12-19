@@ -6,24 +6,21 @@
  * Author: ryan
  */
  
-#ifndef ARA_COM_IPCBINDING_H_
-#define ARA_COM_IPCBINDING_H_
+#ifndef ARA_COM_SOMEIPBINDING_H_
+#define ARA_COM_SOMEIPBINDING_H_
 
-#include "BaseNetworkBinding.h"
-
-#include <thread>
-#include <map>
+#include "DataTypes.h"
 
 namespace ara
 {
 	namespace com
 	{
-		class IpcBinding: public BaseNetworkBinding
+		class SomeIpBinding
 		{
 		public:
-			IpcBinding(uint16_t serverPort);
-			IpcBinding(uint16_t serverPort, uint16_t clientPort);
-			virtual ~IpcBinding();
+			SomeIpBinding();
+			~SomeIpBinding();
+			
 			virtual bool send(std::shared_ptr<Message> msg);
 			virtual void setReceiveHandler(MessageReceiveHandler handler);
 			virtual void onMessage(std::shared_ptr<Message> msg);
@@ -31,14 +28,8 @@ namespace ara
 			virtual void unsubscribe(uint16_t eventgroupId);
 			virtual void addSubscriber(uint16_t eventgroupId, Endpoint endpoint);
 			virtual void delSubscriber(uint16_t eventgroupId, Endpoint endpoint);
-			
-		private:
-			bool m_isServer;
-			int m_fd;
-			std::thread m_acceptThread;
-			std::map<int,std::thread> m_processThreads;
 		};
 	} // namespace com
 } // namespace ara
 
-#endif // ARA_COM_IPCBINDING_H_
+#endif // ARA_COM_SOMEIPBINDING_H_

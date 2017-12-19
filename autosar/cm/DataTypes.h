@@ -141,26 +141,47 @@ namespace ara
 			E_UNKNOWN = 0xFF
 		};
         
-        struct MessageHeader
+        class Message
         {
+        public:
+        	Message(){}
+        	~Message(){}
+        	
+        	void setServiceId(uint16_t serviceId);
+        	void setInstanceId(uint16_t instanceId);
+        	void setClientId(uint16_t clientId);
+        	void setMethodId(uint16_t methodId);
+        	void setSession(uint16_t session);
+        	void setId(uint16_t id);
+        	void setType(MessageType type);
+        	void setCode(ReturnCode code);
+        	void setPayload(std::vector<uint8_t>& payload);
+        	
+        	uint16_t getServiceId();
+        	uint16_t getInstanceId();
+        	uint16_t getClientId();
+        	uint16_t getMethodId();
+        	uint16_t getSession();
+        	uint16_t getId();
+        	MessageType getType();
+        	ReturnCode getCode();
+        	std::vector<uint8_t> getPayload();
+        	
+        private:
 			uint16_t m_serviceId;
         	uint16_t m_methodId;
         	uint16_t m_clientId;
         	uint16_t m_instanceId;
         	uint16_t m_session;
+        	uint16_t m_id;
         	MessageType m_type;
         	ReturnCode m_code;
-        	uint32_t m_len;
-        };
-        
-        struct Message
-        {
-			MessageHeader m_header;
-        	uint8_t m_payload[0];
+        	std::vector<uint8_t> m_payload;
         };
         
         struct Endpoint
         {
+        	uint16_t m_port;
         };
         
         using RequestReceiveHandler = std::function<void (std::shared_ptr<Message>)>;
