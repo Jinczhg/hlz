@@ -81,17 +81,18 @@ namespace ara
         class Payload
         {
         	uint32_t m_size;
-        	std::shared_ptr<uint8_t> m_data;
+        	uint8_t* m_data;
         	
         public:
         	Payload(uint32_t size, uint8_t *data)
-        	: m_size(size), m_data(std::shared_ptr<uint8_t>(new uint8_t[size], std::default_delete<uint8_t[]>()))
+        	: m_size(size), m_data(new uint8_t[size])
         	{
-        		std::memcpy(m_data.get(), data, m_size);
+        		std::memcpy(m_data, data, m_size);
         	}
         	
         	~Payload()
         	{
+        		delete[] m_data;
         	}
         	
         	uint32_t getSize() const
@@ -99,7 +100,7 @@ namespace ara
         		return m_size;
         	}
         	
-        	std::shared_ptr<uint8_t> getData() const
+        	uint8_t* getData() const
         	{
         		return m_data;
         	}
@@ -155,7 +156,7 @@ namespace ara
         	void setId(uint16_t id);
         	void setType(MessageType type);
         	void setCode(ReturnCode code);
-        	void setPayload(std::vector<uint8_t>& payload);
+        	void setPayload(std::shared_ptr<Payload> payload);
         	
         	uint16_t getServiceId();
         	uint16_t getInstanceId();
@@ -165,7 +166,7 @@ namespace ara
         	uint16_t getId();
         	MessageType getType();
         	ReturnCode getCode();
-        	std::vector<uint8_t> getPayload();
+        	std::shared_ptr<Payload> getPayload();
         	
         private:
 			uint16_t m_serviceId;
@@ -176,15 +177,37 @@ namespace ara
         	uint16_t m_id;
         	MessageType m_type;
         	ReturnCode m_code;
-        	std::vector<uint8_t> m_payload;
+        	std::shared_ptr<Payload> m_payload;
         };
+        
+        enum class TransportProtocol : uint8_t
+        {
+        	udp,
+        	tcp
+        };
+        
+        using ipv4_address_t = std::array<uint8_t, 4>;
         
         struct Endpoint
         {
+        public:
+        	Endpoint(ipv4_address_t ip, uint16_t port, TransportProtocol protocol);
+        	Endpoint(Endpoint& e);
+        	~Endpoint(){}
+        	
+        	Endpoint& operator=(Endpoint& e);
+        	
+        	ipv4_address_t getIp() const;
+        	uint16_t getPort() const;
+        	TransportProtocol getProtocol() const;
+        	
+        private:
+        	ipv4_address_t m_ip;
         	uint16_t m_port;
+        	TransportProtocol m_protocol;
         };
         
-        using RequestReceiveHandler = std::function<void (std::shared_ptr<Message>)>;
+        
         using MessageReceiveHandler = std::function<void (std::shared_ptr<Message>)>;
         
 	} // namespace com

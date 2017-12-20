@@ -15,8 +15,14 @@ namespace ara
 namespace com
 {
 
-SomeIpBinding::SomeIpBinding()
+SomeIpBinding::SomeIpBinding(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<SomeIpEndpoint> someIpEndpoint)
+: m_serviceId(serviceId), m_instanceId(instanceId), m_someIpEndpoint(someIpEndpoint)
 {
+	//m_someIpManager = vsomeip::SomeIPManager::get();
+	//std::shared_ptr<vsomeip::SomeIPPort> ipPort(new vsomeip::SomeIPPort());
+	//TODO
+	
+	//m_someIpManager->createSomeIP(ipPort);
 }
 
 SomeIpBinding::~SomeIpBinding()
@@ -37,17 +43,22 @@ bool SomeIpBinding::send(std::shared_ptr<Message> msg)
 	{
 	}
 	
-	
+	//m_someIpManager->sendSomeIP(ipMsg);
 	
 	return true;
 }
 
 void SomeIpBinding::setReceiveHandler(MessageReceiveHandler handler)
 {
+	m_handler = handler;
 }
 
 void SomeIpBinding::onMessage(std::shared_ptr<Message> msg)
 {
+	if (m_handler)
+	{
+		m_handler(msg);
+	}
 }
 
 void SomeIpBinding::subscribe(uint16_t eventgroupId)

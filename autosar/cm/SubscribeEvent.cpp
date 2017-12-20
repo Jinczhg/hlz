@@ -31,7 +31,7 @@ void SubscribeEvent::Subscribe(EventCacheUpdatePolicy policy, size_t cacheSize)
 	
 	ServiceRequester *sr = ManagementFactory::get()->getServiceRequester(m_owner->getServiceId(), m_owner->getInstanceId());
 	sr->subscribe(m_eventId);
-	sr->setEventSubscribeHandler(m_eventId, [this](std::shared_ptr<Payload> payload){
+	sr->setEventReceiveHandler(m_eventId, [this](std::shared_ptr<Payload> payload){
 		std::lock_guard<std::mutex> guard(this->m_mutex);
 		
 		this->m_data.push_back(payload);

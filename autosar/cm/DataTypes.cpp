@@ -13,6 +13,7 @@ namespace ara
 namespace com
 {
 
+// Message
 void Message::setServiceId(uint16_t serviceId)
 {
 	m_serviceId = serviceId;
@@ -52,7 +53,7 @@ void Message::setCode(ReturnCode code)
 	m_code = code;
 }
 
-void Message::setPayload(std::vector<uint8_t>& payload)
+void Message::setPayload(std::shared_ptr<Payload> payload)
 {
 	m_payload = payload;
 }
@@ -97,10 +98,51 @@ ReturnCode Message::getCode()
 	return m_code;
 }
 
-std::vector<uint8_t> Message::getPayload()
+std::shared_ptr<Payload> Message::getPayload()
 {
 	return m_payload;
 }
+
+// end Message
+
+// Endpoint
+Endpoint::Endpoint(ipv4_address_t ip, uint16_t port, TransportProtocol protocol)
+: m_ip(ip), m_port(port), m_protocol(protocol)
+{
+}
+
+Endpoint::Endpoint(Endpoint& e)
+{
+	this->m_ip = e.m_ip;
+	this->m_port = e.m_port;
+	this->m_protocol = e.m_protocol;
+}
+
+Endpoint& Endpoint::operator=(Endpoint& e)
+{
+	this->m_ip = e.m_ip;
+	this->m_port = e.m_port;
+	this->m_protocol = e.m_protocol;
+	
+	return *this;
+}
+
+ipv4_address_t Endpoint::getIp() const
+{
+	return m_ip;
+}
+
+uint16_t Endpoint::getPort() const
+{
+	return m_port;
+}
+
+TransportProtocol Endpoint::getProtocol() const
+{
+	return m_protocol;
+}
+
+//end Endpoint
 
 } // namespace com
 } // namespace ara

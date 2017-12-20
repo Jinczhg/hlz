@@ -11,11 +11,16 @@
 
 #include "DataTypes.h"
 #include "Configuration.h"
+#include "BaseNetworkBinding.h"
+
+#include <map>
 
 namespace ara
 {
 	namespace com
 	{
+		using RequestReceiveHandler = std::function<void (std::shared_ptr<Message>)>;
+		
 		class ServiceProvider
 		{
 			friend class ManagementFactory;
@@ -37,6 +42,13 @@ namespace ara
 			
 			void onMessage(NetWorkBindingType type, std::shared_ptr<Message> msg);
 			
+		private:
+			uint16_t m_serviceId;
+			uint16_t m_instanceId;
+			uint16_t m_clientId;
+			uint16_t m_session;
+			std::map<uint16_t,RequestReceiveHandler> m_handlers;
+			BaseNetworkBinding *m_networkBinding;
 		};
 	} // namespace com
 } // namespace ara

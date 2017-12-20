@@ -23,11 +23,9 @@ PublishEvent::~PublishEvent()
 {
 }
 
-void PublishEvent::Send(uint8_t *data, uint32_t len)
+void PublishEvent::Send(std::shared_ptr<Payload> payload)
 {
 	ServiceProvider *sp = ManagementFactory::get()->getServiceProvider(m_owner->getServiceId(), m_owner->getInstanceId());
-	
-	std::shared_ptr<Payload> payload(new Payload(len, data)); 
 	
 	sp->notify(m_eventId, payload);
 }

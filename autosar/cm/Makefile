@@ -3,7 +3,7 @@
 CC = g++
 
 TARGET = test
-OBJ = test.o ManagementFactory.o SubscribeEvent.o Configuration.o PublishEvent.o ServiceProvider.o ServiceProxy.o ServiceRequester.o ServiceSkeleton.o SomeIpSd.o SomeIpBinding.o DataTypes.o
+OBJ = test.o ManagementFactory.o SubscribeEvent.o Configuration.o PublishEvent.o ServiceProvider.o ServiceProxy.o ServiceRequester.o ServiceSkeleton.o SomeIpSd.o SomeIpBinding.o DataTypes.o Method.o
 LIBS +=
 CFLAGS += -std=c++0x -I.
 LDFLAGS += -lpthread

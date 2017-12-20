@@ -21,7 +21,7 @@ namespace ara
 			PublishEvent(ServiceSkeleton* skeleton, uint16_t eventId);
 			virtual ~PublishEvent();
 			
-			void Send(uint8_t *data, uint32_t len);
+			void Send(std::shared_ptr<Payload> payload);
 		
 		private:
 			ServiceSkeleton* m_owner;

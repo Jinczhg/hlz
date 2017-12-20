@@ -10,15 +10,26 @@
 #define ARA_COM_SOMEIPBINDING_H_
 
 #include "DataTypes.h"
+#include "BaseNetworkBinding.h"
+
+#include <vsomeip/SomeIPManager.hpp>
 
 namespace ara
 {
 	namespace com
 	{
-		class SomeIpBinding
+		class SomeIpEndpoint
+		{
+			std::shared_ptr<Endpoint> m_server;
+			std::shared_ptr<Endpoint> m_client;
+			std::shared_ptr<Endpoint> m_multicast;
+			bool m_isServer;
+		};
+		
+		class SomeIpBinding : public BaseNetworkBinding
 		{
 		public:
-			SomeIpBinding();
+			SomeIpBinding(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<SomeIpEndpoint> someIpEndpoint);
 			~SomeIpBinding();
 			
 			virtual bool send(std::shared_ptr<Message> msg);
@@ -28,6 +39,14 @@ namespace ara
 			virtual void unsubscribe(uint16_t eventgroupId);
 			virtual void addSubscriber(uint16_t eventgroupId, Endpoint endpoint);
 			virtual void delSubscriber(uint16_t eventgroupId, Endpoint endpoint);
+			
+		private:
+			uint16_t m_serviceId;
+			uint16_t m_instanceId;
+			uint16_t m_messageId;
+			std::shared_ptr<SomeIpEndpoint> m_someIpEndpoint;
+			MessageReceiveHandler m_handler;
+			std::shared_ptr<vsomeip::SomeIPManager> m_someIpManager;
 		};
 	} // namespace com
 } // namespace ara
