@@ -30,7 +30,7 @@ namespace ara
 			
 			static ManagementFactory* get();
 			
-			ServiceProvider* createServiceProvider(uint16_t serviceId, uint16_t instanceId, Configuration* conf);
+			ServiceProvider* createServiceProvider(uint16_t serviceId, uint16_t instanceId, MethodCallProcessingMode mode, Configuration* conf);
 			ServiceRequester* createServiceRequester(uint16_t serviceId, uint16_t instanceId, Configuration* conf);
 			
 			void destroyServiceProvider(uint16_t serviceId, uint16_t instanceId);

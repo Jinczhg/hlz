@@ -19,7 +19,23 @@ namespace ara
 		class ServiceProxy
 		{
 		public:
-			class HandleType;
+			class HandleType
+			{
+			public:
+				HandleType(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<Endpoint> endpoint);
+				virtual ~HandleType();
+				
+				HandleType& operator=(HandleType& other);
+				
+				uint16_t getServiceId() const;
+				uint16_t getInstanceId() const;
+				std::shared_ptr<Endpoint> getEndpoit() const;
+				
+			private:
+				uint16_t m_serviceId;
+				uint16_t m_instanceId;
+				std::shared_ptr<Endpoint> m_endpoint;
+			};
 			
 			explicit ServiceProxy(HandleType handle);
 			virtual ~ServiceProxy();
@@ -33,6 +49,7 @@ namespace ara
 		private:
 			uint16_t m_serviceId;
 			uint16_t m_instanceId;
+			HandleType m_handle;
 		};
 	} // namespace com
 } // namespace ara

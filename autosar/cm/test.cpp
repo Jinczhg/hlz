@@ -4,51 +4,58 @@
 #include <iostream>
 
 #include <unistd.h>
+#include "ServiceSkeleton.h"
+#include "ServiceProxy.h"
+#include "PublishEvent.h"
+#include "SubscribeEvent.h"
+#include "Method.h"
+#include "ManagementFactory.h"
+#include "DataTypes.h"
+
 
 int main(int argc, char** argv)
 {
-	ara::com::Promise<int> p;
-	p.set_future_dtor_handler([]{std::cout << "future_dtor_handler" << std::endl;});
-	ara::com::Future<int> f = p.get_future();
+	ara::com::Configuration conf;
 	
-	//std::promise<int> p;
-	//std::future<int> f = p.get_future();
+	ara::com::InstanceIdentifier instance("1");
 	
-	f.then([](ara::com::Future<int> f){
-		try
-		{
-			std::cout << "then ok" << std::endl;
-			std::cout << "Done!\nResults are: "
-              << f.get() << std::endl;
-		}
-		catch(...)
-		{
-			std::cout << "then error" << std::endl;
-		}
+	std::shared_ptr<ara::com::Endpoint> endpoint(new ara::com::Endpoint({{127,0,0,1}}, 8080, ara::com::TransportProtocol::tcp));
+	
+	ara::com::ServiceProxy::HandleType handle(1, 1, endpoint);
+	
+	ara::com::ServiceProxy proxy(handle);
+	
+	ara::com::SubscribeEvent sEvent(&proxy, 1);
+	
+	ara::com::Method method(&proxy, 2);
+	
+	proxy.Init(&conf);
+	
+	sEvent.Subscribe(ara::com::EventCacheUpdatePolicy::kLastN, 1);
+	
+	sEvent.SetReceiveHandler([](){
+		std::cout << "event receive" << std::endl;
 	});
 	
-	std::thread( [&p]{ p.set_value(100); }).detach();
+	ara::com::ServiceSkeleton skeleton(1, instance, ara::com::MethodCallProcessingMode::kEvent);
 	
-	std::cout << "is ready:" << (f.is_ready() ? "OK" : "NOT") << std::endl;
+	ara::com::PublishEvent pEvent(&skeleton, 1);
 	
-	f.wait();
+	skeleton.Init(&conf);
 	
-#if 0
-	f.then([](ara::com::Future<int> f){
-		try
-		{
-			std::cout << "then ok" << std::endl;
-			std::cout << "Done!\nResults are: "
-              << f.get() << std::endl;
-		}
-		catch(...)
-		{
-			std::cout << "then error" << std::endl;
-		}
+	std::shared_ptr<ara::com::Payload> payload(new ara::com::Payload(strlen("hello world")+1, (uint8_t*)"hello world"));
+	
+	ara::com::ManagementFactory::get()->getServiceProvider(1,1)->setRequestReceiveHandler(2, [](std::shared_ptr<ara::com::Message> msg){
+		ara::com::ManagementFactory::get()->getServiceProvider(1,1)->response(2, msg->getId() | (msg->getSession() << 16), msg->getPayload());
 	});
-#endif
-	//std::cout << "is ready:" << (f.is_ready() ? "OK" : "NOT") << std::endl;
-	usleep(100);
+	
+	pEvent.Send(payload);
+	
+	method(payload, [](std::shared_ptr<ara::com::Payload> payload){
+		std::cout << "method result:" << payload->getData() << std::endl;
+	});
+	
+	sleep(1);
 
 	return 0;
 }

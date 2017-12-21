@@ -104,6 +104,11 @@ void ServiceRequester::onMessage(NetWorkBindingType type, std::shared_ptr<Messag
 		}
 	}
 }
+
+BaseNetworkBinding* ServiceRequester::getNetworkBinding() const
+{
+	return m_networkBinding;
+}
 			
 } // namespace com
 } // namespace ara

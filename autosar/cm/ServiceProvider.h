@@ -14,6 +14,8 @@
 #include "BaseNetworkBinding.h"
 
 #include <map>
+#include <mutex>
+#include <condition_variable>
 
 namespace ara
 {
@@ -25,7 +27,7 @@ namespace ara
 		{
 			friend class ManagementFactory;
 			
-			ServiceProvider(uint16_t serviceId, uint16_t instanceId, Configuration *conf);
+			ServiceProvider(uint16_t serviceId, uint16_t instanceId, MethodCallProcessingMode mode, Configuration *conf);
 			
 		public:
 			virtual ~ServiceProvider();
@@ -40,14 +42,24 @@ namespace ara
 			void setRequestReceiveHandler(uint16_t methodId, RequestReceiveHandler handler);
 			void unsetRequestReceiveHandler(uint16_t methodId);
 			
+			bool hasRequest();
+			
+			void processRequest();
+			
 			void onMessage(NetWorkBindingType type, std::shared_ptr<Message> msg);
+			
+			BaseNetworkBinding* getNetworkBinding() const;
 			
 		private:
 			uint16_t m_serviceId;
 			uint16_t m_instanceId;
+			MethodCallProcessingMode m_mode;
 			uint16_t m_clientId;
 			uint16_t m_session;
 			std::map<uint16_t,RequestReceiveHandler> m_handlers;
+			std::vector<std::shared_ptr<Message>> m_requestMessages;
+			std::mutex m_mutex;
+			std::condition_variable m_condition;
 			BaseNetworkBinding *m_networkBinding;
 		};
 	} // namespace com

@@ -33,7 +33,7 @@ ManagementFactory* ManagementFactory::get()
 	return s_instance;
 }
 			
-ServiceProvider* ManagementFactory::createServiceProvider(uint16_t serviceId, uint16_t instanceId, Configuration* conf)
+ServiceProvider* ManagementFactory::createServiceProvider(uint16_t serviceId, uint16_t instanceId, MethodCallProcessingMode mode, Configuration* conf)
 {
 	uint32_t key = (serviceId << 16) + instanceId;
 	if (m_serviceProviders.find(key) != m_serviceProviders.end())
@@ -41,7 +41,7 @@ ServiceProvider* ManagementFactory::createServiceProvider(uint16_t serviceId, ui
 		throw std::runtime_error("exist the service instance");
 	}
 	
-	ServiceProvider *provider = new ServiceProvider(serviceId, instanceId, conf);
+	ServiceProvider *provider = new ServiceProvider(serviceId, instanceId, mode, conf);
 	
 	m_serviceProviders[key] = provider;
 	

@@ -7,8 +7,11 @@
  */
  
 #include "SomeIpBinding.h"
+#include "ManagementFactory.h"
 
 #include <vsomeip/SomeIPManager.hpp>
+
+#include <iostream>
 
 namespace ara
 {
@@ -35,12 +38,21 @@ bool SomeIpBinding::send(std::shared_ptr<Message> msg)
 	
 	if (msg->getType() == MessageType::MT_NOTIFICATION) //event
 	{
+		std::cout << "notify:" << (char*)msg->getPayload()->getData() << std::endl;
+		ServiceRequester *sr = ManagementFactory::get()->getServiceRequester(msg->getServiceId(), msg->getInstanceId());
+		sr->getNetworkBinding()->onMessage(msg);
 	}
 	else if (msg->getType() == MessageType::MT_REQUEST || msg->getType() == MessageType::MT_REQUEST_NO_RETURN) //method request
 	{
+		std::cout << "method request:" << (char*)msg->getPayload()->getData() << std::endl;
+		ServiceProvider *sp = ManagementFactory::get()->getServiceProvider(msg->getServiceId(), msg->getInstanceId());
+		sp->getNetworkBinding()->onMessage(msg);
 	}
 	else //method response or others
 	{
+		std::cout << "method response[" << (int)msg->getCode() << "]" << ":" << (char*)msg->getPayload()->getData() << std::endl;
+		ServiceRequester *sr = ManagementFactory::get()->getServiceRequester(msg->getServiceId(), msg->getInstanceId());
+		sr->getNetworkBinding()->onMessage(msg);
 	}
 	
 	//m_someIpManager->sendSomeIP(ipMsg);

@@ -11,6 +11,7 @@
 
 #include "DataTypes.h"
 #include "Configuration.h"
+#include "Future.h"
 
 #include <semaphore.h>
 
@@ -28,6 +29,8 @@ namespace ara
 			
 			void OfferService();
 			void StopOfferService();
+			
+			ara::com::Future<bool> ProcessNextMethodCall();
 			
 			uint16_t getServiceId() const;
 			

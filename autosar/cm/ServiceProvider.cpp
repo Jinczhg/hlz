@@ -9,13 +9,16 @@
 #include "ServiceProvider.h"
 #include "SomeIpBinding.h"
 
+#include <thread>
+#include <iostream>
+
 namespace ara
 {
 namespace com
 {
 
-ServiceProvider::ServiceProvider(uint16_t serviceId, uint16_t instanceId, Configuration *conf)
-: m_serviceId(serviceId), m_instanceId(instanceId), m_clientId(0), m_session(0)
+ServiceProvider::ServiceProvider(uint16_t serviceId, uint16_t instanceId, MethodCallProcessingMode mode, Configuration *conf)
+: m_serviceId(serviceId), m_instanceId(instanceId), m_mode(mode), m_clientId(0), m_session(0), m_mutex(), m_condition()
 {
 	//someip binding
 	std::shared_ptr<SomeIpEndpoint> endpoints(new SomeIpEndpoint());
@@ -86,6 +89,31 @@ void ServiceProvider::unsetRequestReceiveHandler(uint16_t methodId)
 		m_handlers.erase(it);
 	}
 }
+
+bool ServiceProvider::hasRequest()
+{
+	return !m_requestMessages.empty();
+}
+
+void ServiceProvider::processRequest()
+{
+	std::unique_lock<std::mutex> lck(m_mutex);
+	if (m_requestMessages.empty())
+	{
+		m_condition.wait(lck);
+	}
+	
+	std::shared_ptr<Message> msg = m_requestMessages[0];
+	m_requestMessages.erase(m_requestMessages.begin());
+	
+	uint16_t methodId = msg->getMethodId();
+	auto it = m_handlers.find(methodId);
+	if (it != m_handlers.end())
+	{
+		it->second(msg);
+	}
+	
+}
 			
 void ServiceProvider::onMessage(NetWorkBindingType type, std::shared_ptr<Message> msg)
 {
@@ -93,7 +121,25 @@ void ServiceProvider::onMessage(NetWorkBindingType type, std::shared_ptr<Message
 	auto it = m_handlers.find(methodId);
 	if (it != m_handlers.end())
 	{
-		it->second(msg);
+		if (m_mode == MethodCallProcessingMode::kPoll)
+		{
+			std::unique_lock<std::mutex> lck(m_mutex);
+			m_requestMessages.push_back(msg);
+			m_condition.notify_one();
+		}
+		else if (m_mode == MethodCallProcessingMode::kEvent)
+		{
+			std::thread t([this,msg,methodId](){
+				auto it = this->m_handlers.find(methodId);
+				if (it != this->m_handlers.end())
+				it->second(msg);
+			});
+			t.detach();
+		}
+		else if (m_mode == MethodCallProcessingMode::kEventSingleThread)
+		{
+			it->second(msg);
+		}
 	}
 	else
 	{
@@ -102,6 +148,11 @@ void ServiceProvider::onMessage(NetWorkBindingType type, std::shared_ptr<Message
 		m_networkBinding->send(msg);
 	}
 }
-			
+
+BaseNetworkBinding* ServiceProvider::getNetworkBinding() const
+{
+	return m_networkBinding;
+}
+		
 } // namespace com
 } // namespace ara

@@ -43,6 +43,8 @@ namespace ara
 			
 			void onMessage(NetWorkBindingType type, std::shared_ptr<Message> msg);
 			
+			BaseNetworkBinding* getNetworkBinding() const;
+			
 		private:
 			std::map<uint16_t,EventHandler> m_eventHandlers;
 			uint16_t m_serviceId;

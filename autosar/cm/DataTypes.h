@@ -15,6 +15,8 @@
 #include <functional>
 #include <memory>
 #include <cstring>
+#include <cstdlib>
+#include <array>
 
 namespace ara
 {
@@ -24,10 +26,26 @@ namespace ara
         class InstanceIdentifier {
         public:
             static const InstanceIdentifier Any;
-            explicit InstanceIdentifier(std::string value);
-            std::string toString() const;
-            bool operator== (const InstanceIdentifier& other) const;
-            bool operator< (const InstanceIdentifier& other) const;
+            explicit InstanceIdentifier(std::string value)
+            : m_value(value)
+            {
+            	m_id = atoi(value.c_str());
+            }
+            
+            std::string toString() const
+            {
+            	return m_value;
+            }
+            
+            bool operator== (const InstanceIdentifier& other) const
+            {
+            	return (this->m_id == other.m_id);
+            }
+            
+            bool operator< (const InstanceIdentifier& other) const
+            {
+            	return (this->m_id < other.m_id);
+            }
             
             uint16_t getId() const
             {
@@ -36,6 +54,7 @@ namespace ara
             
         private:
         	uint16_t m_id;
+        	std::string m_value;
         };
         
         template <typename T>

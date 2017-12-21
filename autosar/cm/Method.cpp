@@ -7,7 +7,7 @@
  */
  
 #include "Method.h"
- #include "ManagementFactory.h"
+#include "ManagementFactory.h"
  
 namespace ara
 {
