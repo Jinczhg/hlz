@@ -58,6 +58,24 @@ ServiceProxy::~ServiceProxy()
 	ManagementFactory::get()->destroyServiceRequester(m_serviceId, m_instanceId);
 }
 
+ServiceHandleContainer<ServiceProxy::HandleType> ServiceProxy::FindService(uint16_t serviceId, InstanceIdentifier instance)
+{
+	ServiceHandleContainer<ServiceProxy::HandleType> container;
+	
+	return container;
+}
+
+FindServiceHandle ServiceProxy::StartFindService(FindServiceHandler<ServiceProxy::HandleType> handler, uint16_t serviceId, InstanceIdentifier instance)
+{
+	FindServiceHandle handle(serviceId, instance.getId());
+	
+	return handle;
+}
+
+void ServiceProxy::StopFindService(FindServiceHandle handle)
+{
+}
+
 			
 bool ServiceProxy::Init(Configuration* conf)
 {

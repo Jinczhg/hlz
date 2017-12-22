@@ -32,8 +32,8 @@ namespace ara
 		public:
 			virtual ~ServiceProvider();
 			
-			void addSubscriber(uint16_t eventgroupId, Endpoint endpoint);
-			void delSubscriber(uint16_t eventgroupId, Endpoint endpoint);
+			void addSubscriber(uint16_t eventgroupId, std::shared_ptr<Endpoint> endpoint);
+			void delSubscriber(uint16_t eventgroupId, std::shared_ptr<Endpoint> endpoint);
 			
 			void notify(uint16_t eventId, std::shared_ptr<Payload>);
 			

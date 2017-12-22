@@ -40,6 +40,10 @@ namespace ara
 			explicit ServiceProxy(HandleType handle);
 			virtual ~ServiceProxy();
 			
+			static ServiceHandleContainer<HandleType> FindService(uint16_t serviceId, InstanceIdentifier instance);
+			static FindServiceHandle StartFindService(FindServiceHandler<HandleType> handler, uint16_t serviceId, InstanceIdentifier instance);
+			static void StopFindService(FindServiceHandle handle);
+			
 			bool Init(Configuration* conf);
 			
 			uint16_t getServiceId() const;

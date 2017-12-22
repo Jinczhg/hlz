@@ -81,12 +81,37 @@ void SomeIpBinding::unsubscribe(uint16_t eventgroupId)
 {
 }
 
-void SomeIpBinding::addSubscriber(uint16_t eventgroupId, Endpoint endpoint)
+void SomeIpBinding::addSubscriber(uint16_t eventgroupId, std::shared_ptr<Endpoint> endpoint)
 {
+	auto  subscribers = m_eventgroupSubscribers.find(eventgroupId);
+	if (subscribers != m_eventgroupSubscribers.end())
+	{
+		for (std::vector<std::shared_ptr<Endpoint>>::iterator it = subscribers->second.begin(); it != subscribers->second.end(); it++)
+		{
+			if ((*it).get() == endpoint.get())
+			{
+				return;
+			}
+		}
+	}
+	
+	m_eventgroupSubscribers[eventgroupId].push_back(endpoint);
 }
 
-void SomeIpBinding::delSubscriber(uint16_t eventgroupId, Endpoint endpoint)
+void SomeIpBinding::delSubscriber(uint16_t eventgroupId, std::shared_ptr<Endpoint> endpoint)
 {
+	auto  subscribers = m_eventgroupSubscribers.find(eventgroupId);
+	if (subscribers != m_eventgroupSubscribers.end())
+	{
+		for (std::vector<std::shared_ptr<Endpoint>>::iterator it = subscribers->second.begin(); it != subscribers->second.end(); it++)
+		{
+			if ((*it).get() == endpoint.get())
+			{
+				subscribers->second.erase(it);
+				break;
+			}
+		}
+	}
 }
 
 } // namespace com

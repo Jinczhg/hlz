@@ -8,11 +8,125 @@
  
 #include "DataTypes.h"
 
+#include <algorithm>
+
 namespace ara
 {
 namespace com
 {
+//InstanceIdentifier
 
+const InstanceIdentifier InstanceIdentifier::Any("Any");
+
+InstanceIdentifier::InstanceIdentifier(std::string value)
+: m_value(value)
+{
+	std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) -> unsigned char { return std::toupper(c); });
+	
+	if (value == std::string("ANY"))
+	{
+		m_id = 0xFFFF;
+	}
+	else
+	{
+		m_id = atoi(value.c_str());
+	}
+}
+
+InstanceIdentifier& InstanceIdentifier::operator=(const InstanceIdentifier& other)
+{
+	m_value = other.m_value;
+	m_id = other.m_id;
+	
+	return *this;
+}
+
+bool InstanceIdentifier::operator== (const InstanceIdentifier& other) const
+{
+	return (this->m_id == other.m_id);
+}
+
+bool InstanceIdentifier::operator< (const InstanceIdentifier& other) const
+{
+	return (this->m_id < other.m_id);
+}
+
+std::string InstanceIdentifier::toString() const
+{
+	return m_value;
+}
+
+uint16_t InstanceIdentifier::getId() const
+{
+	return m_id;
+}
+//end InstanceIdentifier
+
+//FindServiceHandle
+FindServiceHandle::FindServiceHandle(uint16_t serviceId, uint16_t instanceId)
+: m_serviceId(serviceId), m_instanceId(instanceId)
+{
+	m_id = (m_serviceId << 16) + m_instanceId;
+}
+        	
+FindServiceHandle& FindServiceHandle::operator=(FindServiceHandle& other)
+{
+	m_serviceId = other.m_serviceId;
+	m_instanceId = other.m_instanceId;
+	m_id = other.m_id;
+	
+	return *this;
+}
+
+bool FindServiceHandle::operator==(FindServiceHandle& other) const
+{
+	return m_id == other.m_id;
+}
+
+bool FindServiceHandle::operator<(FindServiceHandle& other) const
+{
+	return m_id < other.m_id;
+}
+
+uint16_t FindServiceHandle::getServiceId() const
+{
+	return m_serviceId;
+}
+
+uint16_t FindServiceHandle::getInstanceId() const
+{
+	return m_instanceId;
+}
+
+uint32_t FindServiceHandle::getId() const
+{
+	return m_id;
+}
+//end FindServiceHandle
+
+//Payload
+Payload::Payload(uint32_t size, uint8_t *data)
+: m_size(size), m_data(new uint8_t[size])
+{
+	std::memcpy(m_data, data, m_size);
+}
+
+Payload::~Payload()
+{
+	delete[] m_data;
+}
+
+uint32_t Payload::getSize() const
+{
+	return m_size;
+}
+
+uint8_t* Payload::getData() const
+{
+	return m_data;
+}
+//end Payload
+ 
 // Message
 void Message::setServiceId(uint16_t serviceId)
 {

@@ -14,6 +14,8 @@
 
 #include <vsomeip/SomeIPManager.hpp>
 
+#include <map>
+
 namespace ara
 {
 	namespace com
@@ -37,8 +39,8 @@ namespace ara
 			virtual void onMessage(std::shared_ptr<Message> msg);
 			virtual void subscribe(uint16_t eventgroupId);
 			virtual void unsubscribe(uint16_t eventgroupId);
-			virtual void addSubscriber(uint16_t eventgroupId, Endpoint endpoint);
-			virtual void delSubscriber(uint16_t eventgroupId, Endpoint endpoint);
+			virtual void addSubscriber(uint16_t eventgroupId, std::shared_ptr<Endpoint> endpoint);
+			virtual void delSubscriber(uint16_t eventgroupId, std::shared_ptr<Endpoint> endpoint);
 			
 		private:
 			uint16_t m_serviceId;
@@ -46,6 +48,7 @@ namespace ara
 			uint16_t m_messageId;
 			std::shared_ptr<SomeIpEndpoint> m_someIpEndpoint;
 			MessageReceiveHandler m_handler;
+			std::map<uint16_t,std::vector<std::shared_ptr<Endpoint>>> m_eventgroupSubscribers;
 			std::shared_ptr<vsomeip::SomeIPManager> m_someIpManager;
 		};
 	} // namespace com

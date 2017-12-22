@@ -26,35 +26,42 @@ namespace ara
         class InstanceIdentifier {
         public:
             static const InstanceIdentifier Any;
-            explicit InstanceIdentifier(std::string value)
-            : m_value(value)
-            {
-            	m_id = atoi(value.c_str());
-            }
+            explicit InstanceIdentifier(std::string value);
+            ~InstanceIdentifier(){}
+
+            InstanceIdentifier& operator=(const InstanceIdentifier& other);
             
-            std::string toString() const
-            {
-            	return m_value;
-            }
+            bool operator==(const InstanceIdentifier& other) const;
             
-            bool operator== (const InstanceIdentifier& other) const
-            {
-            	return (this->m_id == other.m_id);
-            }
+            bool operator<(const InstanceIdentifier& other) const;
             
-            bool operator< (const InstanceIdentifier& other) const
-            {
-            	return (this->m_id < other.m_id);
-            }
+            std::string toString() const;
             
-            uint16_t getId() const
-            {
-            	return m_id;
-            }
+            uint16_t getId() const;
             
         private:
         	uint16_t m_id;
         	std::string m_value;
+        };
+        
+        class FindServiceHandle
+        {
+        public:
+        	FindServiceHandle(uint16_t serviceId, uint16_t instanceId);
+        	~FindServiceHandle(){}
+        	
+        	FindServiceHandle& operator=(FindServiceHandle& other);
+        	bool operator==(FindServiceHandle& other) const;
+        	bool operator<(FindServiceHandle& other) const;
+        	
+        	uint16_t getServiceId() const;
+        	uint16_t getInstanceId() const;
+        	uint32_t getId() const;
+        	
+        private:
+        	uint16_t m_serviceId;
+        	uint16_t m_instanceId;
+        	uint32_t m_id;
         };
         
         template <typename T>
@@ -103,26 +110,11 @@ namespace ara
         	uint8_t* m_data;
         	
         public:
-        	Payload(uint32_t size, uint8_t *data)
-        	: m_size(size), m_data(new uint8_t[size])
-        	{
-        		std::memcpy(m_data, data, m_size);
-        	}
+        	Payload(uint32_t size, uint8_t *data);
+        	~Payload();
         	
-        	~Payload()
-        	{
-        		delete[] m_data;
-        	}
-        	
-        	uint32_t getSize() const
-        	{
-        		return m_size;
-        	}
-        	
-        	uint8_t* getData() const
-        	{
-        		return m_data;
-        	}
+        	uint32_t getSize() const;
+        	uint8_t* getData() const;
         };
         
         enum class NetWorkBindingType

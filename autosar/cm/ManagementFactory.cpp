@@ -54,7 +54,7 @@ ServiceProvider* ManagementFactory::createServiceProvider(uint16_t serviceId, ui
 	uint32_t key = (serviceId << 16) + instanceId;
 	if (m_serviceProviders.find(key) != m_serviceProviders.end())
 	{
-		throw std::runtime_error("exist the service instance");
+		return m_serviceProviders[key];
 	}
 	
 	ServiceProvider *provider = new ServiceProvider(serviceId, instanceId, mode, conf);
@@ -69,7 +69,7 @@ ServiceRequester* ManagementFactory::createServiceRequester(uint16_t serviceId, 
 	uint32_t key = (serviceId << 16) + instanceId;
 	if (m_serviceRequesters.find(key) != m_serviceRequesters.end())
 	{
-		throw std::runtime_error("exist the service instance");
+		return m_serviceRequesters[key];
 	}
 	
 	ServiceRequester *requester = new ServiceRequester(serviceId, instanceId, conf);

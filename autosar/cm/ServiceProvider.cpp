@@ -32,12 +32,12 @@ ServiceProvider::~ServiceProvider()
 {
 }
 
-void ServiceProvider::addSubscriber(uint16_t eventgroupId, Endpoint endpoint)
+void ServiceProvider::addSubscriber(uint16_t eventgroupId, std::shared_ptr<Endpoint> endpoint)
 {
 	m_networkBinding->addSubscriber(eventgroupId, endpoint);
 }
 
-void ServiceProvider::delSubscriber(uint16_t eventgroupId, Endpoint endpoint)
+void ServiceProvider::delSubscriber(uint16_t eventgroupId, std::shared_ptr<Endpoint> endpoint)
 {
 	m_networkBinding->delSubscriber(eventgroupId, endpoint);
 }
