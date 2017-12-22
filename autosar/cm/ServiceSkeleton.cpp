@@ -16,11 +16,14 @@
 #include <stdexcept>
 #include <string>
 #include <sstream>
+#include <vector>
 
 namespace ara
 {
 namespace com
 {
+extern std::vector<sem_t*> g_sems;
+
 ServiceSkeleton::ServiceSkeleton(uint16_t serviceId, InstanceIdentifier instance, MethodCallProcessingMode mode)
 :m_serviceId(serviceId), m_instanceId(instance.getId()), m_mode(mode)
 {
@@ -29,14 +32,20 @@ ServiceSkeleton::ServiceSkeleton(uint16_t serviceId, InstanceIdentifier instance
 	ss << "/autosar_cm_" << key;
 	std::string name = ss.str();
 	
-	if ((m_sem = sem_open(name.c_str(), O_CREAT | O_EXCL, S_IRWXU, 1)) == NULL)
+	ManagementFactory::get(); //make sure the ManagementFactory instance is created
+	
+	if ((m_sem = sem_open(name.c_str(), O_CREAT, S_IRWXU, 1)) == SEM_FAILED)
 	{
-		throw std::runtime_error("exist the service instance");
+		throw std::runtime_error("fail to create the service skeleton");
 	}
-
-	if (SEM_FAILED == m_sem)
+	
+	if (sem_trywait(m_sem) == 0)
 	{
-		throw std::runtime_error("fail to create the service instance");
+		g_sems.push_back(m_sem);
+	}
+	else
+	{
+		throw std::runtime_error("exist the service skeleton");
 	}
 }
 
@@ -47,8 +56,18 @@ ServiceSkeleton::~ServiceSkeleton()
 	ss << "/autosar_cm_" << key;
 	std::string name = ss.str();
 	
+	sem_post(m_sem);
 	sem_close(m_sem);
 	sem_unlink(name.c_str());
+	
+	for(std::vector<sem_t*>::iterator it = g_sems.begin(); it != g_sems.end(); it++)
+	{
+		if (*it == m_sem)
+		{
+			g_sems.erase(it);
+			break;
+		}
+	}
 	
 	ManagementFactory::get()->destroyServiceProvider(m_serviceId, m_instanceId);
 }

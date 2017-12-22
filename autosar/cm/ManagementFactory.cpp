@@ -6,20 +6,36 @@
  * Author: ryan
  */
  
- #include "ManagementFactory.h"
- #include "ServiceRequester.h"
- #include "ServiceProvider.h"
- #include "SomeIpSd.h"
+#include "ManagementFactory.h"
+#include "ServiceRequester.h"
+#include "ServiceProvider.h"
+#include "SomeIpSd.h"
  
- #include <stdexcept>
+#include <stdexcept>
+#include <iostream>
+ 
+#include <signal.h>
+#include <semaphore.h>
  
 namespace ara
 {
 namespace com
 {
 
+std::vector<sem_t*> g_sems;
+
+void terminate_handler(int sig)
+{	
+	for (auto s : g_sems)
+	{
+		sem_post(s);
+		sem_close(s);
+	}
+}
+
 ManagementFactory::ManagementFactory()
 {
+	signal(SIGABRT, terminate_handler);
 }		
 			
 ManagementFactory::~ManagementFactory()

@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 		std::cout << "method result:" << payload->getData() << std::endl;
 	});
 	
-	sleep(1);
+	sleep(10);
 
 	return 0;
 }
