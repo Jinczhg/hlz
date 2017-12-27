@@ -22,7 +22,7 @@ namespace ara
 			virtual ~SdClient();
 			
 			static SdClient* get();
-			bool send();
+			bool send(std::shared_ptr<SdMessage> msg);
 			bool onMessae(std::shared_ptr<SdMessage> msg);
 		
 		private:

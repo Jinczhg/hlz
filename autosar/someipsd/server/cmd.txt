@@ -1,0 +1,1 @@
+g++ -o test test.cpp SdServer.cpp ../ipc/SomeIpSdIpc.cpp -I../ipc -std=c++0x -lpthread
