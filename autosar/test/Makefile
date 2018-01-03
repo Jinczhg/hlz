@@ -5,8 +5,8 @@ CC = g++
 TARGET = test
 OBJ = test.o
 LIBS +=
-CFLAGS += -std=c++0x -I. -g
-LDFLAGS += -lpthread -lautosar_cm -L.
+CFLAGS += -std=c++0x -I./include -g
+LDFLAGS += -lpthread -lautosar_cm -L./lib
 
 all: $(TARGET)
 

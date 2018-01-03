@@ -13,11 +13,11 @@ namespace ara
 namespace com
 {
 
-SomeIpSdIpc::SomeIpSdIpc()
+SomeIpSd::SomeIpSd()
 {
 }
 			
-SomeIpSdIpc::~SomeIpSdIpc()
+SomeIpSd::~SomeIpSd()
 {
 }
 			
