@@ -21,7 +21,7 @@ namespace ara
 		class Method
 		{
 		public:
-			Method(ServiceProxy* owner, uint16_t methodId);
+			Method(ServiceProxy* proxy, uint16_t methodId);
 			~Method();
 			
 			bool operator()(std::shared_ptr<Payload> payload, MethodResponseHandler handler);

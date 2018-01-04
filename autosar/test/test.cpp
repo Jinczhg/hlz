@@ -1,15 +1,7 @@
 #include <iostream>
 #include <unistd.h>
 
-#include "ara/com/Future.h"
-#include "ara/com/ServiceSkeleton.h"
-#include "ara/com/ServiceProxy.h"
-#include "ara/com/PublishEvent.h"
-#include "ara/com/SubscribeEvent.h"
-#include "ara/com/Method.h"
-#include "ara/com/ManagementFactory.h"
-#include "ara/com/DataTypes.h"
-
+#include "ara/com/types.h"
 
 int main(int argc, char** argv)
 {

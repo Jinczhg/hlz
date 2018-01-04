@@ -14,8 +14,8 @@ namespace ara
 namespace com
 {
 
-Method::Method(ServiceProxy* owner, uint16_t methodId)
-: m_owner(owner), m_methodId(methodId)
+Method::Method(ServiceProxy* proxy, uint16_t methodId)
+: m_owner(proxy), m_methodId(methodId)
 {
 }
 
