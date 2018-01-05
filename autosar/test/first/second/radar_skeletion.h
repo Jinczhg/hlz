@@ -34,12 +34,14 @@ namespace events
 		RadarSkeketion(ara::com::InstanceIdentifier instance, ara::com::MethodCallProcessingMode mode = ara::com::MethodCallProcessingMode::kEvent);
 		virtual ~RadarSkeketion();
 		
+		events::BrakeEvent BrakeEvent;
+		
 		struct CalibrateOutput
 		{
 			ara::com::boolean result;
 		};
 		
-		virtual ara::com::Future<Output> Calibrate(const Position& configuration) = 0;
+		virtual ara::com::Future<CalibrateOutput> Calibrate(const Position& configuration) = 0;
 		
 		struct AdjustOutput
 		{
@@ -48,6 +50,8 @@ namespace events
 		};
 		
 		virtual ara::com::Future<AdjustOutput> Adjust(const Position& target_position) = 0;
+		
+		bool Init(Configuration* conf);
 	};
 } // namespace proxy
 } // namespace second

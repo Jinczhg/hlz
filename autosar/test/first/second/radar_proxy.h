@@ -15,7 +15,7 @@ namespace events
 	class BrakeEvent : public ara::com::SubscribeEvent
 	{
 	public:
-		using SampleType = ara::com::RadarObjects;
+		using SampleType = RadarObjects;
 		
 		BrakeEvent(ara::com::ServiceProxy* proxy, uint16_t eventId);
 		virtual ~BrakeEvent(){}
@@ -23,6 +23,9 @@ namespace events
 		bool Update(ara::com::FilterFunction<SampleType> filter = {});
 		
 		const ara::com::SampleContainer<ara::com::SamplePtr<const SampleType>>& GetCachedSamples() const;
+		 
+	private:
+		ara::com::SampleContainer<ara::com::SamplePtr<const SampleType>> m_samples;
 	};
 } // namespace events
 

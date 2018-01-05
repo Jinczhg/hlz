@@ -56,7 +56,11 @@ void SubscribeEvent::Unsubscribe()
 
 void SubscribeEvent::Cleanup()
 {
-
+	if (m_policy == EventCacheUpdatePolicy::kNewestN)
+	{
+		std::lock_guard<std::mutex> guard(m_mutex);
+		m_data.clear();
+	}
 }
 
 void SubscribeEvent::SetReceiveHandler(EventReceiveHandler handler)

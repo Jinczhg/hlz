@@ -16,4 +16,62 @@ struct Position
 	ara::com::uint32 z;
 };
 
+class RadarSerializer : public ara::com:Serializer
+{
+public:
+	RadarSerializer()
+	: ara::com:Serializer(ara::com::ByteOrderEnum::LittleEndian)
+	{
+	}
+	
+	void serialize(RadarObjects radarObjects)
+	{
+		serialize(radarObjects.active);
+		ara::com::uint32 size = radarObjects.size();
+		serialize(size);
+		for (auto v : radarObjects.objects)
+		{
+			serialize(v);
+		}
+	}
+	
+	void serialize(Position position)
+	{
+		serialize(position.x);
+		serialize(position.y);
+		serialize(position.z);
+	}
+};
+
+class RadarDeserializer : public ara::com:Deserializer
+{
+public:
+	RadarDeserializer(uint8_t *data, uint32_t size)
+	: ara::com:Deserializer(ara::com::ByteOrderEnum::LittleEndian, data, size)
+	{
+	}
+	
+	~RadarDeserializer();
+	
+	void deserialize(RadarObjects& radarObjects)
+	{
+		deserialize(radarObjects.active);
+		ara::com::uint32 size;
+		deserialize(size);
+		for (ara::com::uint32 i = 0; i < size; i++)
+		{
+			ara::com::uint8 v;
+			deserialize(v);
+			radarObjects.objects.push_back(v);
+		}
+	}
+	
+	void deserialize(Position& position)
+	{
+		deserialize(position.x);
+		deserialize(position.y);
+		deserialize(position.z);
+	}
+};
+
 #endif //RADAR_COMMON_H_
