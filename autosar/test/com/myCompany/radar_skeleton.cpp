@@ -1,6 +1,6 @@
 #incluce "radar_skeleton.h"
 
-using namespace first::second;
+using namespace com::myCompany;
 
 //events
 events::BrakeEvent::BrakeEvent(ara::com::ServiceSkeleton* proxy, uint16_t eventId)

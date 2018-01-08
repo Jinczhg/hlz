@@ -3,9 +3,9 @@
 
 #include "radar_common.h"
 
-namespace first
+namespace com
 {
-namespace second
+namespace myCompany
 {
 namespace proxy
 {

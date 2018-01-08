@@ -24,6 +24,8 @@ public:
 	{
 	}
 	
+	~RadarSerializer(){}
+	
 	void serialize(RadarObjects radarObjects)
 	{
 		serialize(radarObjects.active);
@@ -51,7 +53,7 @@ public:
 	{
 	}
 	
-	~RadarDeserializer();
+	~RadarDeserializer(){}
 	
 	void deserialize(RadarObjects& radarObjects)
 	{

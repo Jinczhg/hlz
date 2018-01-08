@@ -1,6 +1,6 @@
 #incluce "radar_proxy.h"
 
-using namespace first::second;
+using namespace com::myCompany;
 
 //events
 
