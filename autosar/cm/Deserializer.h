@@ -18,24 +18,25 @@ namespace ara
 		class Deserializer
 		{
 		public:
-			Deserializer(ByteOrderEnum byteOrder, uint8_t *data, uint32_t size);
+			Deserializer(ByteOrderEnum byteOrder, const uint8_t *data, uint32_t size);
 			virtual ~Deserializer(){}
 			
-			void serialize(boolean& value);
-			void serialize(uint8& value);
-			void serialize(uint16& value);
-			void serialize(uint32& value);
-			void serialize(uint64& value);
-			void serialize(sint8& value);
-			void serialize(sint16& value);
-			void serialize(sint32& value);
-			void serialize(sint64& value);
-			void serialize(float32& value);
-			void serialize(float64& value);
+			bool deserialize(boolean& value);
+			bool deserialize(uint8& value);
+			bool deserialize(uint16& value);
+			bool deserialize(uint32& value);
+			bool deserialize(uint64& value);
+			bool deserialize(sint8& value);
+			bool deserialize(sint16& value);
+			bool deserialize(sint32& value);
+			bool deserialize(sint64& value);
+			bool deserialize(float32& value);
+			bool deserialize(float64& value);
 			
 		protected:
 			std::vector<uint8_t> m_data;
 			uint32_t m_size;
+			std::vector<uint8_t>::iterator m_pos;
 			ByteOrderEnum m_byteOrder;
 		};
 	} // namespace com

@@ -26,7 +26,7 @@ public:
 	
 	~RadarSerializer(){}
 	
-	void serialize(RadarObjects radarObjects)
+	bool serialize(RadarObjects radarObjects)
 	{
 		serialize(radarObjects.active);
 		ara::com::uint32 size = radarObjects.size();
@@ -35,13 +35,17 @@ public:
 		{
 			serialize(v);
 		}
+		
+		return true;
 	}
 	
-	void serialize(Position position)
+	bool serialize(Position position)
 	{
 		serialize(position.x);
 		serialize(position.y);
 		serialize(position.z);
+		
+		return true;
 	}
 };
 
@@ -55,7 +59,7 @@ public:
 	
 	~RadarDeserializer(){}
 	
-	void deserialize(RadarObjects& radarObjects)
+	bool deserialize(RadarObjects& radarObjects)
 	{
 		deserialize(radarObjects.active);
 		ara::com::uint32 size;
@@ -66,13 +70,17 @@ public:
 			deserialize(v);
 			radarObjects.objects.push_back(v);
 		}
+		
+		return true;
 	}
 	
-	void deserialize(Position& position)
+	bool deserialize(Position& position)
 	{
 		deserialize(position.x);
 		deserialize(position.y);
 		deserialize(position.z);
+		
+		return true;
 	}
 };
 

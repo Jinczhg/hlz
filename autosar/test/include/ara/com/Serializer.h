@@ -21,21 +21,24 @@ namespace ara
 			Serializer(ByteOrderEnum byteOrder);
 			virtual ~Serializer(){}
 			
-			void serialize(boolean value);
-			void serialize(uint8 value);
-			void serialize(uint16 value);
-			void serialize(uint32 value);
-			void serialize(uint64 value);
-			void serialize(sint8 value);
-			void serialize(sint16 value);
-			void serialize(sint32 value);
-			void serialize(sint64 value);
-			void serialize(float32 value);
-			void serialize(float64 value);
+			const uint8_t* getData() const;
+			
+			uint32_t getSize() const;
+			
+			bool serialize(boolean value);
+			bool serialize(uint8 value);
+			bool serialize(uint16 value);
+			bool serialize(uint32 value);
+			bool serialize(uint64 value);
+			bool serialize(sint8 value);
+			bool serialize(sint16 value);
+			bool serialize(sint32 value);
+			bool serialize(sint64 value);
+			bool serialize(float32 value);
+			bool serialize(float64 value);
 			
 		protected:
 			std::vector<uint8_t> m_data;
-			uint32_t m_size;
 			ByteOrderEnum m_byteOrder;
 		};
 	} // namespace com
