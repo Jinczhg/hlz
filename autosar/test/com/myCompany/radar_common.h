@@ -5,15 +5,15 @@
 
 struct RadarObjects
 {
-	ara::com::boolean active;
-	std::vector<ara::com::uint8> objects;
+	boolean active;
+	std::vector<uint8> objects;
 };
 
 struct Position
 {
-	ara::com::uint32 x;
-	ara::com::uint32 y;
-	ara::com::uint32 z;
+	uint32 x;
+	uint32 y;
+	uint32 z;
 };
 
 class RadarSerializer : public ara::com:Serializer
@@ -29,7 +29,7 @@ public:
 	bool serialize(RadarObjects radarObjects)
 	{
 		serialize(radarObjects.active);
-		ara::com::uint32 size = radarObjects.size();
+		uint32 size = radarObjects.size();
 		serialize(size);
 		for (auto v : radarObjects.objects)
 		{
@@ -62,9 +62,9 @@ public:
 	bool deserialize(RadarObjects& radarObjects)
 	{
 		deserialize(radarObjects.active);
-		ara::com::uint32 size;
+		uint32 size;
 		deserialize(size);
-		for (ara::com::uint32 i = 0; i < size; i++)
+		for (uint32 i = 0; i < size; i++)
 		{
 			ara::com::uint8 v;
 			deserialize(v);

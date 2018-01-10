@@ -12,6 +12,8 @@
 #include "DataTypes.h"
 #include "BaseNetworkBinding.h"
 
+#include <zmq.hpp>
+
 #include <map>
 
 namespace ara
@@ -20,8 +22,11 @@ namespace ara
 	{
 		class IpcEndpoint
 		{
+		public:
+			IpcEndpoint(){}
+			~IpcEndpoint(){}
 			std::shared_ptr<Endpoint> m_server;
-			std::shared_ptr<Endpoint> m_client;
+			std::vector<std::shared_ptr<Endpoint>> m_client;
 			std::shared_ptr<Endpoint> m_multicast;
 			bool m_isServer;
 		};
@@ -29,7 +34,7 @@ namespace ara
 		class IpcBinding : public BaseNetworkBinding
 		{
 		public:
-			IpcBinding(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<IpcEndpoint> IpcEndpoint);
+			IpcBinding(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<IpcEndpoint> endpoint);
 			~IpcBinding();
 			
 			virtual bool send(std::shared_ptr<Message> msg);
@@ -45,7 +50,15 @@ namespace ara
 			uint16_t m_instanceId;
 			uint16_t m_messageId;
 			MessageReceiveHandler m_handler;
+			std::shared_ptr<IpcEndpoint> m_endpoint;
+			std::shared_ptr<zmq::context_t> m_context;
+			std::shared_ptr<zmq::socket_t> m_PUB_SUB;
+			std::map<uint16_t,std::shared_ptr<zmq::socket_t>> m_REQs;
+			std::map<uint16_t,std::shared_ptr<zmq::socket_t>> m_REPs;
 			std::map<uint16_t,std::vector<std::shared_ptr<Endpoint>>> m_eventgroupSubscribers;
+			
+			std::shared_ptr<zmq::message_t> buildMessage(std::shared_ptr<Message> msg);
+			std::shared_ptr<Message> IpcBinding::parseMessage(std::shared_ptr<zmq::message_t> msg);
 		};
 	} // namespace com
 } // namespace ara
