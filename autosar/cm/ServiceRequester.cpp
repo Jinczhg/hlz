@@ -8,6 +8,9 @@
  
 #include "ServiceRequester.h"
 #include "SomeIpBinding.h"
+#include "IpcBinding.h"
+
+#include <iostream>
 
 namespace ara
 {
@@ -17,12 +20,24 @@ namespace com
 ServiceRequester::ServiceRequester(uint16_t serviceId, uint16_t instanceId, Configuration *conf)
 : m_serviceId(serviceId), m_instanceId(instanceId), m_clientId(0), m_session(0)
 {
+#if 0
 	//someip binding
 	std::shared_ptr<SomeIpEndpoint> endpoints(new SomeIpEndpoint());
 	m_networkBinding = new SomeIpBinding(m_serviceId, m_instanceId, endpoints);
 	m_networkBinding->setReceiveHandler([this](std::shared_ptr<Message> msg){
 		this->onMessage(NetWorkBindingType::SOMEIP, msg);
 	});
+#else
+	//ipc binding
+	std::shared_ptr<IpcEndpoint> endpoints(new IpcEndpoint());
+	endpoints->m_isServer = false;
+	std::shared_ptr<Endpoint> multicast(new Endpoint({{127,0,0,1}}, 10000, TransportProtocol::tcp));
+	endpoints->m_multicast = multicast;
+	m_networkBinding = new IpcBinding(m_serviceId, m_instanceId, endpoints);
+	m_networkBinding->setReceiveHandler([this](std::shared_ptr<Message> msg){
+		this->onMessage(NetWorkBindingType::IPC, msg);
+	});
+#endif
 }
 			
 ServiceRequester::~ServiceRequester()
@@ -85,7 +100,7 @@ bool ServiceRequester::request(uint16_t methodId, std::shared_ptr<Payload> paylo
 }
 			
 void ServiceRequester::onMessage(NetWorkBindingType type, std::shared_ptr<Message> msg)
-{
+{	
 	if (msg->getType() == MessageType::MT_NOTIFICATION)
 	{
 		auto it = m_eventHandlers.find(msg->getMethodId());

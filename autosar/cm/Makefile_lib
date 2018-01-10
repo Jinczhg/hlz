@@ -3,10 +3,10 @@
 CC = g++
 
 TARGET = libautosar_cm.so
-OBJ = ManagementFactory.o SubscribeEvent.o Configuration.o PublishEvent.o ServiceProvider.o ServiceProxy.o ServiceRequester.o ServiceSkeleton.o SomeIpSd.o SomeIpBinding.o DataTypes.o Method.o Serializer.o Deserializer.o
+OBJ = ManagementFactory.o SubscribeEvent.o Configuration.o PublishEvent.o ServiceProvider.o ServiceProxy.o ServiceRequester.o ServiceSkeleton.o SomeIpSd.o SomeIpBinding.o DataTypes.o Method.o Serializer.o Deserializer.o IpcBinding.o
 LIBS +=
 CFLAGS += -std=c++0x -I.
-LDFLAGS += -lpthread
+LDFLAGS += -lpthread -zmq
 
 all: $(TARGET)
 

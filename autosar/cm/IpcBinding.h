@@ -58,7 +58,7 @@ namespace ara
 			std::map<uint16_t,std::vector<std::shared_ptr<Endpoint>>> m_eventgroupSubscribers;
 			
 			std::shared_ptr<zmq::message_t> buildMessage(std::shared_ptr<Message> msg);
-			std::shared_ptr<Message> IpcBinding::parseMessage(std::shared_ptr<zmq::message_t> msg);
+			std::shared_ptr<Message> parseMessage(std::shared_ptr<zmq::message_t> msg);
 		};
 	} // namespace com
 } // namespace ara

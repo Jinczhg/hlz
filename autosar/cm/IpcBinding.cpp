@@ -9,9 +9,11 @@
 #include "IpcBinding.h"
 #include "ManagementFactory.h"
 #include "Serializer.h"
+#include "Deserializer.h"
 
 #include <iostream>
 #include <sstream>
+#include <thread>
 
 namespace ara
 {
@@ -22,34 +24,53 @@ IpcBinding::IpcBinding(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<
 : m_serviceId(serviceId), m_instanceId(instanceId), m_endpoint(endpoint)
 {
 	//TODO
-	m_context = std::std::make_shared<zmq::context_t>(1);
+	m_context = std::make_shared<zmq::context_t>(1);
 	
-	if (m_endpoint.isServer)
+	std::cout << "m_context ok" << std::endl;
+	
+	if (m_endpoint->m_isServer)
 	{
-		m_PUB_SUB = std::std::make_shared<zmq::socket_t>(*m_context.get(), ZMQ_PUB);
+		m_PUB_SUB = std::make_shared<zmq::socket_t>(*m_context.get(), ZMQ_PUB);
+		
+		std::cout << "server m_PUB_SUB" << std::endl;
 	
 		std::stringstream ss;
-		ss << "tcp://*:" << m_endpoint->m_multicast.getPort();
+		ss << "tcp://*:" << m_endpoint->m_multicast->getPort();
+		
+		std::cout << ss.str() << std::endl;
+		
+		int sndhwm = 0;
+    	m_PUB_SUB->setsockopt (ZMQ_SNDHWM, &sndhwm, sizeof (sndhwm));
 	
-		m_PUB_SUB.bind(ss.str().c_str());
+		m_PUB_SUB->bind(ss.str().c_str());
+		
+		std::cout << "client m_PUB_SUB->bind" << std::endl;
 	}
 	else
 	{
-		m_PUB_SUB = std::std::make_shared<zmq::socket_t>(*m_context.get(), ZMQ_SUB);
-	
-		ipv4_address_t ip = m_endpoint->m_multicast.getIp();
-		std::stringstream ss;
-		ss << "tcp://" << ip[0] << "." << ip[1] << "." << ip[2] << "." << ip[3] << ":" << m_endpoint->m_multicast.getPort();
-	
-		m_PUB_SUB.bind(ss.str().c_str());
+		m_PUB_SUB = std::make_shared<zmq::socket_t>(*m_context.get(), ZMQ_SUB);
 		
-		std::thread t([this,msg,methodId](){
+		std::cout << "client m_PUB_SUB" << std::endl;
+	
+		ipv4_address_t ip = m_endpoint->m_multicast->getIp();
+		std::stringstream ss;
+		ss << "tcp://" << (int)ip[0] << "." << (int)ip[1] << "." << (int)ip[2] << "." << (int)ip[3] << ":" << m_endpoint->m_multicast->getPort();
+		
+		std::cout << ss.str() << std::endl;
+	
+		m_PUB_SUB->connect(ss.str().c_str());
+		m_PUB_SUB->setsockopt(ZMQ_SUBSCRIBE, "", 0);
+		
+		std::cout << "client m_PUB_SUB->connect" << std::endl;
+		
+		std::thread t([this](){
 			while (1)
 			{
 				std::shared_ptr<zmq::message_t> message(new zmq::message_t);
     			this->m_PUB_SUB->recv(message.get());
     			
     			std::shared_ptr<Message> msg = this->parseMessage(message);
+    			
     			this->onMessage(msg);
 			}
 		});
@@ -68,30 +89,32 @@ std::shared_ptr<zmq::message_t> IpcBinding::buildMessage(std::shared_ptr<Message
 	uint32_t length = 8 + msg->getPayload()->getSize();
 	uint8_t protocol_version = 1;
 	uint8_t interface_version = 1;
+	uint8_t type = (uint8_t)msg->getType();
+	uint8_t code = (uint8_t)msg->getCode();
 	
-	serializer.serialize(msg.getServiceId());
-	serializer.serialize(msg.getMethodId());
+	serializer.serialize(msg->getServiceId());
+	serializer.serialize(msg->getMethodId());
 	serializer.serialize(length);
-	serializer.serialize(msg.getClientId());
-	serializer.serialize(msg.getSession());
+	serializer.serialize(msg->getClientId());
+	serializer.serialize(msg->getSession());
 	serializer.serialize(protocol_version);
 	serializer.serialize(interface_version);
-	serializer.serialize((uint8_t)msg.getType());
-	serializer.serialize((uint8_t)msg.getCode());
+	serializer.serialize(type);
+	serializer.serialize(code);
 	
 	std::shared_ptr<zmq::message_t> message(new zmq::message_t(length + 8));
 	
 	std::memcpy(message->data(), serializer.getData(), serializer.getSize());
-	std::memcpy(message->data() + serializer.getSize(), msg->getPayload()->getData(), msg->getPayload()->getSize());
+	std::memcpy(static_cast<uint8_t*>(message->data()) + serializer.getSize(), msg->getPayload()->getData(), msg->getPayload()->getSize());
 	
 	return message;
 }
 
 std::shared_ptr<Message> IpcBinding::parseMessage(std::shared_ptr<zmq::message_t> msg)
 {
-	std::shared_ptr<Message> message(new std::shared_ptr<Message>);
+	std::shared_ptr<Message> message(new Message);
 	
-	uint8_t* data = msg->data();
+	uint8_t* data = static_cast<uint8_t*>(msg->data());
 	uint16_t serviceId = 0;
 	uint16_t methodId = 0;
 	uint32_t length = 0;
@@ -99,10 +122,10 @@ std::shared_ptr<Message> IpcBinding::parseMessage(std::shared_ptr<zmq::message_t
 	uint16_t session = 0;
 	uint8_t protocol_version = 1;
 	uint8_t interface_version = 1;
-	MessageType type;
-	ReturnCode code;
+	uint8_t type;
+	uint8_t code;
 	
-	Deserializer deserializer(ByteOrderEnum::BigEndian, data, 8);
+	Deserializer deserializer(ByteOrderEnum::BigEndian, data, 16);
 	
 	deserializer.deserialize(serviceId);
 	deserializer.deserialize(methodId);
@@ -111,16 +134,16 @@ std::shared_ptr<Message> IpcBinding::parseMessage(std::shared_ptr<zmq::message_t
 	deserializer.deserialize(session);
 	deserializer.deserialize(protocol_version);
 	deserializer.deserialize(interface_version);
-	deserializer.deserialize((uint8_t)type);
-	deserializer.deserialize((uint8_t)code);
+	deserializer.deserialize(type);
+	deserializer.deserialize(code);
 	
 	message->setServiceId(serviceId);
 	message->setInstanceId(m_instanceId);
 	message->setMethodId(methodId);
 	message->setClientId(clientId);
 	message->setSession(session);
-	message->setType(type);
-	message->setCode(code);
+	message->setType((MessageType)type);
+	message->setCode((ReturnCode)code);
 	
 	std::shared_ptr<Payload> payload(new Payload(length - 8, data + 16));
 	
@@ -134,8 +157,6 @@ bool IpcBinding::send(std::shared_ptr<Message> msg)
 	if (msg->getType() == MessageType::MT_NOTIFICATION) //event
 	{
 		std::cout << "notify:" << (char*)msg->getPayload()->getData() << std::endl;
-		zmq::message_t message(string.size());
-    	memcpy (message.data(), string.data(), string.size());
 
     	return m_PUB_SUB->send(*(buildMessage(msg).get()));
 	}
