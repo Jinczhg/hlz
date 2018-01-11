@@ -36,6 +36,11 @@ void Configuration::setMulticastEndpoint(std::shared_ptr<Endpoint> multicastEndp
 	m_multicastEndpoint = multicastEndpoint;
 }
 
+void Configuration::setNetWorkBindingType(NetWorkBindingType type)
+{
+	m_networkBindingType = type;
+}
+
 std::shared_ptr<Endpoint> Configuration::getServerEndpoint() const
 {
 	return m_serverEndpoint;
@@ -49,6 +54,11 @@ std::shared_ptr<Endpoint> Configuration::getClientEndpoint() const
 std::shared_ptr<Endpoint> Configuration::getMulticastEndpoint() const
 {
 	return m_multicastEndpoint;
+}
+
+NetWorkBindingType Configuration::getNetWorkBindingType() const
+{
+	return m_networkBindingType;
 }
 
 } // namespace com

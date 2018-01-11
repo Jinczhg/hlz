@@ -25,7 +25,7 @@ namespace ara
 		public:
 			IpcEndpoint(){}
 			~IpcEndpoint(){}
-			std::shared_ptr<Endpoint> m_server;
+			std::vector<std::shared_ptr<Endpoint>> m_server;
 			std::vector<std::shared_ptr<Endpoint>> m_client;
 			std::shared_ptr<Endpoint> m_multicast;
 			bool m_isServer;
@@ -53,8 +53,8 @@ namespace ara
 			std::shared_ptr<IpcEndpoint> m_endpoint;
 			std::shared_ptr<zmq::context_t> m_context;
 			std::shared_ptr<zmq::socket_t> m_PUB_SUB;
-			std::map<uint16_t,std::shared_ptr<zmq::socket_t>> m_REQs;
-			std::map<uint16_t,std::shared_ptr<zmq::socket_t>> m_REPs;
+			std::vector<std::shared_ptr<zmq::socket_t>> m_REQs;
+			std::vector<std::shared_ptr<zmq::socket_t>> m_REPs;
 			std::map<uint16_t,std::vector<std::shared_ptr<Endpoint>>> m_eventgroupSubscribers;
 			
 			std::shared_ptr<zmq::message_t> buildMessage(std::shared_ptr<Message> msg);
