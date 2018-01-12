@@ -31,11 +31,17 @@ void terminate_handler(int sig)
 		sem_post(s);
 		sem_close(s);
 	}
+	
+	if (sig == SIGINT)
+	{
+		exit(0);
+	}
 }
 
 ManagementFactory::ManagementFactory()
 {
 	signal(SIGABRT, terminate_handler);
+	signal(SIGINT, terminate_handler);
 }		
 			
 ManagementFactory::~ManagementFactory()

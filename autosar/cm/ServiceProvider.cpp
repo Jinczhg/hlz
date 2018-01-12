@@ -25,6 +25,8 @@ ServiceProvider::ServiceProvider(uint16_t serviceId, uint16_t instanceId, Method
 	{
 		//someip binding
 		std::shared_ptr<SomeIpEndpoint> endpoints(new SomeIpEndpoint());
+		endpoints->m_isServer = true;
+		
 		m_networkBinding = new SomeIpBinding(m_serviceId, m_instanceId, endpoints);
 		m_networkBinding->setReceiveHandler([this](std::shared_ptr<Message> msg){
 			this->onMessage(NetWorkBindingType::SOMEIP, msg);
@@ -34,9 +36,12 @@ ServiceProvider::ServiceProvider(uint16_t serviceId, uint16_t instanceId, Method
 	{	
 		//ipc binding
 		std::shared_ptr<IpcEndpoint> endpoints(new IpcEndpoint());
+		
 		endpoints->m_isServer = true;
-		std::shared_ptr<Endpoint> multicast(new Endpoint({{127,0,0,1}}, 10000, TransportProtocol::tcp));
-		endpoints->m_multicast = multicast;
+		endpoints->m_server = conf->getServerEndpoint();
+		endpoints->m_client = conf->getClientEndpoint();
+		endpoints->m_multicast = conf->getMulticastEndpoint();
+		
 		m_networkBinding = new IpcBinding(m_serviceId, m_instanceId, endpoints);
 		m_networkBinding->setReceiveHandler([this](std::shared_ptr<Message> msg){
 			this->onMessage(NetWorkBindingType::IPC, msg);

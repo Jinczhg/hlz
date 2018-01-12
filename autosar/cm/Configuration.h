@@ -21,19 +21,19 @@ namespace ara
 			Configuration();
 			virtual ~Configuration();
 			
-			void setServerEndpoint(std::shared_ptr<Endpoint> serverEndpoint);
-			void setClientEndpoint(std::shared_ptr<Endpoint> clientEndpoint);
+			void setServerEndpoint(std::vector<std::shared_ptr<Endpoint>> serverEndpoint);
+			void setClientEndpoint(std::vector<std::shared_ptr<Endpoint>> clientEndpoint);
 			void setMulticastEndpoint(std::shared_ptr<Endpoint> multicastEndpoint);
 			void setNetWorkBindingType(NetWorkBindingType type);
 			
-			std::shared_ptr<Endpoint> getServerEndpoint() const;
-			std::shared_ptr<Endpoint> getClientEndpoint() const;
+			std::vector<std::shared_ptr<Endpoint>> getServerEndpoint() const;
+			std::vector<std::shared_ptr<Endpoint>> getClientEndpoint() const;
 			std::shared_ptr<Endpoint> getMulticastEndpoint() const;
 			NetWorkBindingType getNetWorkBindingType() const;
 			
 		private:
-			std::shared_ptr<Endpoint> m_serverEndpoint;
-			std::shared_ptr<Endpoint> m_clientEndpoint;
+			std::vector<std::shared_ptr<Endpoint>> m_serverEndpoint;
+			std::vector<std::shared_ptr<Endpoint>> m_clientEndpoint;
 			std::shared_ptr<Endpoint> m_multicastEndpoint;
 			
 			NetWorkBindingType m_networkBindingType;

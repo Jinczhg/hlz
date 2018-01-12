@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 	
 	std::shared_ptr<ara::com::Endpoint> server(new ara::com::Endpoint({{127,0,0,1}}, 9000, ara::com::TransportProtocol::tcp));
 	std::shared_ptr<ara::com::Endpoint> client(new ara::com::Endpoint({{127,0,0,1}}, 9001, ara::com::TransportProtocol::tcp));
-	std::shared_ptr<ara::com::Endpoint> mutilcast(new ara::com::Endpoint({{127,0,0,1}}, 9002, ara::com::TransportProtocol::tcp));
+	std::shared_ptr<ara::com::Endpoint> mutilcast(new ara::com::Endpoint({{127,0,0,1}}, 9004, ara::com::TransportProtocol::tcp));
 	
 	std::vector<std::shared_ptr<ara::com::Endpoint>> servers;
 	std::vector<std::shared_ptr<ara::com::Endpoint>> clients;
@@ -43,33 +43,29 @@ int main(int argc, char** argv)
 	ara::com::Method method(&proxy, 2);
 	
 	proxy.Init(&conf);
-
-#if 1
+	
 	sEvent.Subscribe(ara::com::EventCacheUpdatePolicy::kLastN, 1);
 	
 	sEvent.SetReceiveHandler([](){
 		std::cout << "event receive" << std::endl;
 	});
 	
-	ara::com::ServiceSkeleton skeleton(1, instance, ara::com::MethodCallProcessingMode::kEvent);
+	std::shared_ptr<ara::com::Payload> payload(new ara::com::Payload(strlen("hello world1")+1, (uint8_t*)"hello world1"));
 	
-	ara::com::PublishEvent pEvent(&skeleton, 1);
-	
-	skeleton.Init(&conf);
-	
-	std::shared_ptr<ara::com::Payload> payload(new ara::com::Payload(strlen("hello world")+1, (uint8_t*)"hello world"));
-	
-	ara::com::ManagementFactory::get()->getServiceProvider(1,1)->setRequestReceiveHandler(2, [](std::shared_ptr<ara::com::Message> msg){
-		ara::com::ManagementFactory::get()->getServiceProvider(1,1)->response(2, msg->getId() | (msg->getSession() << 16), msg->getPayload());
-	});
-	
-	pEvent.Send(payload);
+	sleep(1);
 	
 	method(payload, [](std::shared_ptr<ara::com::Payload> payload){
 		std::cout << "method result:" << payload->getData() << std::endl;
 	});
-#endif	
-	sleep(10);
+	
+	
+	while (1)
+	{
+		sleep(1);
+		method(payload, [](std::shared_ptr<ara::com::Payload> payload){
+			std::cout << "method result:" << payload->getData() << std::endl;
+		});
+	}
 
 	return 0;
 }

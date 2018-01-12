@@ -33,9 +33,12 @@ ServiceRequester::ServiceRequester(uint16_t serviceId, uint16_t instanceId, Conf
 	{
 		//ipc binding
 		std::shared_ptr<IpcEndpoint> endpoints(new IpcEndpoint());
+		
 		endpoints->m_isServer = false;
-		std::shared_ptr<Endpoint> multicast(new Endpoint({{127,0,0,1}}, 10000, TransportProtocol::tcp));
-		endpoints->m_multicast = multicast;
+		endpoints->m_server = conf->getServerEndpoint();
+		endpoints->m_client = conf->getClientEndpoint();
+		endpoints->m_multicast = conf->getMulticastEndpoint();
+		
 		m_networkBinding = new IpcBinding(m_serviceId, m_instanceId, endpoints);
 		m_networkBinding->setReceiveHandler([this](std::shared_ptr<Message> msg){
 			this->onMessage(NetWorkBindingType::IPC, msg);

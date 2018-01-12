@@ -21,12 +21,12 @@ Configuration::~Configuration()
 {
 }
 			
-void Configuration::setServerEndpoint(std::shared_ptr<Endpoint> serverEndpoint)
+void Configuration::setServerEndpoint(std::vector<std::shared_ptr<Endpoint>> serverEndpoint)
 {
 	m_serverEndpoint = serverEndpoint;
 }
 
-void Configuration::setClientEndpoint(std::shared_ptr<Endpoint> clientEndpoint)
+void Configuration::setClientEndpoint(std::vector<std::shared_ptr<Endpoint>> clientEndpoint)
 {
 	m_clientEndpoint = clientEndpoint;
 }
@@ -41,12 +41,12 @@ void Configuration::setNetWorkBindingType(NetWorkBindingType type)
 	m_networkBindingType = type;
 }
 
-std::shared_ptr<Endpoint> Configuration::getServerEndpoint() const
+std::vector<std::shared_ptr<Endpoint>> Configuration::getServerEndpoint() const
 {
 	return m_serverEndpoint;
 }
 
-std::shared_ptr<Endpoint> Configuration::getClientEndpoint() const
+std::vector<std::shared_ptr<Endpoint>> Configuration::getClientEndpoint() const
 {
 	return m_clientEndpoint;
 }

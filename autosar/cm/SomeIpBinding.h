@@ -22,6 +22,7 @@ namespace ara
 	{
 		class SomeIpEndpoint
 		{
+		public:
 			std::shared_ptr<Endpoint> m_server;
 			std::shared_ptr<Endpoint> m_client;
 			std::shared_ptr<Endpoint> m_multicast;
