@@ -42,6 +42,7 @@ ManagementFactory::ManagementFactory()
 {
 	signal(SIGABRT, terminate_handler);
 	signal(SIGINT, terminate_handler);
+	signal(SIGSEGV, terminate_handler);
 }		
 			
 ManagementFactory::~ManagementFactory()

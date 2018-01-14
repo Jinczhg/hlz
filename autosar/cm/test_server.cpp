@@ -57,8 +57,8 @@ int main(int argc, char** argv)
 	
 	while (1)
 	{
-		sleep(1);
-		pEvent.Send(payload);
+		usleep(10000);
+		//pEvent.Send(payload);
 	}
 
 	return 0;

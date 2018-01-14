@@ -44,6 +44,8 @@ int main(int argc, char** argv)
 	
 	proxy.Init(&conf);
 	
+	//sleep(1);
+	
 	sEvent.Subscribe(ara::com::EventCacheUpdatePolicy::kLastN, 1);
 	
 	sEvent.SetReceiveHandler([](){
@@ -51,8 +53,6 @@ int main(int argc, char** argv)
 	});
 	
 	std::shared_ptr<ara::com::Payload> payload(new ara::com::Payload(strlen("hello world1")+1, (uint8_t*)"hello world1"));
-	
-	sleep(1);
 	
 	method(payload, [](std::shared_ptr<ara::com::Payload> payload){
 		std::cout << "method result:" << payload->getData() << std::endl;

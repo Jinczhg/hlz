@@ -40,7 +40,6 @@ ServiceProvider::ServiceProvider(uint16_t serviceId, uint16_t instanceId, Method
 		endpoints->m_isServer = true;
 		endpoints->m_server = conf->getServerEndpoint();
 		endpoints->m_client = conf->getClientEndpoint();
-		endpoints->m_multicast = conf->getMulticastEndpoint();
 		
 		m_networkBinding = new IpcBinding(m_serviceId, m_instanceId, endpoints);
 		m_networkBinding->setReceiveHandler([this](std::shared_ptr<Message> msg){

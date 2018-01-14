@@ -37,7 +37,6 @@ ServiceRequester::ServiceRequester(uint16_t serviceId, uint16_t instanceId, Conf
 		endpoints->m_isServer = false;
 		endpoints->m_server = conf->getServerEndpoint();
 		endpoints->m_client = conf->getClientEndpoint();
-		endpoints->m_multicast = conf->getMulticastEndpoint();
 		
 		m_networkBinding = new IpcBinding(m_serviceId, m_instanceId, endpoints);
 		m_networkBinding->setReceiveHandler([this](std::shared_ptr<Message> msg){
@@ -52,7 +51,8 @@ ServiceRequester::~ServiceRequester()
 
 bool ServiceRequester::subscribe(uint16_t eventId)
 {
-	return false;
+	m_networkBinding->subscribe(eventId);
+	return true;
 }
 			
 bool ServiceRequester::unsubscribe(uint16_t eventId)

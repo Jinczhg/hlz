@@ -163,7 +163,7 @@ namespace ara
         class Message
         {
         public:
-        	Message(){}
+        	Message();
         	~Message(){}
         	
         	void setServiceId(uint16_t serviceId);

@@ -128,6 +128,12 @@ uint8_t* Payload::getData() const
 //end Payload
  
 // Message
+
+Message::Message()
+: m_payload(NULL)
+{
+}
+
 void Message::setServiceId(uint16_t serviceId)
 {
 	m_serviceId = serviceId;

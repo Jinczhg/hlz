@@ -15,6 +15,8 @@
 #include <sstream>
 #include <thread>
 
+#include <unistd.h>
+
 namespace ara
 {
 namespace com
@@ -27,20 +29,27 @@ IpcBinding::IpcBinding(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<
 	m_context = std::make_shared<zmq::context_t>(1);
 	
 	if (m_endpoint->m_isServer) //server
-	{
-		//publish
-		m_PUB_SUB = std::make_shared<zmq::socket_t>(*m_context.get(), ZMQ_PUB);
+	{		
+		//reply
+		for (auto ep : m_endpoint->m_server)
+		{
+			std::shared_ptr<zmq::socket_t> publisher = std::make_shared<zmq::socket_t>(*m_context.get(), ZMQ_PUB);
 	
-		std::stringstream ss_multicast;
-		ss_multicast << "tcp://*:" << m_endpoint->m_multicast->getPort();
+			std::stringstream ss_client;
+			ss_client << "tcp://*:" << ep->getPort();
 		
-		int sndhwm = 0;
-    	m_PUB_SUB->setsockopt(ZMQ_SNDHWM, &sndhwm, sizeof(sndhwm));
+			int sndhwm = 0;
+			publisher->setsockopt(ZMQ_SNDHWM, &sndhwm, sizeof(sndhwm));
 	
-		m_PUB_SUB->bind(ss_multicast.str().c_str());
+			publisher->bind(ss_client.str().c_str());
+			
+			uint16_t id = m_REPs.size();
+			m_REPs.push_back(publisher);
+			m_subscriberStatus[id] = false;
+		}
 		
 		//request
-		for (auto ep : m_endpoint->m_server)
+		for (auto ep : m_endpoint->m_client)
 		{
 			std::shared_ptr<zmq::socket_t> subscriber = std::make_shared<zmq::socket_t>(*m_context.get(), ZMQ_SUB);
 			ipv4_address_t ip = ep->getIp();
@@ -61,73 +70,52 @@ IpcBinding::IpcBinding(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<
 					
 					std::shared_ptr<Message> msg = this->parseMessage(message);
 					
-					msg->setId(id);
+					if (msg->getServiceId() == 0xFFFF)
+					{
+						if (msg->getMethodId() != 0xFFFF)
+						{
+							m_subscriberStatus[id] = true;
+						
+							for (auto em : m_eventMessages)
+							{
+								std::shared_ptr<zmq::message_t> m = buildMessage(em.second);
+								m_REPs[id]->send(*(m.get()));
+							}
+						}
+						else
+						{
+							m_REPs[id]->send(*(message.get()));
+						}
+					}
+					else
+					{
+						msg->setId(id);
 					
-					this->onMessage(msg);
+						this->onMessage(msg);
+					}
 				}
 			});
 			tr.detach();
 		}
-		
-		//reply
-		for (auto ep : m_endpoint->m_client)
-		{
-			std::shared_ptr<zmq::socket_t> publisher = std::make_shared<zmq::socket_t>(*m_context.get(), ZMQ_PUB);
-	
-			std::stringstream ss_client;
-			ss_client << "tcp://*:" << ep->getPort();
-		
-			sndhwm = 0;
-			publisher->setsockopt(ZMQ_SNDHWM, &sndhwm, sizeof(sndhwm));
-	
-			publisher->bind(ss_client.str().c_str());
-			
-			m_REPs.push_back(publisher);
-		}
 	}
 	else //client
 	{
-		//subscribe
-		m_PUB_SUB = std::make_shared<zmq::socket_t>(*m_context.get(), ZMQ_SUB);
-	
-		ipv4_address_t ip = m_endpoint->m_multicast->getIp();
-		std::stringstream ss_multicast;
-		ss_multicast << "tcp://" << (int)ip[0] << "." << (int)ip[1] << "." << (int)ip[2] << "." << (int)ip[3] << ":" << m_endpoint->m_multicast->getPort();
-	
-		std::cout << ss_multicast.str() << std::endl;
-		
-		m_PUB_SUB->connect(ss_multicast.str().c_str());
-		m_PUB_SUB->setsockopt(ZMQ_SUBSCRIBE, "", 0);
-		
-		std::thread t([this](){
-			while (1)
-			{
-				std::shared_ptr<zmq::message_t> message(new zmq::message_t);
-    			this->m_PUB_SUB->recv(message.get());
-    			
-    			std::shared_ptr<Message> msg = this->parseMessage(message);
-    			
-    			this->onMessage(msg);
-			}
-		});
-		t.detach();
-		
-		//request
-		std::shared_ptr<Endpoint> ep = m_endpoint->m_client[0];
+		 std::shared_ptr<bool> connected(new bool);
+		 
+		//reply
+		std::shared_ptr<Endpoint> ep = m_endpoint->m_server[0];
 		std::shared_ptr<zmq::socket_t> subscriber = std::make_shared<zmq::socket_t>(*m_context.get(), ZMQ_SUB);
-		ip = ep->getIp();
-		std::stringstream ss_client;
-		ss_client << "tcp://" << (int)ip[0] << "." << (int)ip[1] << "." << (int)ip[2] << "." << (int)ip[3] << ":" << ep->getPort();
+		ipv4_address_t ip = ep->getIp();
+		std::stringstream ss_server;
+		ss_server << "tcp://" << (int)ip[0] << "." << (int)ip[1] << "." << (int)ip[2] << "." << (int)ip[3] << ":" << ep->getPort();
 
-		std::cout << ss_client.str() << std::endl;
-
-		subscriber->connect(ss_client.str().c_str());
+		subscriber->connect(ss_server.str().c_str());
 		subscriber->setsockopt(ZMQ_SUBSCRIBE, "", 0);
 		
-		uint16_t id = m_REQs.size();
+		uint16_t id = m_REPs.size();
 		m_REPs.push_back(subscriber);
 		
-		std::thread tr([this,id](){
+		std::thread tr([this,id,connected](){
 			while (1)
 			{
 				std::shared_ptr<zmq::message_t> message(new zmq::message_t);
@@ -135,30 +123,48 @@ IpcBinding::IpcBinding(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<
 				
 				std::shared_ptr<Message> msg = this->parseMessage(message);
 				
-				msg->setId(id);
-				
-				this->onMessage(msg);
+				if (msg->getServiceId() == 0xFFFF && msg->getMethodId() == 0xFFFF)
+				{
+					*connected.get() = true;
+				}
+				else
+				{
+					msg->setId(id);
+					this->onMessage(msg);
+				}
 			}
 		});
 		tr.detach();
 		
 		
-		//reply
-		ep = m_endpoint->m_server[0];
+		//requestss_server
+		ep = m_endpoint->m_client[0];
 	
 		std::shared_ptr<zmq::socket_t> publisher = std::make_shared<zmq::socket_t>(*m_context.get(), ZMQ_PUB);
 
-		std::stringstream ss_server;
-		ss_server << "tcp://*:" << ep->getPort();
-		
-		std::cout << ss_server.str() << std::endl;
+		std::stringstream ss_client;
+		ss_client << "tcp://*:" << ep->getPort();
 	
 		int sndhwm = 0;
 		publisher->setsockopt(ZMQ_SNDHWM, &sndhwm, sizeof(sndhwm));
 
-		publisher->bind(ss_server.str().c_str());
+		publisher->bind(ss_client.str().c_str());
 		
 		m_REQs.push_back(publisher);
+		
+		std::shared_ptr<Message> initMsg(new Message);
+		initMsg->setServiceId(0xFFFF);
+		initMsg->setMethodId(0xFFFF);
+		
+		std::shared_ptr<zmq::message_t> initIpcMsg = buildMessage(initMsg);
+		
+		m_REQs[0]->send(*(buildMessage(initMsg).get()));
+		
+		while (!(*connected.get()))
+		{
+			usleep(10000);
+			m_REQs[0]->send(*(buildMessage(initMsg).get()));
+		}
 	}
 }
 
@@ -170,7 +176,9 @@ std::shared_ptr<zmq::message_t> IpcBinding::buildMessage(std::shared_ptr<Message
 {	
 	Serializer serializer(ByteOrderEnum::BigEndian);
 	
-	uint32_t length = 8 + msg->getPayload()->getSize();
+	std::shared_ptr<Payload> payload = msg->getPayload();
+	
+	uint32_t length = 8 + (payload ? payload->getSize() : 0);
 	uint8_t protocol_version = 1;
 	uint8_t interface_version = 1;
 	uint8_t type = (uint8_t)msg->getType();
@@ -189,7 +197,10 @@ std::shared_ptr<zmq::message_t> IpcBinding::buildMessage(std::shared_ptr<Message
 	std::shared_ptr<zmq::message_t> message(new zmq::message_t(length + 8));
 	
 	std::memcpy(message->data(), serializer.getData(), serializer.getSize());
-	std::memcpy(static_cast<uint8_t*>(message->data()) + serializer.getSize(), msg->getPayload()->getData(), msg->getPayload()->getSize());
+	if (payload)
+	{
+		std::memcpy(static_cast<uint8_t*>(message->data()) + serializer.getSize(), payload->getData(), payload->getSize());
+	}
 	
 	return message;
 }
@@ -229,9 +240,11 @@ std::shared_ptr<Message> IpcBinding::parseMessage(std::shared_ptr<zmq::message_t
 	message->setType((MessageType)type);
 	message->setCode((ReturnCode)code);
 	
-	std::shared_ptr<Payload> payload(new Payload(length - 8, data + 16));
-	
-	message->setPayload(payload);
+	if (length - 8 > 0)
+	{
+		std::shared_ptr<Payload> payload(new Payload(length - 8, data + 16));
+		message->setPayload(payload);
+	}
 	
 	return message;
 }
@@ -239,21 +252,24 @@ std::shared_ptr<Message> IpcBinding::parseMessage(std::shared_ptr<zmq::message_t
 bool IpcBinding::send(std::shared_ptr<Message> msg)
 {	
 	if (msg->getType() == MessageType::MT_NOTIFICATION) //event
-	{
-		std::cout << "notify:" << (char*)msg->getPayload()->getData() << std::endl;
+	{	
+		m_eventMessages[msg->getMethodId()] = msg;
 		
-		m_eventMessages[msg->getMethodId] = msg;
-		
-    	return m_PUB_SUB->send(*(buildMessage(msg).get()));
+    	std::shared_ptr<zmq::message_t> message = buildMessage(msg);
+    	for (auto subscriber : m_subscriberStatus)
+    	{
+    		if (subscriber.second)
+    		{
+    			m_REPs[subscriber.first]->send(*(message.get()));
+    		}
+    	}
 	}
 	else if (msg->getType() == MessageType::MT_REQUEST || msg->getType() == MessageType::MT_REQUEST_NO_RETURN) //method request
 	{
-		std::cout << "method request:" << (char*)msg->getPayload()->getData() << std::endl;
 		return m_REQs[0]->send(*(buildMessage(msg).get()));
 	}
 	else //method response or others
 	{
-		std::cout << "method response[" << (int)msg->getCode() << "]" << ":" << (char*)msg->getPayload()->getData() << std::endl;
 		return m_REPs[msg->getId()]->send(*(buildMessage(msg).get()));
 	}
 	
@@ -275,6 +291,14 @@ void IpcBinding::onMessage(std::shared_ptr<Message> msg)
 
 void IpcBinding::subscribe(uint16_t eventgroupId)
 {
+	std::shared_ptr<Message> message(new Message);
+	
+	message->setServiceId(0xFFFF);
+	message->setMethodId(eventgroupId);
+	
+	m_REQs[0]->send(*(buildMessage(message).get()));
+	
+	std::cout << "subscribe" << std::endl;
 }
 
 void IpcBinding::unsubscribe(uint16_t eventgroupId)
