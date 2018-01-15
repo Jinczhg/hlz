@@ -18,7 +18,7 @@
 #include <cstdlib>
 #include <array>
 
-#include "BaseTypes.h"
+#include <BaseTypes.h>
 
 namespace ara
 {
@@ -117,7 +117,7 @@ namespace ara
         	uint8_t* m_data;
         	
         public:
-        	Payload(uint32_t size, const uint8_t *data);
+        	Payload(uint32_t size, uint8_t *data);
         	~Payload();
         	
         	uint32_t getSize() const;
@@ -163,7 +163,7 @@ namespace ara
         class Message
         {
         public:
-        	Message();
+        	Message(){}
         	~Message(){}
         	
         	void setServiceId(uint16_t serviceId);

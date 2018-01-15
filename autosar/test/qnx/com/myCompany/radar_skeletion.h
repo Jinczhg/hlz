@@ -12,12 +12,12 @@ namespace skeleton
 	
 namespace events
 {
-	class BrakeEvent : public ara::com::PublishEvent
+	class BrakeEvent : public PublishEvent
 	{
 	public:
 		using SampleType = RadarObjects;
 		
-		BrakeEvent(ara::com::ServiceSkeleton* skeleton, uint16_t eventId);
+		BrakeEvent(ara::com::ServiceSkeleton* proxy, uint16_t eventId);
 		virtual ~BrakeEvent(){}
 		
 		void Send(const SampleType &data);
@@ -51,7 +51,7 @@ namespace events
 		
 		virtual ara::com::Future<AdjustOutput> Adjust(const Position& target_position) = 0;
 		
-		bool Init(ara::com::Configuration* conf);
+		bool Init(Configuration* conf);
 	};
 } // namespace proxy
 } // namespace second

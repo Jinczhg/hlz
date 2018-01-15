@@ -25,17 +25,17 @@ namespace ara
 			
 			uint32_t getSize() const;
 			
-			bool serialize(boolean value);
-			bool serialize(uint8 value);
-			bool serialize(uint16 value);
-			bool serialize(uint32 value);
-			bool serialize(uint64 value);
-			bool serialize(sint8 value);
-			bool serialize(sint16 value);
-			bool serialize(sint32 value);
-			bool serialize(sint64 value);
-			bool serialize(float32 value);
-			bool serialize(float64 value);
+			virtual bool serialize(boolean value);
+			virtual bool serialize(uint8 value);
+			virtual bool serialize(uint16 value);
+			virtual bool serialize(uint32 value);
+			virtual bool serialize(uint64 value);
+			virtual bool serialize(sint8 value);
+			virtual bool serialize(sint16 value);
+			virtual bool serialize(sint32 value);
+			virtual bool serialize(sint64 value);
+			virtual bool serialize(float32 value);
+			virtual bool serialize(float64 value);
 			
 		protected:
 			std::vector<uint8_t> m_data;

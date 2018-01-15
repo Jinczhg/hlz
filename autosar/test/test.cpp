@@ -5,6 +5,7 @@
 
 int main(int argc, char** argv)
 {
+#if 0
 	ara::com::Configuration conf;
 	
 	ara::com::InstanceIdentifier instance("1");
@@ -46,6 +47,6 @@ int main(int argc, char** argv)
 	});
 	
 	sleep(10);
-
+#endif
 	return 0;
 }

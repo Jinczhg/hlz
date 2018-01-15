@@ -36,7 +36,7 @@ namespace methods
 	public:
 		struct Output
 		{
-			boolean result;
+			ara::com::boolean result;
 		};
 		
 		Calibrate(ara::com::ServiceProxy* proxy, uint16_t methodId);
@@ -51,7 +51,7 @@ namespace methods
 		struct Output
 		{
 			boolean success;
-			Position effective_position;
+			ara::com::Position effective_position;
 		};
 		
 		Adjust(ara::com::ServiceProxy* proxy, uint16_t methodId);
@@ -64,11 +64,11 @@ namespace methods
 	class RadarProxy : public ara::com::ServiceProxy
 	{
 	public:
-		explicit RadarProxy(ara::com::ServiceProxy::HandleType handle);
-		virtual ~RadarProxy(){}
+		explicit RadarProxy(ara::com::HandleType handle);
+		virtual ~ServiceProxy(){}
 			
-		static ara::com::ServiceHandleContainer<ara::com::ServiceProxy::HandleType> FindService(ara::com::InstanceIdentifier instance);
-		static ara::com::FindServiceHandle StartFindService(ara::com::FindServiceHandler<ara::com::ServiceProxy::HandleType> handler, ara::com::InstanceIdentifier instance);
+		static ServiceHandleContainer<ara::com::ServiceProxy::HandleType> FindService(ara::com::InstanceIdentifier instance);
+		static ara::com::FindServiceHandle StartFindService(FindServiceHandler<ara::com::ServiceProxy::HandleType> handler, ara::com::InstanceIdentifier instance);
 		
 		events::BrakeEvent BrakeEvent;
 		methods::Calibrate Calibrate;

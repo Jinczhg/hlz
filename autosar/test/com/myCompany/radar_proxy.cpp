@@ -1,6 +1,8 @@
-#incluce "radar_proxy.h"
+#include "radar_proxy.h"
 
-using namespace com::myCompany;
+#include <iostream>
+
+using namespace com::myCompany::proxy;
 
 //events
 
@@ -21,8 +23,8 @@ bool events::BrakeEvent::Update(ara::com::FilterFunction<events::BrakeEvent::Sam
 		{
 			uint8_t *data = payload->getData();
 			uint32_t len = payload->getSize();
-			events::BrakeEvent::SampleType sample;
-			ara::com::SamplePtr<const events::BrakeEvent::SampleType> sample(new events::BrakeEvent::SampleType);
+			
+			ara::com::SamplePtr<events::BrakeEvent::SampleType> sample(new events::BrakeEvent::SampleType);
 			
 			RadarDeserializer deserializer(data, len);
 			deserializer.deserialize(*(sample.get()));
@@ -56,29 +58,32 @@ methods::Calibrate::Calibrate(ara::com::ServiceProxy* proxy, uint16_t methodId)
 {
 }
 
-ara::com::Future<methods::Calibrate::Output> Calibrate::operator()(const Position& configuration)
+ara::com::Future<methods::Calibrate::Output> methods::Calibrate::operator()(const Position& configuration)
 {
-	RadarSerializer serializer();
+	RadarSerializer serializer;
 	serializer.serialize(configuration);
 	
-	uint8_t *data = serializer.getData();
+	const uint8_t *data = serializer.getData();
 	uint32_t len = serializer.getSize();
 	
-	std::shared_ptr<Payload> payload(new ara::com::Payload(data, len));
-	ara::com::Promise<methods::Calibrate::Output> promise;
+	std::shared_ptr<ara::com::Payload> payload(new ara::com::Payload(len, data));
+	std::shared_ptr<ara::com::Promise<methods::Calibrate::Output>> promise;
 	
-	ara::com::Method::operator(payload, [&promise](std::shared_ptr<ara::com::Payload> payload){
+	ara::com::Method::operator()(payload, [promise](std::shared_ptr<ara::com::Payload> payload){
+	    std::cout << "Calibrate rep" << std::endl;
 		methods::Calibrate::Output output;
-		uint8_t *resData = payload.getData();
+		const uint8_t *resData = payload->getData();
 		uint32_t resLen = payload->getSize();
 		
-		RadarDeserializer deserializer(data, len);
+		RadarDeserializer deserializer(resData, resLen);
 		deserializer.deserialize(output.result);
 		
-		promise.set_value(output);
+		std::cout << "Calibrate promise set_value" << std::endl;
+		promise->set_value(output);
+		std::cout << "Calibrate promise set_value OK" << std::endl;
 	});
 	
-	return promise.get_future();
+	return promise->get_future();
 }
 
 methods::Adjust::Adjust(ara::com::ServiceProxy* proxy, uint16_t methodId)
@@ -86,44 +91,44 @@ methods::Adjust::Adjust(ara::com::ServiceProxy* proxy, uint16_t methodId)
 {
 }
 
-ara::com::Future<methods::Adjust::Output> Adjust::operator()(const Position& target_position)
+ara::com::Future<methods::Adjust::Output> methods::Adjust::operator()(const Position& target_position)
 {
-	RadarSerializer serializer();
+	RadarSerializer serializer;
 	serializer.serialize(target_position);
 	
-	uint8_t *data = serializer.getData();
+	const uint8_t *data = serializer.getData();
 	uint32_t len = serializer.getSize();
 	
-	std::shared_ptr<Payload> payload(new ara::com::Payload(data, len));
-	ara::com::Promise<methods::Calibrate::Output> promise;
+	std::shared_ptr<ara::com::Payload> payload(new ara::com::Payload(len, data));
+	std::shared_ptr<ara::com::Promise<methods::Adjust::Output>> promise;
 	
-	ara::com::Method::operator(payload, [&promise](std::shared_ptr<ara::com::Payload> payload){
+	ara::com::Method::operator()(payload, [promise](std::shared_ptr<ara::com::Payload> payload){
 		methods::Adjust::Output output;
-		uint8_t *resData = payload.getData();
+		uint8_t *resData = payload->getData();
 		uint32_t resLen = payload->getSize();
 		
-		RadarDeserializer deserializer(data, len);
+		RadarDeserializer deserializer(resData, resLen);
 		deserializer.deserialize(output.success);
 		deserializer.deserialize(output.effective_position);
 		
-		promise.set_value(output);
+		promise->set_value(output);
 	});
 	
-	return promise.get_future();
+	return promise->get_future();
 }
 
 //proxy
-RadarProxy::RadarProxy(ara::com::HandleType handle)
-: ara::com::ServiceProxy(handle)
+RadarProxy::RadarProxy(ara::com::ServiceProxy::HandleType handle)
+: ara::com::ServiceProxy(handle), BrakeEvent(this, 1), Calibrate(this, 2), Adjust(this, 3)
 {
 }
 			
-ServiceHandleContainer<ara::com::ServiceProxy::HandleType> RadarProxy::FindService(ara::com::InstanceIdentifier instance)
+ara::com::ServiceHandleContainer<ara::com::ServiceProxy::HandleType> RadarProxy::FindService(ara::com::InstanceIdentifier instance)
 {
-	return FindService(31, instance);
+	return ara::com::ServiceProxy::FindService(31, instance);
 }
 
-ara::com::FindServiceHandle RadarProxy::StartFindService(FindServiceHandler<ara::com::ServiceProxy::HandleType> handler, ara::com::InstanceIdentifier instance)
+ara::com::FindServiceHandle RadarProxy::StartFindService(ara::com::FindServiceHandler<ara::com::ServiceProxy::HandleType> handler, ara::com::InstanceIdentifier instance)
 {
-	return StartFindService(handler, 31, instance);
+	return ara::com::ServiceProxy::StartFindService(handler, 31, instance);
 }

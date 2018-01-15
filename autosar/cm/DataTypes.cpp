@@ -105,7 +105,7 @@ uint32_t FindServiceHandle::getId() const
 //end FindServiceHandle
 
 //Payload
-Payload::Payload(uint32_t size, uint8_t *data)
+Payload::Payload(uint32_t size, const uint8_t *data)
 : m_size(size), m_data(new uint8_t[size])
 {
 	std::memcpy(m_data, data, m_size);

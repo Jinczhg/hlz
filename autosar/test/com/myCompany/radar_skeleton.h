@@ -17,7 +17,7 @@ namespace events
 	public:
 		using SampleType = RadarObjects;
 		
-		BrakeEvent(ara::com::ServiceSkeleton* skeleton, uint16_t eventId);
+		BrakeEvent(ara::com::ServiceSkeleton* proxy, uint16_t eventId);
 		virtual ~BrakeEvent(){}
 		
 		void Send(const SampleType &data);

@@ -21,17 +21,17 @@ namespace ara
 			Deserializer(ByteOrderEnum byteOrder, const uint8_t *data, uint32_t size);
 			virtual ~Deserializer(){}
 			
-			bool deserialize(boolean& value);
-			bool deserialize(uint8& value);
-			bool deserialize(uint16& value);
-			bool deserialize(uint32& value);
-			bool deserialize(uint64& value);
-			bool deserialize(sint8& value);
-			bool deserialize(sint16& value);
-			bool deserialize(sint32& value);
-			bool deserialize(sint64& value);
-			bool deserialize(float32& value);
-			bool deserialize(float64& value);
+			virtual bool deserialize(boolean& value);
+			virtual bool deserialize(uint8& value);
+			virtual bool deserialize(uint16& value);
+			virtual bool deserialize(uint32& value);
+			virtual bool deserialize(uint64& value);
+			virtual bool deserialize(sint8& value);
+			virtual bool deserialize(sint16& value);
+			virtual bool deserialize(sint32& value);
+			virtual bool deserialize(sint64& value);
+			virtual bool deserialize(float32& value);
+			virtual bool deserialize(float64& value);
 			
 		protected:
 			std::vector<uint8_t> m_data;
