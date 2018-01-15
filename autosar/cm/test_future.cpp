@@ -13,7 +13,8 @@ int main(int argc, char** argv)
 	
 	//std::promise<int> p;
 	//std::future<int> f = p.get_future();
-	
+
+#if 0	
 	f.then([](ara::com::Future<int> f){
 		try
 		{
@@ -26,12 +27,18 @@ int main(int argc, char** argv)
 			std::cout << "then error" << std::endl;
 		}
 	});
+#endif	
+	std::thread( [&p]{
 	
-	std::thread( [&p]{ p.set_value(100); }).detach();
+	 int value = 100;
+	 usleep(10000000);
+	 p.set_value(value);
+	  
+	 }).detach();
 	
 	std::cout << "is ready:" << (f.is_ready() ? "OK" : "NOT") << std::endl;
 	
-	f.wait();
+	//f.wait();
 	
 #if 0
 	f.then([](ara::com::Future<int> f){
@@ -47,8 +54,10 @@ int main(int argc, char** argv)
 		}
 	});
 #endif
+	std::cout<< f.get() << std::endl;
 	//std::cout << "is ready:" << (f.is_ready() ? "OK" : "NOT") << std::endl;
-	usleep(100);
+	//usleep(100);
+	
 
 	return 0;
 }

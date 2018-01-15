@@ -50,8 +50,6 @@ namespace events
 		};
 		
 		virtual ara::com::Future<AdjustOutput> Adjust(const Position& target_position) = 0;
-		
-		bool Init(ara::com::Configuration* conf);
 	};
 } // namespace proxy
 } // namespace second

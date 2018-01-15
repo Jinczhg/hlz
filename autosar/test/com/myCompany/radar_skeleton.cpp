@@ -43,11 +43,27 @@ void events::BrakeEvent::Send(ara::com::SampleAllocateePtr<SampleType> data)
 RadarSkeketion::RadarSkeketion(ara::com::InstanceIdentifier instance, ara::com::MethodCallProcessingMode mode)
 : ara::com::ServiceSkeleton(31, instance, mode), BrakeEvent(this, 1)
 {
-}
-
-bool RadarSkeketion::Init(ara::com::Configuration* conf)
-{
-	ara::com::ServiceSkeleton::Init(conf);
+	std::shared_ptr<ara::com::Configuration> conf(new ara::com::Configuration);
+	
+	std::shared_ptr<ara::com::Endpoint> server1(new ara::com::Endpoint({{127,0,0,1}}, 9000, ara::com::TransportProtocol::tcp));
+	std::shared_ptr<ara::com::Endpoint> client1(new ara::com::Endpoint({{127,0,0,1}}, 9001, ara::com::TransportProtocol::tcp));
+	std::shared_ptr<ara::com::Endpoint> server2(new ara::com::Endpoint({{127,0,0,1}}, 9002, ara::com::TransportProtocol::tcp));
+	std::shared_ptr<ara::com::Endpoint> client2(new ara::com::Endpoint({{127,0,0,1}}, 9003, ara::com::TransportProtocol::tcp));
+	
+	std::vector<std::shared_ptr<ara::com::Endpoint>> servers;
+	std::vector<std::shared_ptr<ara::com::Endpoint>> clients;
+	
+	servers.push_back(server1);
+	clients.push_back(client1);
+	
+	servers.push_back(server2);
+	clients.push_back(client2);
+	
+	conf->setServerEndpoint(servers);
+	conf->setClientEndpoint(clients);
+	conf->setNetWorkBindingType(ara::com::NetWorkBindingType::IPC);
+	
+	Init(conf);
 	
 	ara::com::ServiceProvider *provider = ara::com::ManagementFactory::get()->getServiceProvider(this->getServiceId(), this->getInstanceId());
 	
@@ -95,6 +111,4 @@ bool RadarSkeketion::Init(ara::com::Configuration* conf)
 		
 		provider->response(3, msg->getId() | (msg->getSession() << 16), response);
 	});
-	
-	return true;
 }

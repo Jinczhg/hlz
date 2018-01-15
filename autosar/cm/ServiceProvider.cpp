@@ -18,7 +18,7 @@ namespace ara
 namespace com
 {
 
-ServiceProvider::ServiceProvider(uint16_t serviceId, uint16_t instanceId, MethodCallProcessingMode mode, Configuration *conf)
+ServiceProvider::ServiceProvider(uint16_t serviceId, uint16_t instanceId, MethodCallProcessingMode mode, std::shared_ptr<Configuration> conf)
 : m_serviceId(serviceId), m_instanceId(instanceId), m_mode(mode), m_clientId(0), m_session(0), m_mutex(), m_condition()
 {
 	if (conf->getNetWorkBindingType() == NetWorkBindingType::SOMEIP)

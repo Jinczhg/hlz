@@ -14,8 +14,8 @@ namespace ara
 namespace com
 {
 
-ServiceProxy::HandleType::HandleType(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<Endpoint> endpoint)
-: m_serviceId(serviceId), m_instanceId(instanceId), m_endpoint(endpoint)
+ServiceProxy::HandleType::HandleType(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<Configuration> conf)
+: m_serviceId(serviceId), m_instanceId(instanceId), m_conf(conf)
 {
 }
 
@@ -27,7 +27,7 @@ ServiceProxy::HandleType& ServiceProxy::HandleType::operator=(HandleType& other)
 {
 	m_serviceId = other.m_serviceId;
 	m_instanceId = other.m_instanceId;
-	m_endpoint = other.m_endpoint;
+	m_conf = other.m_conf;
 	
 	return *this;
 }
@@ -42,9 +42,9 @@ uint16_t ServiceProxy::HandleType::getInstanceId() const
 	return m_instanceId;
 }
 
-std::shared_ptr<Endpoint> ServiceProxy::HandleType::getEndpoit() const
+std::shared_ptr<Configuration> ServiceProxy::HandleType::getConf() const
 {
-	return m_endpoint;
+	return m_conf;
 }
 
 			
@@ -77,7 +77,7 @@ void ServiceProxy::StopFindService(FindServiceHandle handle)
 }
 
 			
-bool ServiceProxy::Init(Configuration* conf)
+bool ServiceProxy::Init(std::shared_ptr<Configuration> conf)
 {
 	ManagementFactory::get()->createServiceRequester(m_serviceId, m_instanceId, conf);
 	

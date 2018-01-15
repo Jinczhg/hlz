@@ -25,8 +25,6 @@ namespace ara
 			explicit ServiceSkeleton(uint16_t serviceId, InstanceIdentifier instance, MethodCallProcessingMode mode = MethodCallProcessingMode::kEvent);
 			virtual ~ServiceSkeleton();
 			
-			bool Init(Configuration* conf);
-			
 			void OfferService();
 			void StopOfferService();
 			
@@ -35,6 +33,9 @@ namespace ara
 			uint16_t getServiceId() const;
 			
 			uint16_t getInstanceId() const;
+		
+		protected:
+			bool Init(std::shared_ptr<Configuration> conf);
 			
 		private:
 			uint16_t m_serviceId;

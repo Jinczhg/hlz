@@ -26,7 +26,7 @@ namespace ara
 		{
 			friend class ManagementFactory;
 			
-			ServiceRequester(uint16_t serviceId, uint16_t instanceId, Configuration *conf);
+			ServiceRequester(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<Configuration> conf);
 			
 		public:
 			virtual ~ServiceRequester();

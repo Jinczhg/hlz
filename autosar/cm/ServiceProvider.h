@@ -27,7 +27,7 @@ namespace ara
 		{
 			friend class ManagementFactory;
 			
-			ServiceProvider(uint16_t serviceId, uint16_t instanceId, MethodCallProcessingMode mode, Configuration *conf);
+			ServiceProvider(uint16_t serviceId, uint16_t instanceId, MethodCallProcessingMode mode, std::shared_ptr<Configuration> conf);
 			
 		public:
 			virtual ~ServiceProvider();

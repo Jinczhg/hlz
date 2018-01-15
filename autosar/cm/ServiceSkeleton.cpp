@@ -72,7 +72,7 @@ ServiceSkeleton::~ServiceSkeleton()
 	ManagementFactory::get()->destroyServiceProvider(m_serviceId, m_instanceId);
 }
 			
-bool ServiceSkeleton::Init(Configuration* conf)
+bool ServiceSkeleton::Init(std::shared_ptr<Configuration> conf)
 {
 	try
 	{

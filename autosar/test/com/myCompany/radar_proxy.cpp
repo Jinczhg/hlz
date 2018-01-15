@@ -67,10 +67,11 @@ ara::com::Future<methods::Calibrate::Output> methods::Calibrate::operator()(cons
 	uint32_t len = serializer.getSize();
 	
 	std::shared_ptr<ara::com::Payload> payload(new ara::com::Payload(len, data));
-	std::shared_ptr<ara::com::Promise<methods::Calibrate::Output>> promise;
+	ara::com::Promise<methods::Calibrate::Output> promise;
 	
-	ara::com::Method::operator()(payload, [promise](std::shared_ptr<ara::com::Payload> payload){
-	    std::cout << "Calibrate rep" << std::endl;
+	ara::com::Future<methods::Calibrate::Output> future = promise.get_future();
+	
+	ara::com::Method::operator()(payload, [&promise](std::shared_ptr<ara::com::Payload> payload){
 		methods::Calibrate::Output output;
 		const uint8_t *resData = payload->getData();
 		uint32_t resLen = payload->getSize();
@@ -78,12 +79,12 @@ ara::com::Future<methods::Calibrate::Output> methods::Calibrate::operator()(cons
 		RadarDeserializer deserializer(resData, resLen);
 		deserializer.deserialize(output.result);
 		
-		std::cout << "Calibrate promise set_value" << std::endl;
-		promise->set_value(output);
-		std::cout << "Calibrate promise set_value OK" << std::endl;
+		promise.set_value(output);
 	});
 	
-	return promise->get_future();
+	future.wait();
+	
+	return future;
 }
 
 methods::Adjust::Adjust(ara::com::ServiceProxy* proxy, uint16_t methodId)
@@ -100,9 +101,11 @@ ara::com::Future<methods::Adjust::Output> methods::Adjust::operator()(const Posi
 	uint32_t len = serializer.getSize();
 	
 	std::shared_ptr<ara::com::Payload> payload(new ara::com::Payload(len, data));
-	std::shared_ptr<ara::com::Promise<methods::Adjust::Output>> promise;
+	ara::com::Promise<methods::Adjust::Output> promise;
 	
-	ara::com::Method::operator()(payload, [promise](std::shared_ptr<ara::com::Payload> payload){
+	ara::com::Future<methods::Adjust::Output> future = promise.get_future();
+	
+	ara::com::Method::operator()(payload, [&promise](std::shared_ptr<ara::com::Payload> payload){
 		methods::Adjust::Output output;
 		uint8_t *resData = payload->getData();
 		uint32_t resLen = payload->getSize();
@@ -111,21 +114,45 @@ ara::com::Future<methods::Adjust::Output> methods::Adjust::operator()(const Posi
 		deserializer.deserialize(output.success);
 		deserializer.deserialize(output.effective_position);
 		
-		promise->set_value(output);
+		promise.set_value(output);
 	});
 	
-	return promise->get_future();
+	future.wait();
+	
+	return future;
 }
 
 //proxy
 RadarProxy::RadarProxy(ara::com::ServiceProxy::HandleType handle)
 : ara::com::ServiceProxy(handle), BrakeEvent(this, 1), Calibrate(this, 2), Adjust(this, 3)
 {
+	Init(handle.getConf());
 }
 			
 ara::com::ServiceHandleContainer<ara::com::ServiceProxy::HandleType> RadarProxy::FindService(ara::com::InstanceIdentifier instance)
 {
-	return ara::com::ServiceProxy::FindService(31, instance);
+	//return ara::com::ServiceProxy::FindService(31, instance);
+	std::shared_ptr<ara::com::Configuration> conf(new ara::com::Configuration);
+	
+	std::shared_ptr<ara::com::Endpoint> server1(new ara::com::Endpoint({{127,0,0,1}}, 9000, ara::com::TransportProtocol::tcp));
+	std::shared_ptr<ara::com::Endpoint> client1(new ara::com::Endpoint({{127,0,0,1}}, 9001, ara::com::TransportProtocol::tcp));
+	
+	std::vector<std::shared_ptr<ara::com::Endpoint>> servers;
+	std::vector<std::shared_ptr<ara::com::Endpoint>> clients;
+	
+	servers.push_back(server1);
+	clients.push_back(client1);
+	
+	conf->setServerEndpoint(servers);
+	conf->setClientEndpoint(clients);
+	conf->setNetWorkBindingType(ara::com::NetWorkBindingType::IPC);
+	
+	ara::com::ServiceProxy::HandleType handle(1,1,conf);
+	
+	ara::com::ServiceHandleContainer<ara::com::ServiceProxy::HandleType> handles;
+	handles.push_back(handle);
+	
+	return handles;
 }
 
 ara::com::FindServiceHandle RadarProxy::StartFindService(ara::com::FindServiceHandler<ara::com::ServiceProxy::HandleType> handler, ara::com::InstanceIdentifier instance)

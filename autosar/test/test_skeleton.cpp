@@ -1,4 +1,4 @@
-#include <com/myCompany/radar_skeletion.h>
+#include <com/myCompany/radar_skeleton.h>
 
 #include <unistd.h>
 #include <iostream>
@@ -31,6 +31,8 @@ public:
 	
 	virtual ara::com::Future<com::myCompany::skeleton::RadarSkeketion::AdjustOutput> Adjust(const Position& target_position)
 	{
+		std::cout << "Adjust" << std::endl;
+		
 		ara::com::Promise<com::myCompany::skeleton::RadarSkeketion::AdjustOutput> p;
 		
 		com::myCompany::skeleton::RadarSkeketion::AdjustOutput output;
@@ -48,7 +50,7 @@ public:
 
 int main(int argc, char** argv)
 {
-	ara::com::Configuration conf;
+	std::shared_ptr<ara::com::Configuration> conf(new ara::com::Configuration);
 	
 	ara::com::InstanceIdentifier instance("1");
 	
@@ -66,13 +68,13 @@ int main(int argc, char** argv)
 	servers.push_back(server2);
 	clients.push_back(client2);
 	
-	conf.setServerEndpoint(servers);
-	conf.setClientEndpoint(clients);
-	conf.setNetWorkBindingType(ara::com::NetWorkBindingType::IPC);
+	conf->setServerEndpoint(servers);
+	conf->setClientEndpoint(clients);
+	conf->setNetWorkBindingType(ara::com::NetWorkBindingType::IPC);
 	
 	RadarSkeketionImp skeleton(instance, ara::com::MethodCallProcessingMode::kEvent);
 	
-	skeleton.Init(&conf);
+	//skeleton.Init(conf);
 	
 	while (1)
 	{

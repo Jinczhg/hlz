@@ -17,7 +17,7 @@ namespace ara
 namespace com
 {
 
-ServiceRequester::ServiceRequester(uint16_t serviceId, uint16_t instanceId, Configuration *conf)
+ServiceRequester::ServiceRequester(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<Configuration> conf)
 : m_serviceId(serviceId), m_instanceId(instanceId), m_clientId(0), m_session(0)
 {
 	if (conf->getNetWorkBindingType() == NetWorkBindingType::SOMEIP)

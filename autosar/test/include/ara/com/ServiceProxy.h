@@ -22,19 +22,19 @@ namespace ara
 			class HandleType
 			{
 			public:
-				HandleType(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<Endpoint> endpoint);
+				HandleType(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<Configuration> conf);
 				virtual ~HandleType();
 				
 				HandleType& operator=(HandleType& other);
 				
 				uint16_t getServiceId() const;
 				uint16_t getInstanceId() const;
-				std::shared_ptr<Endpoint> getEndpoit() const;
+				std::shared_ptr<Configuration> getConf() const;
 				
 			private:
 				uint16_t m_serviceId;
 				uint16_t m_instanceId;
-				std::shared_ptr<Endpoint> m_endpoint;
+				std::shared_ptr<Configuration> m_conf;
 			};
 			
 			explicit ServiceProxy(HandleType handle);
@@ -44,11 +44,12 @@ namespace ara
 			static FindServiceHandle StartFindService(FindServiceHandler<HandleType> handler, uint16_t serviceId, InstanceIdentifier instance);
 			static void StopFindService(FindServiceHandle handle);
 			
-			bool Init(Configuration* conf);
-			
 			uint16_t getServiceId() const;
 			
 			uint16_t getInstanceId() const;
+		
+		protected:
+			bool Init(std::shared_ptr<Configuration> conf);
 			
 		private:
 			uint16_t m_serviceId;

@@ -56,7 +56,7 @@ ManagementFactory* ManagementFactory::get()
 	return s_instance;
 }
 			
-ServiceProvider* ManagementFactory::createServiceProvider(uint16_t serviceId, uint16_t instanceId, MethodCallProcessingMode mode, Configuration* conf)
+ServiceProvider* ManagementFactory::createServiceProvider(uint16_t serviceId, uint16_t instanceId, MethodCallProcessingMode mode, std::shared_ptr<Configuration> conf)
 {
 	uint32_t key = (serviceId << 16) + instanceId;
 	if (m_serviceProviders.find(key) != m_serviceProviders.end())
@@ -71,7 +71,7 @@ ServiceProvider* ManagementFactory::createServiceProvider(uint16_t serviceId, ui
 	return provider;
 }
 
-ServiceRequester* ManagementFactory::createServiceRequester(uint16_t serviceId, uint16_t instanceId, Configuration* conf)
+ServiceRequester* ManagementFactory::createServiceRequester(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<Configuration> conf)
 {
 	uint32_t key = (serviceId << 16) + instanceId;
 	if (m_serviceRequesters.find(key) != m_serviceRequesters.end())
