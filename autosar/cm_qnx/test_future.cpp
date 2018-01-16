@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 	std::thread( [&p]{
 	
 	 int value = 100;
-	 //sleep(1);
+	 usleep(1000000);
 	 p.set_value(value);
 	  
 	 }).detach();

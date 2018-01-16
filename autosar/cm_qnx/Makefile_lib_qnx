@@ -5,7 +5,7 @@ CFLAGS += -Vgcc_ntoarmv7le
 TARGET = libautosar_cm.so
 OBJ = ManagementFactory.o SubscribeEvent.o Configuration.o PublishEvent.o ServiceProvider.o ServiceProxy.o ServiceRequester.o ServiceSkeleton.o SomeIpSd.o SomeIpBinding.o DataTypes.o Method.o Serializer.o Deserializer.o IpcBinding.o
 LIBS += -lzmq
-CFLAGS += -std=c++0x -I. -Izmq
+CFLAGS += -I. -Izmq
 LDFLAGS += -Lzmq
 
 all: $(TARGET)

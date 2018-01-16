@@ -1,11 +1,11 @@
-#CC = QCC
-#CFLAGS += -Vgcc_ntoarmv7le_gpp
-CC = g++
+CC = QCC
+CFLAGS += -Vgcc_ntoarmv7le
+#CC = g++
 
 TARGET = test
 OBJ = test.o
 LIBS +=
-CFLAGS += -std=c++0x -I. -g
+CFLAGS += -I. -g
 LDFLAGS += -lpthread -lautosar_cm -lzmq -L.
 
 all: $(TARGET) test_server test_client1 test_client2

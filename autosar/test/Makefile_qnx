@@ -5,7 +5,7 @@ CFLAGS += -Vgcc_ntoarmv7le
 TARGET = test
 OBJ = test.o
 LIBS += -lautosar_cm -lsocket -lzmq
-CFLAGS += -std=c++0x -I./include -I. -g
+CFLAGS += -I./qnx/include -I.
 LDFLAGS += -L./qnx/lib
 
 all: $(TARGET) test_skeleton test_proxy

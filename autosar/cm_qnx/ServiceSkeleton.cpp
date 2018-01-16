@@ -103,16 +103,16 @@ ara::com::Future<bool> ServiceSkeleton::ProcessNextMethodCall()
 	
 	ara::com::Promise<bool> p;
 	auto f = p.get_future();
-	
-	std::thread t([this](ara::com::Promise<bool> p){
+
+	std::thread t([this, &p](){
 		ServiceProvider *sp = ManagementFactory::get()->getServiceProvider(this->getServiceId(), this->getInstanceId());
 		sp->processRequest();
 		p.set_value(sp->hasRequest());
-	},
-	std::move(p)
-	);
+	});
 	
 	t.detach();
+	
+	f.wait();
 	
 	return f;
 }

@@ -72,8 +72,8 @@ void SubscribeEvent::SetReceiveHandler(EventReceiveHandler handler)
 
 void SubscribeEvent::UnsetReceiveHandler()
 {
-	m_handler = NULL;
+	m_handler = {};
 }
-			
+	
 } // namespace com
 } //namespace ara

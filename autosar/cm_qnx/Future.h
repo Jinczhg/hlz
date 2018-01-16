@@ -326,10 +326,10 @@ public:
 	_Associated_state(_Deleter_base<_Ty> *_Dp = 0)
 		: _Exception(),
 		_Retrieved(false),
-		_Running(false),
 		_Ready(false),
 		_Ready_at_thread_exit(false),
 		_Has_stored_result(false),
+		_Running(false),
 		_Deleter(_Dp)
 		{	// construct
 		// TODO: _Associated_state ctor assumes _Ty is default constructible
