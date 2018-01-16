@@ -50,31 +50,15 @@ public:
 
 int main(int argc, char** argv)
 {
-	std::shared_ptr<ara::com::Configuration> conf(new ara::com::Configuration);
+	std::cout << "InstanceIdentifier" << std::endl;
 	
 	ara::com::InstanceIdentifier instance("1");
 	
-	std::shared_ptr<ara::com::Endpoint> server1(new ara::com::Endpoint({{127,0,0,1}}, 9000, ara::com::TransportProtocol::tcp));
-	std::shared_ptr<ara::com::Endpoint> client1(new ara::com::Endpoint({{127,0,0,1}}, 9001, ara::com::TransportProtocol::tcp));
-	std::shared_ptr<ara::com::Endpoint> server2(new ara::com::Endpoint({{127,0,0,1}}, 9002, ara::com::TransportProtocol::tcp));
-	std::shared_ptr<ara::com::Endpoint> client2(new ara::com::Endpoint({{127,0,0,1}}, 9003, ara::com::TransportProtocol::tcp));
-	
-	std::vector<std::shared_ptr<ara::com::Endpoint>> servers;
-	std::vector<std::shared_ptr<ara::com::Endpoint>> clients;
-	
-	servers.push_back(server1);
-	clients.push_back(client1);
-	
-	servers.push_back(server2);
-	clients.push_back(client2);
-	
-	conf->setServerEndpoint(servers);
-	conf->setClientEndpoint(clients);
-	conf->setNetWorkBindingType(ara::com::NetWorkBindingType::IPC);
+	std::cout << "RadarSkeketionImp instance" << std::endl;
 	
 	RadarSkeketionImp skeleton(instance, ara::com::MethodCallProcessingMode::kEvent);
 	
-	//skeleton.Init(conf);
+	std::cout << "RadarSkeketionImp instance OK" << std::endl;
 	
 	while (1)
 	{

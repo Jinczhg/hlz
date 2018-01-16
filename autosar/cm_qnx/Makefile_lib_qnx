@@ -1,5 +1,5 @@
 CC = QCC
-CFLAGS += -Vgcc_ntoarmv7le_gpp
+CFLAGS += -Vgcc_ntoarmv7le
 #CC = g++
 
 TARGET = libautosar_cm.so

@@ -1,0 +1,26 @@
+CC = QCC
+CFLAGS += -Vgcc_ntoarmv7le
+#CC = g++
+
+TARGET = test
+OBJ = test.o
+LIBS += -lautosar_cm -lsocket -lzmq
+CFLAGS += -std=c++0x -I./include -I. -g
+LDFLAGS += -L./qnx/lib
+
+all: $(TARGET) test_skeleton test_proxy
+
+test_skeleton: test_skeleton.o com/myCompany/radar_skeleton.o
+	$(CC) -o test_skeleton test_skeleton.o com/myCompany/radar_skeleton.o $(CFLAGS) $(LDFLAGS) $(LIBS)
+	
+test_proxy: test_proxy.o com/myCompany/radar_proxy.o
+	$(CC)  $(CFLAGS) -o test_proxy test_proxy.o com/myCompany/radar_proxy.o $(LDFLAGS) $(LIBS)
+	
+$(TARGET): $(OBJ) 
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ) $(LDFLAGS) $(LIBS)
+
+%.o:%.cpp
+	$(CC) $(CFLAGS) -Wall -c $(@D)/$(<F) -o $(@D)/$(@F)
+
+clean:
+	rm -f $(TARGET) $(OBJ) test_skeleton test_skeleton.o com/myCompany/radar_skeleton.o test_proxy test_proxy.o com/myCompany/radar_proxy.o
