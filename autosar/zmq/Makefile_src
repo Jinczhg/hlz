@@ -1,0 +1,28 @@
+CC = QCC
+CFLAGS += -Vgcc_ntoarmv7le
+
+TARGET = test_zmq
+OBJ = test_zmq.o src/zmq.o src/ctx.o src/err.o src/socket_base.o src/msg.o src/clock.o src/ipc_address.o src/tcp_address.o src/address.o src/object.o src/udp_address.o src/pipe.o \
+	src/own.o src/session_base.o src/pub.o src/mailbox.o src/mailbox_safe.o src/tcp_connecter.o src/io_object.o src/xpub.o src/mtrie.o src/metadata.o src/dist.o src/tcp.o \
+	src/timers.o src/proxy.o src/random.o src/thread.o src/io_thread.o src/reaper.o src/options.o src/pair.o src/signaler.o src/sub.o src/req.o src/rep.o src/xsub.o src/router.o src/dealer.o \
+	src/pull.o src/push.o src/stream.o src/fq.o src/server.o src/client.o src/lb.o src/trie.o src/ip.o src/radio.o src/dish.o src/gather.o src/scatter.o src/dgram.o src/tcp_listener.o \
+	src/ipc_listener.o src/zmq_utils.o src/stream_engine.o src/v1_encoder.o src/v1_decoder.o src/v2_encoder.o src/v2_decoder.o src/raw_encoder.o src/raw_decoder.o src/decoder_allocators.o \
+	src/socks_connecter.o src/ipc_connecter.o src/udp_engine.o src/plain_server.o src/plain_client.o src/curve_server.o src/curve_client.o src/mechanism_base.o src/null_mechanism.o \
+	src/zap_client.o src/mechanism.o src/curve_mechanism_base.o src/socks.o src/select.o src/poller_base.o src/socket_poller.o src/tweetnacl.o
+LIBS += -lsocket -lm
+CFLAGS += -I./include
+LDFLAGS += -L./lib
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ) 
+	$(CC) -o $(TARGET) $(OBJ) $(CFLAGS) $(LDFLAGS) $(LIBS)
+
+%.o:%.cpp
+	$(CC) $(CFLAGS) -Wall -c $(@D)/$(<F) -o $(@D)/$(@F)
+	
+%.o:%.c
+	qcc $(CFLAGS) -Wall -c $(@D)/$(<F) -o $(@D)/$(@F)
+
+clean:
+	rm -f $(TARGET) $(OBJ)
