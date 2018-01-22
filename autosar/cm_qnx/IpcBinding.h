@@ -50,7 +50,7 @@ namespace ara
 			uint16_t m_messageId;
 			MessageReceiveHandler m_handler;
 			std::shared_ptr<IpcEndpoint> m_endpoint;
-			std::shared_ptr<zmq::context_t> m_context;
+			zmq::context_t m_context;
 			std::shared_ptr<zmq::socket_t> m_PUB_SUB;
 			std::vector<std::shared_ptr<zmq::socket_t>> m_REQs;
 			std::vector<std::shared_ptr<zmq::socket_t>> m_REPs;

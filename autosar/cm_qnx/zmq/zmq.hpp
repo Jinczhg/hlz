@@ -49,6 +49,7 @@
 #include <exception>
 #include <vector>
 #include <iterator>
+#include <iostream>
 
 #ifdef ZMQ_CPP11
 #include <chrono>

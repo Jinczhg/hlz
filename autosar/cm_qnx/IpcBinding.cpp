@@ -23,21 +23,20 @@ namespace com
 {
 
 IpcBinding::IpcBinding(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<IpcEndpoint> endpoint)
-: m_serviceId(serviceId), m_instanceId(instanceId), m_endpoint(endpoint)
+: m_serviceId(serviceId), m_instanceId(instanceId), m_endpoint(endpoint), m_context(1)
 {
-	//TODO
-	m_context = std::make_shared<zmq::context_t>(1);
+	//m_context = std::make_shared<zmq::context_t>(1);
 	
 	if (m_endpoint->m_isServer) //server
-	{		
+	{	
 		//reply
 		for (auto ep : m_endpoint->m_server)
 		{
-			std::shared_ptr<zmq::socket_t> publisher = std::make_shared<zmq::socket_t>(*m_context.get(), ZMQ_PUB);
+			std::shared_ptr<zmq::socket_t> publisher = std::make_shared<zmq::socket_t>(m_context, ZMQ_PUB);
 	
 			std::stringstream ss_client;
 			ss_client << "tcp://*:" << ep->getPort();
-		
+
 			int sndhwm = 0;
 			publisher->setsockopt(ZMQ_SNDHWM, &sndhwm, sizeof(sndhwm));
 	
@@ -51,7 +50,7 @@ IpcBinding::IpcBinding(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<
 		//request
 		for (auto ep : m_endpoint->m_client)
 		{
-			std::shared_ptr<zmq::socket_t> subscriber = std::make_shared<zmq::socket_t>(*m_context.get(), ZMQ_SUB);
+			std::shared_ptr<zmq::socket_t> subscriber = std::make_shared<zmq::socket_t>(m_context, ZMQ_SUB);
 			ipv4_address_t ip = ep->getIp();
 			std::stringstream ss_server;
 			ss_server << "tcp://" << (int)ip[0] << "." << (int)ip[1] << "." << (int)ip[2] << "." << (int)ip[3] << ":" << ep->getPort();
@@ -100,15 +99,16 @@ IpcBinding::IpcBinding(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<
 	}
 	else //client
 	{
-		 std::shared_ptr<bool> connected(new bool);
+		
+		std::shared_ptr<bool> connected(new bool);
 		 
 		//reply
 		std::shared_ptr<Endpoint> ep = m_endpoint->m_server[0];
-		std::shared_ptr<zmq::socket_t> subscriber = std::make_shared<zmq::socket_t>(*m_context.get(), ZMQ_SUB);
+		std::shared_ptr<zmq::socket_t> subscriber = std::make_shared<zmq::socket_t>(m_context, ZMQ_SUB);
 		ipv4_address_t ip = ep->getIp();
 		std::stringstream ss_server;
 		ss_server << "tcp://" << (int)ip[0] << "." << (int)ip[1] << "." << (int)ip[2] << "." << (int)ip[3] << ":" << ep->getPort();
-
+		
 		subscriber->connect(ss_server.str().c_str());
 		subscriber->setsockopt(ZMQ_SUBSCRIBE, "", 0);
 		
@@ -135,12 +135,11 @@ IpcBinding::IpcBinding(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<
 			}
 		});
 		tr.detach();
-		
-		
-		//requestss_server
+
+		//request
 		ep = m_endpoint->m_client[0];
 	
-		std::shared_ptr<zmq::socket_t> publisher = std::make_shared<zmq::socket_t>(*m_context.get(), ZMQ_PUB);
+		std::shared_ptr<zmq::socket_t> publisher = std::make_shared<zmq::socket_t>(m_context, ZMQ_PUB);
 
 		std::stringstream ss_client;
 		ss_client << "tcp://*:" << ep->getPort();
@@ -297,8 +296,6 @@ void IpcBinding::subscribe(uint16_t eventgroupId)
 	message->setMethodId(eventgroupId);
 	
 	m_REQs[0]->send(*(buildMessage(message).get()));
-	
-	std::cout << "subscribe" << std::endl;
 }
 
 void IpcBinding::unsubscribe(uint16_t eventgroupId)

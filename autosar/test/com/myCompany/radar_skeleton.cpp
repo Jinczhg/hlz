@@ -1,5 +1,7 @@
 #include "radar_skeleton.h"
 
+#include <iostream>
+
 using namespace com::myCompany::skeleton;
 
 //events
@@ -63,7 +65,11 @@ RadarSkeketion::RadarSkeketion(ara::com::InstanceIdentifier instance, ara::com::
 	conf->setClientEndpoint(clients);
 	conf->setNetWorkBindingType(ara::com::NetWorkBindingType::IPC);
 	
+	std::cout << "Init...." << std::endl;
+	
 	Init(conf);
+	
+	std::cout << "Init....OK" << std::endl;
 	
 	ara::com::ServiceProvider *provider = ara::com::ManagementFactory::get()->getServiceProvider(this->getServiceId(), this->getInstanceId());
 	

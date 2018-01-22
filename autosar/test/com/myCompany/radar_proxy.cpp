@@ -14,7 +14,6 @@ events::BrakeEvent::BrakeEvent(ara::com::ServiceProxy* proxy, uint16_t eventId)
 bool events::BrakeEvent::Update(ara::com::FilterFunction<events::BrakeEvent::SampleType> filter)
 {
 	m_samples.clear();
-	
 	std::lock_guard<std::mutex> guard(m_mutex);
 	
 	if (!m_data.empty())
