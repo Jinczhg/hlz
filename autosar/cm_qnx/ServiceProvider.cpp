@@ -21,11 +21,8 @@ namespace com
 ServiceProvider::ServiceProvider(uint16_t serviceId, uint16_t instanceId, MethodCallProcessingMode mode, std::shared_ptr<Configuration> conf)
 : m_serviceId(serviceId), m_instanceId(instanceId), m_mode(mode), m_clientId(0), m_session(0), m_mutex(), m_condition()
 {
-	std::cout << "ServiceProvider" << std::endl;
-	
 	if (conf->getNetWorkBindingType() == NetWorkBindingType::SOMEIP)
 	{
-		std::cout << "ServiceProvider someip" << std::endl;
 		//someip binding
 		std::shared_ptr<SomeIpEndpoint> endpoints(new SomeIpEndpoint());
 		endpoints->m_isServer = true;
@@ -37,7 +34,6 @@ ServiceProvider::ServiceProvider(uint16_t serviceId, uint16_t instanceId, Method
 	}
 	else if (conf->getNetWorkBindingType() == NetWorkBindingType::IPC)
 	{	
-		std::cout << "ServiceProvider ipc" << std::endl;
 		//ipc binding
 		std::shared_ptr<IpcEndpoint> endpoints(new IpcEndpoint());
 		
@@ -156,7 +152,11 @@ void ServiceProvider::onMessage(NetWorkBindingType type, std::shared_ptr<Message
 			std::thread t([this,msg,methodId](){
 				auto it = this->m_handlers.find(methodId);
 				if (it != this->m_handlers.end())
-				it->second(msg);
+				{
+					it->second(msg);
+				}
+					
+				return 0;
 			});
 			t.detach();
 		}

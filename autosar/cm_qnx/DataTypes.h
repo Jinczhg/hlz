@@ -172,6 +172,8 @@ namespace ara
         	void setMethodId(uint16_t methodId);
         	void setSession(uint16_t session);
         	void setId(uint16_t id);
+        	void setIp(uint32_t ip);
+        	void setPort(uint16_t port);
         	void setType(MessageType type);
         	void setCode(ReturnCode code);
         	void setPayload(std::shared_ptr<Payload> payload);
@@ -182,6 +184,8 @@ namespace ara
         	uint16_t getMethodId();
         	uint16_t getSession();
         	uint16_t getId();
+        	uint32_t getIp();
+        	uint16_t getPort();
         	MessageType getType();
         	ReturnCode getCode();
         	std::shared_ptr<Payload> getPayload();
@@ -193,6 +197,8 @@ namespace ara
         	uint16_t m_instanceId;
         	uint16_t m_session;
         	uint16_t m_id;
+        	uint32_t m_ip;
+        	uint16_t m_port;
         	MessageType m_type;
         	ReturnCode m_code;
         	std::shared_ptr<Payload> m_payload;

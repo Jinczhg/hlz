@@ -129,30 +129,14 @@ typedef launch _Launch_type;
 	}	// namespace launch
 
 typedef launch::launch _Launch_type;
-#endif /* _HAS_SCOPED_ENUM */
+#endif /* _HAS_SCOPED_ENUM */	
 
-		// ENUM future_status
-
-#if _HAS_SCOPED_ENUM
-enum class future_status {	// names for timed wait function returns
-#else /* _HAS_SCOPED_ENUM */
-	namespace future_status {
-enum future_status {	// names for timed wait function returns
-#endif /* _HAS_SCOPED_ENUM */
-
+/// Status code for futures
+enum class FutureStatus : uint8_t 
+{
 	ready,
-	timeout,
-	deferred
-	};
-
-#if _HAS_SCOPED_ENUM
-typedef future_status _Future_status;
-
-#else /* _HAS_SCOPED_ENUM */
-	}	// namespace future_status
-
-typedef future_status::future_status _Future_status;
-#endif /* _HAS_SCOPED_ENUM */
+	timeout
+};
 
 const std::error_category& future_category() _NOEXCEPT;
 
@@ -433,31 +417,31 @@ public:
 
 	template<class _Rep,
 		class _Per>
-		_Future_status _Wait_for(
+		FutureStatus _Wait_for(
 			const std::chrono::duration<_Rep, _Per>& _Rel_time)
 		{	// wait for duration
-		_Future_status _Res = _Future_status::ready;
+		FutureStatus _Res = FutureStatus::ready;
 		std::unique_lock<std::mutex> _Lock(_Mtx);
 
 		bool _Cv_state =
 			_Cond.wait_for(_Lock, _Rel_time, _Test_ready(this));
 		if (!_Cv_state)
-			_Res = _Future_status::timeout;
+			_Res = FutureStatus::timeout;
 		return (_Res);
 		}
 
 	template<class _Clock,
 		class _Dur>
-		_Future_status _Wait_until(
+		FutureStatus _Wait_until(
 			const std::chrono::time_point<_Clock, _Dur>& _Abs_time)
 		{	// wait until time point
-		_Future_status _Res = _Future_status::ready;
+		FutureStatus _Res = FutureStatus::ready;
 		std::unique_lock<std::mutex> _Lock(_Mtx);
 
 		bool _Cv_state =
 			_Cond.wait_until(_Lock, _Abs_time, _Test_ready(this));
 		if (!_Cv_state)
-			_Res = _Future_status::timeout;
+			_Res = FutureStatus::timeout;
 		return (_Res);
 		}
 
@@ -1294,7 +1278,7 @@ public:
 
 	template<class _Rep,
 		class _Per>
-		_Future_status wait_for(
+		FutureStatus wait_for(
 			const std::chrono::duration<_Rep, _Per>& _Rel_time) const
 		{	// wait for duration
 		if (!valid())
@@ -1304,7 +1288,7 @@ public:
 
 	template<class _Clock,
 		class _Dur>
-		_Future_status wait_until(
+		FutureStatus wait_until(
 			const std::chrono::time_point<_Clock, _Dur>& _Abs_time) const
 		{	// wait until time point
 		if (!valid())

@@ -1,29 +1,20 @@
 CC = QCC
 CFLAGS += -Vgcc_ntoarmv7le
-#CC = g++
 
-TARGET = test
-OBJ = test.o
-LIBS +=
-CFLAGS += -I. -g
-LDFLAGS += -lpthread -lautosar_cm -lzmq -L.
+TARGET = libautosar_cm.so
+OBJ = ManagementFactory.o SubscribeEvent.o Configuration.o PublishEvent.o ServiceProvider.o ServiceProxy.o ServiceRequester.o ServiceSkeleton.o SomeIpSd.o SomeIpBinding.o DataTypes.o Method.o Serializer.o Deserializer.o IpcBinding.o
+LIBS += -lzmq
+CFLAGS += -I. -I../include/someip -I../include/zmq
+LDFLAGS += -L$(ROOT_DIR)/lib
 
-all: $(TARGET) test_server test_client1 test_client2
+all: $(TARGET)
 
 $(TARGET): $(OBJ) 
-	$(CC) -o $(TARGET) $(OBJ) $(CFLAGS) $(LDFLAGS) $(LIBS)
-	
-test_server: test_server.o
-	$(CC) -o test_server test_server.o $(CFLAGS) $(LDFLAGS) $(LIBS)
-	
-test_client1: test_client1.o
-	$(CC) -o test_client1 test_client1.o $(CFLAGS) $(LDFLAGS) $(LIBS)
-	
-test_client2: test_client2.o
-	$(CC) -o test_client2 test_client2.o $(CFLAGS) $(LDFLAGS) $(LIBS)
-	
+	$(CC) -shared -o $(TARGET) $(OBJ) $(CFLAGS) $(LDFLAGS) $(LIBS)
+	cp libautosar_cm.so $(ROOT_DIR)/lib
+
 %.o:%.cpp
-	$(CC) $(CFLAGS) -Wall -c $(@D)/$(<F) -o $(@D)/$(@F)
+	$(CC) $(CFLAGS) -Wall -fPIC -c $(@D)/$(<F) -o $(@D)/$(@F)
 
 clean:
-	rm -f $(TARGET) $(OBJ) test_server test_client1 test_client2 test_server.o test_client1.o test_client2.o
+	rm -f $(TARGET) $(OBJ)

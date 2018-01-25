@@ -22,153 +22,226 @@ namespace ara
 namespace com
 {
 
+#define IPC_HEADER_LEN 22
+#define IPC_HEADER_FIRST_LEN 8
+#define IPC_HEADER_SECOND_LEN 14 //(IPC_HEADER_LEN - IPC_HEADER_FIRST_LEN)
+
 IpcBinding::IpcBinding(uint16_t serviceId, uint16_t instanceId, std::shared_ptr<IpcEndpoint> endpoint)
-: m_serviceId(serviceId), m_instanceId(instanceId), m_endpoint(endpoint), m_context(1)
-{
-	//m_context = std::make_shared<zmq::context_t>(1);
-	
+: m_serviceId(serviceId), m_instanceId(instanceId), m_terminated(false), m_endpoint(endpoint), m_context(1), m_clientCount(0)
+{	
 	if (m_endpoint->m_isServer) //server
-	{	
+	{
 		//reply
-		for (auto ep : m_endpoint->m_server)
+		for (auto ep : m_endpoint->m_client)
 		{
 			std::shared_ptr<zmq::socket_t> publisher = std::make_shared<zmq::socket_t>(m_context, ZMQ_PUB);
 	
 			std::stringstream ss_client;
 			ss_client << "tcp://*:" << ep->getPort();
+			
+			ipv4_address_t ip = ep->getIp();
+			
+			uint32_t ipc_ip = ip[0];
+			ipc_ip = (ipc_ip << 8) + ip[1];
+			ipc_ip = (ipc_ip << 8) + ip[2];
+			ipc_ip = (ipc_ip << 8) + ip[3];
+			uint64_t ipc_id = ipc_ip;
+			ipc_id = (ipc_id << 16) + ep->getPort();
 
 			int sndhwm = 0;
 			publisher->setsockopt(ZMQ_SNDHWM, &sndhwm, sizeof(sndhwm));
 	
 			publisher->bind(ss_client.str().c_str());
 			
-			uint16_t id = m_REPs.size();
-			m_REPs.push_back(publisher);
-			m_subscriberStatus[id] = false;
+			m_REPs[m_clientCount] = publisher;
+			m_subscriberStatus[m_clientCount] = false;
+			m_clientIds[ipc_id] = m_clientCount;
+			
+			m_clientCount++;
 		}
 		
 		//request
-		for (auto ep : m_endpoint->m_client)
 		{
-			std::shared_ptr<zmq::socket_t> subscriber = std::make_shared<zmq::socket_t>(m_context, ZMQ_SUB);
+			std::shared_ptr<Endpoint> ep =  m_endpoint->m_server[0];
+			std::shared_ptr<zmq::socket_t> request = std::make_shared<zmq::socket_t>(m_context, ZMQ_REP);
 			ipv4_address_t ip = ep->getIp();
 			std::stringstream ss_server;
-			ss_server << "tcp://" << (int)ip[0] << "." << (int)ip[1] << "." << (int)ip[2] << "." << (int)ip[3] << ":" << ep->getPort();
+			ss_server << "tcp://*:" << ep->getPort();
 	
-			subscriber->connect(ss_server.str().c_str());
-			subscriber->setsockopt(ZMQ_SUBSCRIBE, "", 0);
+			m_ip = ip[0];
+			m_ip = (m_ip << 8) + ip[1];
+			m_ip = (m_ip << 8) + ip[2];
+			m_ip = (m_ip << 8) + ip[3];
+			m_port =  ep->getPort();
 			
-			uint16_t id = m_REQs.size();
-			m_REQs.push_back(subscriber);
+			request->bind(ss_server.str().c_str());
+
+			m_REQ = request;
 			
-			std::thread tr([this,id](){
-				while (1)
+			std::thread tr([this](){
+				std::shared_ptr<zmq::message_t> message(new zmq::message_t);
+				zmq::message_t reply(1);
+				uint64_t ipc_id = 0;
+				while (!this->isTerminated())
 				{
-					std::shared_ptr<zmq::message_t> message(new zmq::message_t);
-					this->m_REQs[id]->recv(message.get());
+					this->m_REQ->recv(message.get());
+					this->m_REQ->send(reply);
+
+					if (message->size() < IPC_HEADER_LEN)
+					{
+						continue;
+					}
 					
 					std::shared_ptr<Message> msg = this->parseMessage(message);
 					
-					if (msg->getServiceId() == 0xFFFF)
+					ipc_id = msg->getIp();
+					ipc_id = (ipc_id << 16) + msg->getPort();
+					
+					auto it = m_clientIds.find(ipc_id);
+					if (it == m_clientIds.end()) //invalid client
 					{
-						if (msg->getMethodId() != 0xFFFF)
+						continue;
+					}
+					
+					if (msg->getServiceId() == 0xFFFF) //
+					{
+						if (msg->getMethodId() != 0xFFFF) //MethodId == 0xFFFF as find service message, others as subscribe message
 						{
-							m_subscriberStatus[id] = true;
-						
-							for (auto em : m_eventMessages)
+							if (msg->getSession() == 0xFFFF) //subscribe
 							{
-								std::shared_ptr<zmq::message_t> m = buildMessage(em.second);
-								m_REPs[id]->send(*(m.get()));
+								m_subscriberStatus[m_clientIds[ipc_id]] = true;
+						
+								for (auto em : m_eventMessages)
+								{
+									std::shared_ptr<zmq::message_t> m = buildMessage(em.second);
+									publish(m_REPs[m_clientIds[ipc_id]], m);
+								}
+							}
+							else //unsubscribe
+							{
+								m_subscriberStatus[m_clientIds[ipc_id]] = false;
 							}
 						}
-						else
+						else //as find service message,init, unsubscribe
 						{
-							m_REPs[id]->send(*(message.get()));
+							timeval active;
+							gettimeofday(&active, NULL);
+							m_clientActive[m_clientIds[ipc_id]] = active;
 						}
 					}
 					else
-					{
-						msg->setId(id);
-					
+					{	
+						msg->setId(m_clientIds[ipc_id]);				
 						this->onMessage(msg);
 					}
 				}
 			});
 			tr.detach();
 		}
+		
+		//monitor thread
+		std::thread tm([this](){
+			while (!this->isTerminated())
+			{
+				this->checkClientActive();
+				sleep(1);
+			}
+		});
+		tm.detach();
 	}
 	else //client
-	{
-		
-		std::shared_ptr<bool> connected(new bool);
-		 
+	{	 
 		//reply
-		std::shared_ptr<Endpoint> ep = m_endpoint->m_server[0];
+		std::shared_ptr<Endpoint> ep = m_endpoint->m_client[0];
 		std::shared_ptr<zmq::socket_t> subscriber = std::make_shared<zmq::socket_t>(m_context, ZMQ_SUB);
 		ipv4_address_t ip = ep->getIp();
-		std::stringstream ss_server;
-		ss_server << "tcp://" << (int)ip[0] << "." << (int)ip[1] << "." << (int)ip[2] << "." << (int)ip[3] << ":" << ep->getPort();
+		std::stringstream ss_client;
+		ss_client << "tcp://" << (int)ip[0] << "." << (int)ip[1] << "." << (int)ip[2] << "." << (int)ip[3] << ":" << ep->getPort();
 		
-		subscriber->connect(ss_server.str().c_str());
+		subscriber->connect(ss_client.str().c_str());
 		subscriber->setsockopt(ZMQ_SUBSCRIBE, "", 0);
 		
-		uint16_t id = m_REPs.size();
-		m_REPs.push_back(subscriber);
+		m_ip = ip[0];
+		m_ip = (m_ip << 8) + ip[1];
+		m_ip = (m_ip << 8) + ip[2];
+		m_ip = (m_ip << 8) + ip[3];
+		m_port =  ep->getPort();
+		uint64_t ipc_id = m_ip;
+		ipc_id = (ipc_id << 16) + m_port;
+		m_REPs[0] = subscriber;
 		
-		std::thread tr([this,id,connected](){
-			while (1)
+		std::thread tr([this](){
+			std::shared_ptr<zmq::message_t> message(new zmq::message_t);
+			
+			while (!this->isTerminated())
 			{
-				std::shared_ptr<zmq::message_t> message(new zmq::message_t);
-				this->m_REPs[id]->recv(message.get());
+				this->m_REPs[0]->recv(message.get());
+				
+				if (message->size() < IPC_HEADER_LEN)
+				{
+					continue;
+				}
 				
 				std::shared_ptr<Message> msg = this->parseMessage(message);
-				
-				if (msg->getServiceId() == 0xFFFF && msg->getMethodId() == 0xFFFF)
-				{
-					*connected.get() = true;
-				}
-				else
-				{
-					msg->setId(id);
-					this->onMessage(msg);
-				}
+
+				this->onMessage(msg);
 			}
 		});
 		tr.detach();
 
 		//request
-		ep = m_endpoint->m_client[0];
+		ep = m_endpoint->m_server[0];
 	
-		std::shared_ptr<zmq::socket_t> publisher = std::make_shared<zmq::socket_t>(m_context, ZMQ_PUB);
+		std::shared_ptr<zmq::socket_t> requester = std::make_shared<zmq::socket_t>(m_context, ZMQ_REQ);
 
-		std::stringstream ss_client;
-		ss_client << "tcp://*:" << ep->getPort();
-	
-		int sndhwm = 0;
-		publisher->setsockopt(ZMQ_SNDHWM, &sndhwm, sizeof(sndhwm));
+		std::stringstream ss_server;
+		ss_server << "tcp://" << (int)ip[0] << "." << (int)ip[1] << "." << (int)ip[2] << "." << (int)ip[3] << ":" << ep->getPort();
 
-		publisher->bind(ss_client.str().c_str());
+		requester->connect(ss_server.str().c_str());
 		
-		m_REQs.push_back(publisher);
+		m_REQ = requester;
 		
 		std::shared_ptr<Message> initMsg(new Message);
 		initMsg->setServiceId(0xFFFF);
 		initMsg->setMethodId(0xFFFF);
+		initMsg->setIp(m_ip);
+		initMsg->setPort(m_port);
 		
-		std::shared_ptr<zmq::message_t> initIpcMsg = buildMessage(initMsg);
+		request(m_REQ, initMsg);
 		
-		m_REQs[0]->send(*(buildMessage(initMsg).get()));
-		
-		while (!(*connected.get()))
-		{
-			usleep(10000);
-			m_REQs[0]->send(*(buildMessage(initMsg).get()));
-		}
+		//monitor thread
+		std::thread tm([this, requester, initMsg](){
+			while (!this->isTerminated())
+			{
+				sleep(1);
+				this->request(requester, initMsg);
+			}
+		});
+		tm.detach();
 	}
 }
 
 IpcBinding::~IpcBinding()
 {
+	m_terminated = true;
+}
+
+void IpcBinding::checkClientActive()
+{
+	timeval now;
+	gettimeofday(&now, NULL);
+	for (auto it : m_clientActive)
+	{
+		if (now.tv_sec - it.second.tv_sec > 3)
+		{
+			m_subscriberStatus[it.first] = false;
+		}
+	}
+}
+
+bool IpcBinding::isTerminated()
+{
+	return m_terminated;
 }
 
 std::shared_ptr<zmq::message_t> IpcBinding::buildMessage(std::shared_ptr<Message> msg)
@@ -177,7 +250,7 @@ std::shared_ptr<zmq::message_t> IpcBinding::buildMessage(std::shared_ptr<Message
 	
 	std::shared_ptr<Payload> payload = msg->getPayload();
 	
-	uint32_t length = 8 + (payload ? payload->getSize() : 0);
+	uint32_t length = IPC_HEADER_SECOND_LEN + (payload ? payload->getSize() : 0);
 	uint8_t protocol_version = 1;
 	uint8_t interface_version = 1;
 	uint8_t type = (uint8_t)msg->getType();
@@ -188,12 +261,14 @@ std::shared_ptr<zmq::message_t> IpcBinding::buildMessage(std::shared_ptr<Message
 	serializer.serialize(length);
 	serializer.serialize(msg->getClientId());
 	serializer.serialize(msg->getSession());
+	serializer.serialize(msg->getIp());
+	serializer.serialize(msg->getPort());
 	serializer.serialize(protocol_version);
 	serializer.serialize(interface_version);
 	serializer.serialize(type);
 	serializer.serialize(code);
 	
-	std::shared_ptr<zmq::message_t> message(new zmq::message_t(length + 8));
+	std::shared_ptr<zmq::message_t> message(new zmq::message_t(length + IPC_HEADER_FIRST_LEN));
 	
 	std::memcpy(message->data(), serializer.getData(), serializer.getSize());
 	if (payload)
@@ -204,52 +279,60 @@ std::shared_ptr<zmq::message_t> IpcBinding::buildMessage(std::shared_ptr<Message
 	return message;
 }
 
-std::shared_ptr<Message> IpcBinding::parseMessage(std::shared_ptr<zmq::message_t> msg)
+std::shared_ptr<Message> IpcBinding::parseMessage(std::shared_ptr<zmq::message_t> message)
 {
-	std::shared_ptr<Message> message(new Message);
+	std::shared_ptr<Message> msg(new Message);
 	
-	uint8_t* data = static_cast<uint8_t*>(msg->data());
+	uint8_t* data = static_cast<uint8_t*>(message->data());
 	uint16_t serviceId = 0;
 	uint16_t methodId = 0;
 	uint32_t length = 0;
 	uint16_t clientId = 0;
 	uint16_t session = 0;
+	uint32_t ip = 0;
+	uint16_t port = 0;
 	uint8_t protocol_version = 1;
 	uint8_t interface_version = 1;
 	uint8_t type;
 	uint8_t code;
 	
-	Deserializer deserializer(ByteOrderEnum::BigEndian, data, 16);
+	Deserializer deserializer(ByteOrderEnum::BigEndian, data, IPC_HEADER_LEN);
 	
 	deserializer.deserialize(serviceId);
 	deserializer.deserialize(methodId);
 	deserializer.deserialize(length);
 	deserializer.deserialize(clientId);
 	deserializer.deserialize(session);
+	deserializer.deserialize(ip);
+	deserializer.deserialize(port);
 	deserializer.deserialize(protocol_version);
 	deserializer.deserialize(interface_version);
 	deserializer.deserialize(type);
 	deserializer.deserialize(code);
 	
-	message->setServiceId(serviceId);
-	message->setInstanceId(m_instanceId);
-	message->setMethodId(methodId);
-	message->setClientId(clientId);
-	message->setSession(session);
-	message->setType((MessageType)type);
-	message->setCode((ReturnCode)code);
+	msg->setServiceId(serviceId);
+	msg->setInstanceId(m_instanceId);
+	msg->setMethodId(methodId);
+	msg->setClientId(clientId);
+	msg->setSession(session);
+	msg->setIp(ip);
+	msg->setPort(port);
+	msg->setType((MessageType)type);
+	msg->setCode((ReturnCode)code);
 	
-	if (length - 8 > 0)
+	if (length - IPC_HEADER_SECOND_LEN > 0)
 	{
-		std::shared_ptr<Payload> payload(new Payload(length - 8, data + 16));
-		message->setPayload(payload);
+		std::shared_ptr<Payload> payload(new Payload(length - IPC_HEADER_SECOND_LEN, data + IPC_HEADER_LEN));
+		msg->setPayload(payload);
 	}
 	
-	return message;
+	return msg;
 }
 
 bool IpcBinding::send(std::shared_ptr<Message> msg)
 {	
+	bool result = false;
+	
 	if (msg->getType() == MessageType::MT_NOTIFICATION) //event
 	{	
 		m_eventMessages[msg->getMethodId()] = msg;
@@ -259,20 +342,22 @@ bool IpcBinding::send(std::shared_ptr<Message> msg)
     	{
     		if (subscriber.second)
     		{
-    			m_REPs[subscriber.first]->send(*(message.get()));
+    			result = publish(m_REPs[subscriber.first], message);
     		}
     	}
 	}
 	else if (msg->getType() == MessageType::MT_REQUEST || msg->getType() == MessageType::MT_REQUEST_NO_RETURN) //method request
 	{
-		return m_REQs[0]->send(*(buildMessage(msg).get()));
+		msg->setIp(m_ip);
+		msg->setPort(m_port);
+		result = request(m_REQ, msg);
 	}
 	else //method response or others
 	{
-		return m_REPs[msg->getId()]->send(*(buildMessage(msg).get()));
+		result = publish(m_REPs[msg->getId()], msg);
 	}
 	
-	return true;
+	return result;
 }
 
 void IpcBinding::setReceiveHandler(MessageReceiveHandler handler)
@@ -290,16 +375,28 @@ void IpcBinding::onMessage(std::shared_ptr<Message> msg)
 
 void IpcBinding::subscribe(uint16_t eventgroupId)
 {
-	std::shared_ptr<Message> message(new Message);
+	std::shared_ptr<Message> msg(new Message);
 	
-	message->setServiceId(0xFFFF);
-	message->setMethodId(eventgroupId);
+	msg->setServiceId(0xFFFF);
+	msg->setMethodId(eventgroupId);
+	msg->setSession(0xFFFF);
+	msg->setIp(m_ip);
+	msg->setPort(m_port);
 	
-	m_REQs[0]->send(*(buildMessage(message).get()));
+	request(m_REQ, msg);
 }
 
 void IpcBinding::unsubscribe(uint16_t eventgroupId)
 {
+	std::shared_ptr<Message> msg(new Message);
+	
+	msg->setServiceId(0xFFFF);
+	msg->setMethodId(eventgroupId);
+	msg->setSession(0x0);
+	msg->setIp(m_ip);
+	msg->setPort(m_port);
+	
+	request(m_REQ, msg);
 }
 
 void IpcBinding::addSubscriber(uint16_t eventgroupId, std::shared_ptr<Endpoint> endpoint)
@@ -308,6 +405,34 @@ void IpcBinding::addSubscriber(uint16_t eventgroupId, std::shared_ptr<Endpoint> 
 
 void IpcBinding::delSubscriber(uint16_t eventgroupId, std::shared_ptr<Endpoint> endpoint)
 {
+}
+
+bool IpcBinding::publish(std::shared_ptr<zmq::socket_t> sock, std::shared_ptr<Message> msg)
+{
+	return publish(sock, buildMessage(msg));
+}
+
+bool IpcBinding::publish(std::shared_ptr<zmq::socket_t> sock, std::shared_ptr<zmq::message_t> message)
+{
+	std::lock_guard<std::mutex> guard(m_mutex);
+	return sock->send(*(message.get()));
+}
+
+bool IpcBinding::request(std::shared_ptr<zmq::socket_t> sock, std::shared_ptr<Message> msg)
+{
+	return request(sock, buildMessage(msg));
+}
+
+bool IpcBinding::request(std::shared_ptr<zmq::socket_t> sock, std::shared_ptr<zmq::message_t> message)
+{
+	zmq::message_t reply;
+
+	std::lock_guard<std::mutex> guard(m_mutex);
+	
+	sock->send(*(message.get()));
+	sock->recv(&reply);
+	
+	return true;
 }
 
 } // namespace com

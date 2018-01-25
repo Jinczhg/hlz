@@ -16,12 +16,16 @@ namespace com
 {
 
 SubscribeEvent::SubscribeEvent(ServiceProxy* proxy, uint16_t eventId)
-: m_owner(proxy), m_eventId(eventId)
+: m_owner(proxy), m_eventId(eventId), m_subscribed(false)
 {
 }
 
 SubscribeEvent::~SubscribeEvent()
 {
+	if (m_subscribed)
+	{
+		Unsubscribe();
+	}
 }
 
 void SubscribeEvent::Subscribe(EventCacheUpdatePolicy policy, size_t cacheSize)
@@ -50,12 +54,14 @@ void SubscribeEvent::Subscribe(EventCacheUpdatePolicy policy, size_t cacheSize)
 	});
 	
 	sr->subscribe(m_eventId);
+	m_subscribed = true;
 }
 
 void SubscribeEvent::Unsubscribe()
 {
 	ServiceRequester *sr = ManagementFactory::get()->getServiceRequester(m_owner->getServiceId(), m_owner->getInstanceId());
 	sr->unsubscribe(m_eventId);
+	m_subscribed = false;
 }
 
 void SubscribeEvent::Cleanup()

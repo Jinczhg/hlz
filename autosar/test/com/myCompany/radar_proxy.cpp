@@ -64,25 +64,40 @@ ara::com::Future<methods::Calibrate::Output> methods::Calibrate::operator()(cons
 	
 	const uint8_t *data = serializer.getData();
 	uint32_t len = serializer.getSize();
+	uint16_t session = 0;
 	
 	std::shared_ptr<ara::com::Payload> payload(new ara::com::Payload(len, data));
 	ara::com::Promise<methods::Calibrate::Output> promise;
 	
 	ara::com::Future<methods::Calibrate::Output> future = promise.get_future();
 	
-	ara::com::Method::operator()(payload, [&promise](std::shared_ptr<ara::com::Payload> payload){
+	session = ara::com::Method::operator()(payload, [&promise, this](std::shared_ptr<ara::com::Payload> payload){
 		methods::Calibrate::Output output;
 		const uint8_t *resData = payload->getData();
 		uint32_t resLen = payload->getSize();
-		
+	
 		RadarDeserializer deserializer(resData, resLen);
 		deserializer.deserialize(output.result);
-		
-		promise.set_value(output);
+		try
+		{
+			promise.set_value(output);
+		}
+		catch(std::exception &e)
+		{
+			std::cout << e.what() << std::endl;
+		}
 	});
 	
-	future.wait();
-	
+	//future.wait();
+
+	ara::com::FutureStatus status = future.wait_for(std::chrono::seconds(1));
+	if (status != ara::com::FutureStatus::ready)
+	{
+		this->cancel(session);
+		usleep(1000);
+		throw std::runtime_error("methods::Calibrate timeout");
+	}
+    
 	return future;
 }
 
@@ -92,19 +107,20 @@ methods::Adjust::Adjust(ara::com::ServiceProxy* proxy, uint16_t methodId)
 }
 
 ara::com::Future<methods::Adjust::Output> methods::Adjust::operator()(const Position& target_position)
-{
+{	
 	RadarSerializer serializer;
 	serializer.serialize(target_position);
 	
 	const uint8_t *data = serializer.getData();
 	uint32_t len = serializer.getSize();
+	uint16_t session = 0;
 	
 	std::shared_ptr<ara::com::Payload> payload(new ara::com::Payload(len, data));
 	ara::com::Promise<methods::Adjust::Output> promise;
 	
 	ara::com::Future<methods::Adjust::Output> future = promise.get_future();
 	
-	ara::com::Method::operator()(payload, [&promise](std::shared_ptr<ara::com::Payload> payload){
+	session = ara::com::Method::operator()(payload, [&promise, this](std::shared_ptr<ara::com::Payload> payload){
 		methods::Adjust::Output output;
 		uint8_t *resData = payload->getData();
 		uint32_t resLen = payload->getSize();
@@ -112,11 +128,25 @@ ara::com::Future<methods::Adjust::Output> methods::Adjust::operator()(const Posi
 		RadarDeserializer deserializer(resData, resLen);
 		deserializer.deserialize(output.success);
 		deserializer.deserialize(output.effective_position);
-		
-		promise.set_value(output);
+
+		try
+		{
+			promise.set_value(output);
+		}
+		catch(std::exception &e)
+		{
+			std::cout << e.what() << std::endl;
+		}
 	});
 	
-	future.wait();
+	//future.wait();
+	ara::com::FutureStatus status = future.wait_for(std::chrono::seconds(1));
+	if (status != ara::com::FutureStatus::ready)
+	{
+		this->cancel(session);
+		usleep(1000);
+		throw std::runtime_error("methods::Adjust timeout");
+	}
 	
 	return future;
 }
@@ -133,14 +163,14 @@ ara::com::ServiceHandleContainer<ara::com::ServiceProxy::HandleType> RadarProxy:
 	//return ara::com::ServiceProxy::FindService(31, instance);
 	std::shared_ptr<ara::com::Configuration> conf(new ara::com::Configuration);
 	
-	std::shared_ptr<ara::com::Endpoint> server1(new ara::com::Endpoint({{127,0,0,1}}, 9000, ara::com::TransportProtocol::tcp));
-	std::shared_ptr<ara::com::Endpoint> client1(new ara::com::Endpoint({{127,0,0,1}}, 9001, ara::com::TransportProtocol::tcp));
+	std::shared_ptr<ara::com::Endpoint> server(new ara::com::Endpoint({{127,0,0,1}}, 9000, ara::com::TransportProtocol::tcp));
+	std::shared_ptr<ara::com::Endpoint> client(new ara::com::Endpoint({{127,0,0,1}}, 9001, ara::com::TransportProtocol::tcp));
 	
 	std::vector<std::shared_ptr<ara::com::Endpoint>> servers;
 	std::vector<std::shared_ptr<ara::com::Endpoint>> clients;
 	
-	servers.push_back(server1);
-	clients.push_back(client1);
+	servers.push_back(server);
+	clients.push_back(client);
 	
 	conf->setServerEndpoint(servers);
 	conf->setClientEndpoint(clients);

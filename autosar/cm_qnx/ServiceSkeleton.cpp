@@ -17,6 +17,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <iostream>
 
 namespace ara
 {
@@ -33,7 +34,7 @@ ServiceSkeleton::ServiceSkeleton(uint16_t serviceId, InstanceIdentifier instance
 	std::string name = ss.str();
 	
 	ManagementFactory::get(); //make sure the ManagementFactory instance is created
-	
+#if 0
 	if ((m_sem = sem_open(name.c_str(), O_CREAT, S_IRWXU, 1)) == SEM_FAILED)
 	{
 		throw std::runtime_error("fail to create the service skeleton");
@@ -47,6 +48,7 @@ ServiceSkeleton::ServiceSkeleton(uint16_t serviceId, InstanceIdentifier instance
 	{
 		throw std::runtime_error("exist the service skeleton");
 	}
+#endif
 }
 
 ServiceSkeleton::~ServiceSkeleton()

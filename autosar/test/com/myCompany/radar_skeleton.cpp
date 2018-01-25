@@ -47,29 +47,22 @@ RadarSkeketion::RadarSkeketion(ara::com::InstanceIdentifier instance, ara::com::
 {
 	std::shared_ptr<ara::com::Configuration> conf(new ara::com::Configuration);
 	
-	std::shared_ptr<ara::com::Endpoint> server1(new ara::com::Endpoint({{127,0,0,1}}, 9000, ara::com::TransportProtocol::tcp));
+	std::shared_ptr<ara::com::Endpoint> server(new ara::com::Endpoint({{127,0,0,1}}, 9000, ara::com::TransportProtocol::tcp));
 	std::shared_ptr<ara::com::Endpoint> client1(new ara::com::Endpoint({{127,0,0,1}}, 9001, ara::com::TransportProtocol::tcp));
-	std::shared_ptr<ara::com::Endpoint> server2(new ara::com::Endpoint({{127,0,0,1}}, 9002, ara::com::TransportProtocol::tcp));
-	std::shared_ptr<ara::com::Endpoint> client2(new ara::com::Endpoint({{127,0,0,1}}, 9003, ara::com::TransportProtocol::tcp));
+	std::shared_ptr<ara::com::Endpoint> client2(new ara::com::Endpoint({{127,0,0,1}}, 9002, ara::com::TransportProtocol::tcp));
 	
 	std::vector<std::shared_ptr<ara::com::Endpoint>> servers;
 	std::vector<std::shared_ptr<ara::com::Endpoint>> clients;
 	
-	servers.push_back(server1);
+	servers.push_back(server);
 	clients.push_back(client1);
-	
-	servers.push_back(server2);
 	clients.push_back(client2);
 	
 	conf->setServerEndpoint(servers);
 	conf->setClientEndpoint(clients);
 	conf->setNetWorkBindingType(ara::com::NetWorkBindingType::IPC);
 	
-	std::cout << "Init...." << std::endl;
-	
 	Init(conf);
-	
-	std::cout << "Init....OK" << std::endl;
 	
 	ara::com::ServiceProvider *provider = ara::com::ManagementFactory::get()->getServiceProvider(this->getServiceId(), this->getInstanceId());
 	

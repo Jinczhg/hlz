@@ -9,6 +9,8 @@
 #ifndef ARA_COM_TYPES_H_
 #define ARA_COM_TYPES_H_
 
+#include <unistd.h>
+
 #include "Future.h"
 #include "ServiceSkeleton.h"
 #include "ServiceProxy.h"

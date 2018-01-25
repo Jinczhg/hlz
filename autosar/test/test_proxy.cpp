@@ -2,21 +2,48 @@
 
 #include <unistd.h>
 #include <iostream>
+#include <signal.h>
+
+com::myCompany::proxy::RadarProxy *g_proxy;
+void terminate_handler(int sig)
+{	
+	std::cout << "terminate_handler" << std::endl;
+	if (g_proxy)
+	{
+		g_proxy->BrakeEvent.Unsubscribe();
+		usleep(10000);
+		std::cout << "g_proxy->BrakeEvent.Unsubscribe()" << std::endl;
+	}
+	
+	if (sig == SIGINT)
+	{
+		exit(0);
+	}
+}
 
 int main(int argc, char** argv)
 {
+	signal(SIGABRT, terminate_handler);
+	signal(SIGINT, terminate_handler);
+	signal(SIGSEGV, terminate_handler);
+	
 	ara::com::InstanceIdentifier instance("1");
 
 	ara::com::ServiceHandleContainer<ara::com::ServiceProxy::HandleType> handles = com::myCompany::proxy::RadarProxy::FindService(instance);
 	
+	std::cout << "RadarProxy instance" << std::endl;
+	
 	com::myCompany::proxy::RadarProxy proxy(handles[0]);
+
+	g_proxy = &proxy;
+	
+	std::cout << "RadarProxy instance OK" << std::endl;
 	
 	proxy.BrakeEvent.SetReceiveHandler([&proxy](){
-		std::cout << "BrakeEvent receive" << std::endl;
 		proxy.BrakeEvent.Update();
-
 		ara::com::SampleContainer<ara::com::SamplePtr<const com::myCompany::proxy::events::BrakeEvent::SampleType>> samples = proxy.BrakeEvent.GetCachedSamples();
 
+		std::cout << "BrakeEvent receive" << std::endl;
 		std::cout << "RadarObjects active = " << samples[0]->active << std::endl;
 		std::cout << "RadarObjects objects = ";
 		for (auto obj : samples[0]->objects)
@@ -41,13 +68,20 @@ int main(int argc, char** argv)
 			configuration.z += 100;
 
 			std::cout << std::endl << "call Calibrate" << std::endl;
-			ara::com::Future<com::myCompany::proxy::methods::Calibrate::Output> calibrateResult = proxy.Calibrate(configuration);
+			try
+			{
+				ara::com::Future<com::myCompany::proxy::methods::Calibrate::Output> calibrateResult = proxy.Calibrate(configuration);
 		
-			com::myCompany::proxy::methods::Calibrate::Output calibrateOutput = calibrateResult.get();
+				com::myCompany::proxy::methods::Calibrate::Output calibrateOutput = calibrateResult.get();
 		
-			std::cout << "calibrateOutput.result:" << calibrateOutput.result << std::endl << std::endl << std::endl;
-		
-			sleep(1);
+				std::cout << "calibrateOutput.result:" << calibrateOutput.result << std::endl << std::endl << std::endl;
+			}
+			catch (std::exception &e)
+			{
+				std::cout << e.what() << std::endl;
+			}
+
+			usleep(10000);
 		}
 	});
 	calibrateThread.detach();
@@ -62,46 +96,29 @@ int main(int argc, char** argv)
 			configuration.z = 100;
 
 			std::cout << std::endl <<  "call Adjust" << std::endl;
-			ara::com::Future<com::myCompany::proxy::methods::Adjust::Output> adjustResult = proxy.Adjust(configuration);
+			try
+			{
+				ara::com::Future<com::myCompany::proxy::methods::Adjust::Output> adjustResult = proxy.Adjust(configuration);
 		
-			com::myCompany::proxy::methods::Adjust::Output adjustOutput = adjustResult.get();
+				com::myCompany::proxy::methods::Adjust::Output adjustOutput = adjustResult.get();
 		
-			std::cout << "adjustOutput.success:" << adjustOutput.success << std::endl;
-			std::cout << "adjustOutput.effective_position.x:" << adjustOutput.effective_position.x << std::endl;
-			std::cout << "adjustOutput.effective_position.y:" << adjustOutput.effective_position.y << std::endl;
-			std::cout << "adjustOutput.effective_position.z:" << adjustOutput.effective_position.z << std::endl << std::endl;
-		
-			sleep(1);
+				std::cout << "adjustOutput.success:" << adjustOutput.success << std::endl;
+				std::cout << "adjustOutput.effective_position.x:" << adjustOutput.effective_position.x << std::endl;
+				std::cout << "adjustOutput.effective_position.y:" << adjustOutput.effective_position.y << std::endl;
+				std::cout << "adjustOutput.effective_position.z:" << adjustOutput.effective_position.z << std::endl << std::endl;
+			}
+			catch (std::exception &e)
+			{
+				std::cout << e.what() << std::endl;
+			}
+
+			usleep(10000);
 		}
 	});
 	adjustThread.detach();
-		
+	
 	while (1)
 	{
-	#if 0
-		Position configuration;
-		
-		configuration.x = 100;
-		configuration.y = 200;
-		configuration.z = 300;
-
-		std::cout << "call Calibrate" << std::endl;
-		ara::com::Future<com::myCompany::proxy::methods::Calibrate::Output> calibrateResult = proxy.Calibrate(configuration);
-		
-		com::myCompany::proxy::methods::Calibrate::Output calibrateOutput = calibrateResult.get();
-		
-		std::cout << "calibrateOutput.result:" << calibrateOutput.result << std::endl << std::endl;
-
-		std::cout << "call Adjust" << std::endl;
-		ara::com::Future<com::myCompany::proxy::methods::Adjust::Output> adjustResult = proxy.Adjust(configuration);
-		
-		com::myCompany::proxy::methods::Adjust::Output adjustOutput = adjustResult.get();
-		
-		std::cout << "adjustOutput.success:" << adjustOutput.success << std::endl;
-		std::cout << "adjustOutput.effective_position.x:" << adjustOutput.effective_position.x << std::endl;
-		std::cout << "adjustOutput.effective_position.y:" << adjustOutput.effective_position.y << std::endl;
-		std::cout << "adjustOutput.effective_position.z:" << adjustOutput.effective_position.z << std::endl << std::endl;
-	#endif	
 		sleep(1);
 	}
 	

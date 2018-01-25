@@ -24,7 +24,9 @@ namespace ara
 			Method(ServiceProxy* proxy, uint16_t methodId);
 			~Method();
 			
-			bool operator()(std::shared_ptr<Payload> payload, MethodResponseHandler handler);
+			uint16_t operator()(std::shared_ptr<Payload> payload, MethodResponseHandler handler);
+			
+			void cancel(uint16_t session);
 			
 		protected:
 			ServiceProxy* m_owner;

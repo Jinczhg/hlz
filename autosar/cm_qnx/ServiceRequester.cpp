@@ -57,6 +57,7 @@ bool ServiceRequester::subscribe(uint16_t eventId)
 			
 bool ServiceRequester::unsubscribe(uint16_t eventId)
 {
+	m_networkBinding->unsubscribe(eventId);
 	return false;
 }
 			
@@ -74,10 +75,14 @@ void ServiceRequester::unsetEventReceiveHandler(uint16_t eventId)
 	}
 }
 
-bool ServiceRequester::request(uint16_t methodId, std::shared_ptr<Payload> payload, ResponseHandler handler)
+uint16_t ServiceRequester::request(uint16_t methodId, std::shared_ptr<Payload> payload, ResponseHandler handler)
 {
 	std::shared_ptr<Message> msg(new Message());
-	uint16_t session = ++m_session;
+	uint16_t session = 0;
+	{
+		std::lock_guard<std::mutex> guard(m_mutex);
+		session = ++m_session;
+	}
 	
 	msg->setServiceId(m_serviceId);
 	msg->setInstanceId(m_instanceId);
@@ -98,11 +103,18 @@ bool ServiceRequester::request(uint16_t methodId, std::shared_ptr<Payload> paylo
 		{
 			m_responseHandlers.erase(it);
 		}
-		
-		return false;
 	}
 	
-	return true;
+	return session;
+}
+
+void ServiceRequester::cancelRequest(uint16_t session)
+{
+	auto it = m_responseHandlers.find(session);
+	if (it != m_responseHandlers.end())
+	{
+		m_responseHandlers.erase(it);
+	}
 }
 			
 void ServiceRequester::onMessage(NetWorkBindingType type, std::shared_ptr<Message> msg)

@@ -14,6 +14,7 @@
 #include "BaseNetworkBinding.h"
 
 #include <map>
+#include <mutex>
 
 namespace ara
 {
@@ -39,7 +40,9 @@ namespace ara
 			
 			void unsetEventReceiveHandler(uint16_t eventId);
 			
-			bool request(uint16_t methodId, std::shared_ptr<Payload> payload, ResponseHandler handler);
+			uint16_t request(uint16_t methodId, std::shared_ptr<Payload> payload, ResponseHandler handler);
+			
+			void cancelRequest(uint16_t session);
 			
 			void onMessage(NetWorkBindingType type, std::shared_ptr<Message> msg);
 			
@@ -53,6 +56,8 @@ namespace ara
 			uint16_t m_session;
 			std::map<uint16_t,ResponseHandler> m_responseHandlers;
 			BaseNetworkBinding *m_networkBinding;
+			
+			std::mutex m_mutex;
 		};
 	} // namespace com
 } // namespace ara

@@ -57,36 +57,42 @@ public:
 };
 
 int main(int argc, char** argv)
-{
-	std::cout << "InstanceIdentifier" << std::endl;
-	
-	ara::com::InstanceIdentifier instance("1");
-	
-	std::cout << "RadarSkeketionImp instance" << std::endl;
-	
-	RadarSkeketionImp skeleton(instance, ara::com::MethodCallProcessingMode::kEvent);
-	
-	std::cout << "RadarSkeketionImp instance OK" << std::endl;
-	
-	int num = 0;
-	
-	while (1)
+{	
+	try
 	{
-		com::myCompany::skeleton::events::BrakeEvent::SampleType sample;
-		sample.active = true;
-		std::stringstream objects;
-		objects << "RadarObjects" << num;
-		for (uint32_t i = 0; i < objects.str().size(); i++)
+		ara::com::InstanceIdentifier instance("1");
+	
+		std::cout << "RadarSkeketionImp instance" << std::endl;
+		
+		RadarSkeketionImp skeleton(instance, ara::com::MethodCallProcessingMode::kEvent);
+	
+	
+		std::cout << "RadarSkeketionImp instance OK" << std::endl;
+	
+		int num = 0;
+	
+		while (1)
 		{
-			sample.objects.push_back(objects.str().c_str()[i]);
+			com::myCompany::skeleton::events::BrakeEvent::SampleType sample;
+			sample.active = true;
+			std::stringstream objects;
+			objects << "RadarObjects" << num;
+			for (uint32_t i = 0; i < objects.str().size(); i++)
+			{
+				sample.objects.push_back(objects.str().c_str()[i]);
+			}
+			sample.objects.push_back('\0');
+		
+			skeleton.BrakeEvent.Send(sample);
+		
+			num++;
+		
+			usleep(10000);
 		}
-		sample.objects.push_back('\0');
-		
-		skeleton.BrakeEvent.Send(sample);
-		
-		num++;
-		
-		sleep(1);
+	}
+	catch (std::exception &e)
+	{
+		std::cout << e.what() << std::endl;
 	}
 
 	return 0;

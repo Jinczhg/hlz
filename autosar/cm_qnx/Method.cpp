@@ -23,14 +23,19 @@ Method::~Method()
 {
 }
 
-bool Method::operator()(std::shared_ptr<Payload> payload, MethodResponseHandler handler)
+uint16_t Method::operator()(std::shared_ptr<Payload> payload, MethodResponseHandler handler)
 {
 	ServiceRequester *sr = ManagementFactory::get()->getServiceRequester(m_owner->getServiceId(), m_owner->getInstanceId());
 
-	
 	return sr->request(m_methodId, payload, [handler](std::shared_ptr<Message> msg){
 		handler(msg->getPayload());
 	});
+}
+
+void Method::cancel(uint16_t session)
+{
+	ServiceRequester *sr = ManagementFactory::get()->getServiceRequester(m_owner->getServiceId(), m_owner->getInstanceId());
+	sr->cancelRequest(session);
 }
 
 } // namespace com

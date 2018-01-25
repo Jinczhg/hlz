@@ -163,6 +163,17 @@ void Message::setId(uint16_t id)
 {
 	m_id = id;
 }
+
+void Message::setIp(uint32_t ip)
+{
+	m_ip = ip;
+}
+
+void Message::setPort(uint16_t port)
+{
+	m_port = port;
+}
+
 void Message::setType(MessageType type)
 {
 	m_type = type;
@@ -206,6 +217,16 @@ uint16_t Message::getSession()
 uint16_t Message::getId()
 {
 	return m_id;
+}
+
+uint32_t Message::getIp()
+{
+	return m_ip;
+}
+
+uint16_t Message::getPort()
+{
+	return m_port;
 }
 
 MessageType Message::getType()

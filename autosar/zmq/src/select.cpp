@@ -112,7 +112,10 @@ void zmq::select_t::trigger_events (const fd_entries_t &fd_entries_,
     //  Size is cached to avoid iteration through recently added descriptors.
     for (fd_entries_t::size_type i = 0, size = fd_entries_.size ();
          i < size && event_count_ > 0; ++i) {
-        const fd_entry_t &current_fd_entry = fd_entries_ [i];
+        try
+        {
+        //const fd_entry_t &current_fd_entry = fd_entries_ [i];
+        const fd_entry_t current_fd_entry = fd_entries_.at(i);
 
         if (is_retired_fd (current_fd_entry))
             continue;
@@ -141,6 +144,10 @@ void zmq::select_t::trigger_events (const fd_entries_t &fd_entries_,
         if (FD_ISSET (current_fd_entry.fd, &local_fds_set_.error)) {
             current_fd_entry.events->in_event ();
             --event_count_;
+        }
+        }
+        catch(std::exception &e)
+        {
         }
     }
 }
@@ -278,8 +285,8 @@ void zmq::select_t::loop ()
 #if defined ZMQ_HAVE_OSX
         struct timeval tv = {(long) (timeout / 1000), timeout % 1000 * 1000};
 #else
-        struct timeval tv = {(long) (timeout / 1000),
-                             (long) (timeout % 1000 * 1000)};
+        struct timeval tv = {(time_t) (timeout / 1000),
+                             (suseconds_t) (timeout % 1000 * 1000)};
 #endif
 
         

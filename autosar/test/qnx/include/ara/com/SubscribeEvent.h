@@ -32,6 +32,7 @@ namespace ara
 		protected:
 			ServiceProxy* m_owner;
 			uint16_t m_eventId;
+			bool m_subscribed;
 			EventCacheUpdatePolicy m_policy;
 			size_t m_cacheSize;
 			std::vector<std::shared_ptr<Payload>> m_data;
