@@ -41,13 +41,13 @@ namespace zmq
         virtual ~i_poll_events () {}
 
         // Called by I/O thread when file descriptor is ready for reading.
-        virtual void in_event () = 0;
+        virtual void in_event () {}
 
         // Called by I/O thread when file descriptor is ready for writing.
-        virtual void out_event () = 0;
+        virtual void out_event () {}
 
         // Called when timer expires.
-        virtual void timer_event (int id_) = 0;
+        virtual void timer_event (int id_) {}
     };
 
 }
