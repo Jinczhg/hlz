@@ -1,0 +1,2436 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--PREEvision 8.0.8 final--><!--JDK: 1.8.0_112--><!--Autosar Release 4.2.2 Revision 0001--><!--Date: 2018.01.09 at 15:22:50--><AUTOSAR xmlns="http://autosar.org/schema/r4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://autosar.org/schema/r4.0 AUTOSAR_4-2-2.xsd">
+  <ADMIN-DATA>
+    <LANGUAGE>EN</LANGUAGE>
+    <USED-LANGUAGES>
+      <L-10 L="EN" xml:space="default"/>
+    </USED-LANGUAGES>
+  </ADMIN-DATA>
+  <AR-PACKAGES>
+    <AR-PACKAGE UUID="0a9b246c9e373afb9330a953844b3b6e">
+      <SHORT-NAME>Communication</SHORT-NAME>
+      <AR-PACKAGES>
+        <AR-PACKAGE UUID="bd41cf36a4a136fc81592f3b1c3660df">
+          <SHORT-NAME>DataTransformation</SHORT-NAME>
+          <ELEMENTS>
+            <DATA-TRANSFORMATION-SET UUID="Na0753a5160d357a3992a492xNa0753a5160d357a3992ddb800">
+              <SHORT-NAME>New_Transformer_Configuration</SHORT-NAME>
+              <TRANSFORMATION-TECHNOLOGYS>
+                <TRANSFORMATION-TECHNOLOGY UUID="Na0753a5160d357a3992a492xNa0753a5160d357a3992ddb900">
+                  <SHORT-NAME>Fingerprint_SOME_IP_Transformer</SHORT-NAME>
+                  <TRANSFORMATION-DESCRIPTIONS>
+                    <SOMEIP-TRANSFORMATION-DESCRIPTION>
+                      <BYTE-ORDER>MOST-SIGNIFICANT-BYTE-FIRST</BYTE-ORDER>
+                    </SOMEIP-TRANSFORMATION-DESCRIPTION>
+                  </TRANSFORMATION-DESCRIPTIONS>
+                </TRANSFORMATION-TECHNOLOGY>
+              </TRANSFORMATION-TECHNOLOGYS>
+            </DATA-TRANSFORMATION-SET>
+          </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE UUID="8ea7d5f648373dcb81a5df496ef28b08">
+          <SHORT-NAME>PDUs</SHORT-NAME>
+          <ELEMENTS>
+            <I-SIGNAL-I-PDU UUID="Na0753a5160d357a3992d3eaXNa0753a5160d357a3992d3e800">
+              <SHORT-NAME>Delete_RequestSignalIPDU</SHORT-NAME>
+              <CONTAINED-I-PDU-PROPS>
+                <COLLECTION-SEMANTICS>LAST-IS-BEST</COLLECTION-SEMANTICS>
+                <HEADER-ID-SHORT-HEADER>1</HEADER-ID-SHORT-HEADER>
+              </CONTAINED-I-PDU-PROPS>
+              <I-SIGNAL-TO-PDU-MAPPINGS>
+                <I-SIGNAL-TO-I-PDU-MAPPING UUID="Na0753a5160d357a3992d3eaxNa0753a5160d357a3992d3e900">
+                  <SHORT-NAME>Delete_Request</SHORT-NAME>
+                  <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Delete_Request</I-SIGNAL-REF>
+                </I-SIGNAL-TO-I-PDU-MAPPING>
+              </I-SIGNAL-TO-PDU-MAPPINGS>
+            </I-SIGNAL-I-PDU>
+            <I-SIGNAL-I-PDU UUID="Na0753a5160d357a3992d38cXNa0753a5160d357a3992d38a00">
+              <SHORT-NAME>Delete_ResultSignalIPDU</SHORT-NAME>
+              <CONTAINED-I-PDU-PROPS>
+                <COLLECTION-SEMANTICS>LAST-IS-BEST</COLLECTION-SEMANTICS>
+                <HEADER-ID-SHORT-HEADER>2</HEADER-ID-SHORT-HEADER>
+              </CONTAINED-I-PDU-PROPS>
+              <I-SIGNAL-TO-PDU-MAPPINGS>
+                <I-SIGNAL-TO-I-PDU-MAPPING UUID="Na0753a5160d357a3992d38cxNa0753a5160d357a3992d38b00">
+                  <SHORT-NAME>Delete_Result</SHORT-NAME>
+                  <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Delete_Result</I-SIGNAL-REF>
+                </I-SIGNAL-TO-I-PDU-MAPPING>
+              </I-SIGNAL-TO-PDU-MAPPINGS>
+            </I-SIGNAL-I-PDU>
+            <I-SIGNAL-I-PDU UUID="Na0753a5160d357a3992d310XNa0753a5160d357a3992d30e00">
+              <SHORT-NAME>DoorStatusSignalIPDU</SHORT-NAME>
+              <CONTAINED-I-PDU-PROPS>
+                <COLLECTION-SEMANTICS>LAST-IS-BEST</COLLECTION-SEMANTICS>
+                <HEADER-ID-SHORT-HEADER>3</HEADER-ID-SHORT-HEADER>
+              </CONTAINED-I-PDU-PROPS>
+              <I-SIGNAL-TO-PDU-MAPPINGS>
+                <I-SIGNAL-TO-I-PDU-MAPPING UUID="Na0753a5160d357a3992d310xNa0753a5160d357a3992d30f00">
+                  <SHORT-NAME>DoorStatus</SHORT-NAME>
+                  <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/DoorStatus</I-SIGNAL-REF>
+                  <PACKING-BYTE-ORDER>MOST-SIGNIFICANT-BYTE-FIRST</PACKING-BYTE-ORDER>
+                </I-SIGNAL-TO-I-PDU-MAPPING>
+              </I-SIGNAL-TO-PDU-MAPPINGS>
+            </I-SIGNAL-I-PDU>
+            <I-SIGNAL-I-PDU-GROUP>
+              <SHORT-NAME>J6_BusSystem57_Rx</SHORT-NAME>
+              <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+              <I-SIGNAL-I-PDUS>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Learn_PercentSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Inactive_ResultSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/PowermodeSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Delete_ResultSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/DoorStatusSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Learn_ResultSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+              </I-SIGNAL-I-PDUS>
+            </I-SIGNAL-I-PDU-GROUP>
+            <I-SIGNAL-I-PDU-GROUP>
+              <SHORT-NAME>J6_BusSystem57_Tx</SHORT-NAME>
+              <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+              <I-SIGNAL-I-PDUS>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Inactive_RequestSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Delete_RequestSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Learn_RequestSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+              </I-SIGNAL-I-PDUS>
+            </I-SIGNAL-I-PDU-GROUP>
+            <I-SIGNAL-I-PDU-GROUP>
+              <SHORT-NAME>TC297_BusSystem56_Rx</SHORT-NAME>
+              <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+              <I-SIGNAL-I-PDUS>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Learn_RequestSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Delete_RequestSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Inactive_RequestSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+              </I-SIGNAL-I-PDUS>
+            </I-SIGNAL-I-PDU-GROUP>
+            <I-SIGNAL-I-PDU-GROUP>
+              <SHORT-NAME>TC297_BusSystem56_Tx</SHORT-NAME>
+              <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+              <I-SIGNAL-I-PDUS>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/PowermodeSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/DoorStatusSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Inactive_ResultSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Delete_ResultSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Learn_ResultSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                <I-SIGNAL-I-PDU-REF-CONDITIONAL>
+                  <I-SIGNAL-I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Learn_PercentSignalIPDU</I-SIGNAL-I-PDU-REF>
+                </I-SIGNAL-I-PDU-REF-CONDITIONAL>
+              </I-SIGNAL-I-PDUS>
+            </I-SIGNAL-I-PDU-GROUP>
+            <I-SIGNAL-I-PDU UUID="Na0753a5160d357a3992d3e2XNa0753a5160d357a3992d3e000">
+              <SHORT-NAME>Inactive_RequestSignalIPDU</SHORT-NAME>
+              <I-SIGNAL-TO-PDU-MAPPINGS>
+                <I-SIGNAL-TO-I-PDU-MAPPING UUID="Na0753a5160d357a3992d3e2xNa0753a5160d357a3992d3e100">
+                  <SHORT-NAME>Inactive_Request</SHORT-NAME>
+                  <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Inactive_Request</I-SIGNAL-REF>
+                </I-SIGNAL-TO-I-PDU-MAPPING>
+              </I-SIGNAL-TO-PDU-MAPPINGS>
+            </I-SIGNAL-I-PDU>
+            <I-SIGNAL-I-PDU UUID="Na0753a5160d357a3992d376XNa0753a5160d357a3992d37400">
+              <SHORT-NAME>Inactive_ResultSignalIPDU</SHORT-NAME>
+              <CONTAINED-I-PDU-PROPS>
+                <COLLECTION-SEMANTICS>LAST-IS-BEST</COLLECTION-SEMANTICS>
+                <HEADER-ID-SHORT-HEADER>4</HEADER-ID-SHORT-HEADER>
+              </CONTAINED-I-PDU-PROPS>
+              <I-SIGNAL-TO-PDU-MAPPINGS>
+                <I-SIGNAL-TO-I-PDU-MAPPING UUID="Na0753a5160d357a3992d376xNa0753a5160d357a3992d37500">
+                  <SHORT-NAME>Inactive_Result</SHORT-NAME>
+                  <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Inactive_Result</I-SIGNAL-REF>
+                </I-SIGNAL-TO-I-PDU-MAPPING>
+              </I-SIGNAL-TO-PDU-MAPPINGS>
+            </I-SIGNAL-I-PDU>
+            <I-SIGNAL-I-PDU UUID="Na0753a5160d357a3992d341XNa0753a5160d357a3992d33f00">
+              <SHORT-NAME>Learn_PercentSignalIPDU</SHORT-NAME>
+              <CONTAINED-I-PDU-PROPS>
+                <COLLECTION-SEMANTICS>LAST-IS-BEST</COLLECTION-SEMANTICS>
+                <HEADER-ID-SHORT-HEADER>6</HEADER-ID-SHORT-HEADER>
+              </CONTAINED-I-PDU-PROPS>
+              <I-SIGNAL-TO-PDU-MAPPINGS>
+                <I-SIGNAL-TO-I-PDU-MAPPING UUID="Na0753a5160d357a3992d341xNa0753a5160d357a3992d34000">
+                  <SHORT-NAME>Learn_Percent</SHORT-NAME>
+                  <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Learn_Percent</I-SIGNAL-REF>
+                </I-SIGNAL-TO-I-PDU-MAPPING>
+              </I-SIGNAL-TO-PDU-MAPPINGS>
+            </I-SIGNAL-I-PDU>
+            <I-SIGNAL-I-PDU UUID="Na0753a5160d357a3992d3daXNa0753a5160d357a3992d3d800">
+              <SHORT-NAME>Learn_RequestSignalIPDU</SHORT-NAME>
+              <CONTAINED-I-PDU-PROPS>
+                <COLLECTION-SEMANTICS>LAST-IS-BEST</COLLECTION-SEMANTICS>
+                <HEADER-ID-SHORT-HEADER>7</HEADER-ID-SHORT-HEADER>
+              </CONTAINED-I-PDU-PROPS>
+              <I-SIGNAL-TO-PDU-MAPPINGS>
+                <I-SIGNAL-TO-I-PDU-MAPPING UUID="Na0753a5160d357a3992d3daxNa0753a5160d357a3992d3d900">
+                  <SHORT-NAME>Learn_Request</SHORT-NAME>
+                  <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Learn_Request</I-SIGNAL-REF>
+                </I-SIGNAL-TO-I-PDU-MAPPING>
+              </I-SIGNAL-TO-PDU-MAPPINGS>
+            </I-SIGNAL-I-PDU>
+            <I-SIGNAL-I-PDU UUID="Na0753a5160d357a3992d384XNa0753a5160d357a3992d38200">
+              <SHORT-NAME>Learn_ResultSignalIPDU</SHORT-NAME>
+              <CONTAINED-I-PDU-PROPS>
+                <COLLECTION-SEMANTICS>LAST-IS-BEST</COLLECTION-SEMANTICS>
+                <HEADER-ID-SHORT-HEADER>8</HEADER-ID-SHORT-HEADER>
+              </CONTAINED-I-PDU-PROPS>
+              <I-SIGNAL-TO-PDU-MAPPINGS>
+                <I-SIGNAL-TO-I-PDU-MAPPING UUID="Na0753a5160d357a3992d384xNa0753a5160d357a3992d38300">
+                  <SHORT-NAME>Learn_Result</SHORT-NAME>
+                  <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Learn_Result</I-SIGNAL-REF>
+                </I-SIGNAL-TO-I-PDU-MAPPING>
+              </I-SIGNAL-TO-PDU-MAPPINGS>
+            </I-SIGNAL-I-PDU>
+            <I-SIGNAL-I-PDU UUID="Na0753a5160d357a3992d3a5XNa0753a5160d357a3992d3a300">
+              <SHORT-NAME>PowermodeSignalIPDU</SHORT-NAME>
+              <CONTAINED-I-PDU-PROPS>
+                <COLLECTION-SEMANTICS>LAST-IS-BEST</COLLECTION-SEMANTICS>
+                <HEADER-ID-SHORT-HEADER>9</HEADER-ID-SHORT-HEADER>
+              </CONTAINED-I-PDU-PROPS>
+              <I-SIGNAL-TO-PDU-MAPPINGS>
+                <I-SIGNAL-TO-I-PDU-MAPPING UUID="Na0753a5160d357a3992d3a5xNa0753a5160d357a3992d3a400">
+                  <SHORT-NAME>PowermodeDataElement_PowermodeInterface</SHORT-NAME>
+                  <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Powermode</I-SIGNAL-REF>
+                </I-SIGNAL-TO-I-PDU-MAPPING>
+              </I-SIGNAL-TO-PDU-MAPPINGS>
+            </I-SIGNAL-I-PDU>
+          </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE UUID="8d148d7186933bf681808a1b3ce3d0b3">
+          <SHORT-NAME>Signals</SHORT-NAME>
+          <ELEMENTS>
+            <I-SIGNAL UUID="Na0753a5160d357a3992d3bbXNa0753a5160d357a3992d3ba00">
+              <SHORT-NAME>Delete_Request</SHORT-NAME>
+              <LENGTH>4</LENGTH>
+              <NETWORK-REPRESENTATION-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/DeleteFunction_FingerPrintDelete1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </NETWORK-REPRESENTATION-PROPS>
+              <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Delete_Request</SYSTEM-SIGNAL-REF>
+              <TRANSFORMATION-I-SIGNAL-PROPSS>
+                <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+                  <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                    <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                      <TRANSFORMER-REF DEST="TRANSFORMATION-TECHNOLOGY">/Communication/DataTransformation/New_Transformer_Configuration/Fingerprint_SOME_IP_Transformer</TRANSFORMER-REF>
+                    </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                  </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+              </TRANSFORMATION-I-SIGNAL-PROPSS>
+            </I-SIGNAL>
+            <I-SIGNAL UUID="Na0753a5160d357a3992d357XNa0753a5160d357a3992d35600">
+              <SHORT-NAME>Delete_Result</SHORT-NAME>
+              <LENGTH>1</LENGTH>
+              <NETWORK-REPRESENTATION-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Delete_Result1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </NETWORK-REPRESENTATION-PROPS>
+              <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Delete_Result</SYSTEM-SIGNAL-REF>
+              <TRANSFORMATION-I-SIGNAL-PROPSS>
+                <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+                  <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                    <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                      <TRANSFORMER-REF DEST="TRANSFORMATION-TECHNOLOGY">/Communication/DataTransformation/New_Transformer_Configuration/Fingerprint_SOME_IP_Transformer</TRANSFORMER-REF>
+                    </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                  </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+              </TRANSFORMATION-I-SIGNAL-PROPSS>
+            </I-SIGNAL>
+            <I-SIGNAL UUID="Na0753a5160d357a3992d2f0XNa0753a5160d357a3992d2ef00">
+              <SHORT-NAME>DoorStatus</SHORT-NAME>
+              <LENGTH>1</LENGTH>
+              <NETWORK-REPRESENTATION-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/DoorStatus1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </NETWORK-REPRESENTATION-PROPS>
+              <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/DoorStatus</SYSTEM-SIGNAL-REF>
+              <TRANSFORMATION-I-SIGNAL-PROPSS>
+                <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+                  <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                    <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                      <TRANSFORMER-REF DEST="TRANSFORMATION-TECHNOLOGY">/Communication/DataTransformation/New_Transformer_Configuration/Fingerprint_SOME_IP_Transformer</TRANSFORMER-REF>
+                    </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                  </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+              </TRANSFORMATION-I-SIGNAL-PROPSS>
+            </I-SIGNAL>
+            <I-SIGNAL UUID="Na0753a5160d357a3992d3b4XNa0753a5160d357a3992d3b300">
+              <SHORT-NAME>Inactive_Request</SHORT-NAME>
+              <LENGTH>1</LENGTH>
+              <NETWORK-REPRESENTATION-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Learn_Inactive1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </NETWORK-REPRESENTATION-PROPS>
+              <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Inactive_Request</SYSTEM-SIGNAL-REF>
+              <TRANSFORMATION-I-SIGNAL-PROPSS>
+                <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+                  <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                    <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                      <TRANSFORMER-REF DEST="TRANSFORMATION-TECHNOLOGY">/Communication/DataTransformation/New_Transformer_Configuration/Fingerprint_SOME_IP_Transformer</TRANSFORMER-REF>
+                    </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                  </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+              </TRANSFORMATION-I-SIGNAL-PROPSS>
+            </I-SIGNAL>
+            <I-SIGNAL UUID="Na0753a5160d357a3992d350XNa0753a5160d357a3992d34f00">
+              <SHORT-NAME>Inactive_Result</SHORT-NAME>
+              <LENGTH>1</LENGTH>
+              <NETWORK-REPRESENTATION-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Inactive_Result1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </NETWORK-REPRESENTATION-PROPS>
+              <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Inactive_Result</SYSTEM-SIGNAL-REF>
+              <TRANSFORMATION-I-SIGNAL-PROPSS>
+                <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+                  <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                    <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                      <TRANSFORMER-REF DEST="TRANSFORMATION-TECHNOLOGY">/Communication/DataTransformation/New_Transformer_Configuration/Fingerprint_SOME_IP_Transformer</TRANSFORMER-REF>
+                    </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                  </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+              </TRANSFORMATION-I-SIGNAL-PROPSS>
+            </I-SIGNAL>
+            <I-SIGNAL UUID="Na0753a5160d357a3992d330XNa0753a5160d357a3992d32f00">
+              <SHORT-NAME>Learn_Percent</SHORT-NAME>
+              <LENGTH>8</LENGTH>
+              <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Learn_Percent</SYSTEM-SIGNAL-REF>
+              <TRANSFORMATION-I-SIGNAL-PROPSS>
+                <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+                  <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                    <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                      <TRANSFORMER-REF DEST="TRANSFORMATION-TECHNOLOGY">/Communication/DataTransformation/New_Transformer_Configuration/Fingerprint_SOME_IP_Transformer</TRANSFORMER-REF>
+                    </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                  </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+              </TRANSFORMATION-I-SIGNAL-PROPSS>
+            </I-SIGNAL>
+            <I-SIGNAL UUID="Na0753a5160d357a3992d3adXNa0753a5160d357a3992d3ac00">
+              <SHORT-NAME>Learn_Request</SHORT-NAME>
+              <LENGTH>1</LENGTH>
+              <NETWORK-REPRESENTATION-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Learn_Active1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </NETWORK-REPRESENTATION-PROPS>
+              <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Learn_Request</SYSTEM-SIGNAL-REF>
+              <TRANSFORMATION-I-SIGNAL-PROPSS>
+                <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+                  <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                    <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                      <TRANSFORMER-REF DEST="TRANSFORMATION-TECHNOLOGY">/Communication/DataTransformation/New_Transformer_Configuration/Fingerprint_SOME_IP_Transformer</TRANSFORMER-REF>
+                    </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                  </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+              </TRANSFORMATION-I-SIGNAL-PROPSS>
+            </I-SIGNAL>
+            <I-SIGNAL UUID="Na0753a5160d357a3992d349XNa0753a5160d357a3992d34800">
+              <SHORT-NAME>Learn_Result</SHORT-NAME>
+              <LENGTH>3</LENGTH>
+              <NETWORK-REPRESENTATION-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Learn_Result1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </NETWORK-REPRESENTATION-PROPS>
+              <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Learn_Result</SYSTEM-SIGNAL-REF>
+              <TRANSFORMATION-I-SIGNAL-PROPSS>
+                <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+                  <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                    <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                      <TRANSFORMER-REF DEST="TRANSFORMATION-TECHNOLOGY">/Communication/DataTransformation/New_Transformer_Configuration/Fingerprint_SOME_IP_Transformer</TRANSFORMER-REF>
+                    </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                  </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+              </TRANSFORMATION-I-SIGNAL-PROPSS>
+            </I-SIGNAL>
+            <I-SIGNAL UUID="Na0753a5160d357a3992d394XNa0753a5160d357a3992d39300">
+              <SHORT-NAME>Powermode</SHORT-NAME>
+              <LENGTH>2</LENGTH>
+              <NETWORK-REPRESENTATION-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/PowerModeStatus1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </NETWORK-REPRESENTATION-PROPS>
+              <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Powermode</SYSTEM-SIGNAL-REF>
+              <TRANSFORMATION-I-SIGNAL-PROPSS>
+                <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+                  <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                    <SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                      <TRANSFORMER-REF DEST="TRANSFORMATION-TECHNOLOGY">/Communication/DataTransformation/New_Transformer_Configuration/Fingerprint_SOME_IP_Transformer</TRANSFORMER-REF>
+                    </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-CONDITIONAL>
+                  </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS-VARIANTS>
+                </SOMEIP-TRANSFORMATION-I-SIGNAL-PROPS>
+              </TRANSFORMATION-I-SIGNAL-PROPSS>
+            </I-SIGNAL>
+          </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE UUID="c804a5701d0931fc916944b1da5613ca">
+          <SHORT-NAME>SystemSignals</SHORT-NAME>
+          <ELEMENTS>
+            <SYSTEM-SIGNAL UUID="Na0753a5160d357a3992d2d8xNa0753a5160d357a3992d3bc00">
+              <SHORT-NAME>Delete_Request</SHORT-NAME>
+              <PHYSICAL-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/DeleteFunction_FingerPrintDelete1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </PHYSICAL-PROPS>
+            </SYSTEM-SIGNAL>
+            <SYSTEM-SIGNAL UUID="Na0753a5160d357a3992d2d8xNa0753a5160d357a3992d35800">
+              <SHORT-NAME>Delete_Result</SHORT-NAME>
+              <PHYSICAL-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Delete_Result1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </PHYSICAL-PROPS>
+            </SYSTEM-SIGNAL>
+            <SYSTEM-SIGNAL UUID="Na0753a5160d357a3992d2d8xNa0753a5160d357a3992d2f100">
+              <SHORT-NAME>DoorStatus</SHORT-NAME>
+              <PHYSICAL-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/DoorStatus1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </PHYSICAL-PROPS>
+            </SYSTEM-SIGNAL>
+            <SYSTEM-SIGNAL UUID="Na0753a5160d357a3992d2d8xNa0753a5160d357a3992d3b500">
+              <SHORT-NAME>Inactive_Request</SHORT-NAME>
+              <PHYSICAL-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Learn_Inactive1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </PHYSICAL-PROPS>
+            </SYSTEM-SIGNAL>
+            <SYSTEM-SIGNAL UUID="Na0753a5160d357a3992d2d8xNa0753a5160d357a3992d35100">
+              <SHORT-NAME>Inactive_Result</SHORT-NAME>
+              <PHYSICAL-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Inactive_Result1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </PHYSICAL-PROPS>
+            </SYSTEM-SIGNAL>
+            <SYSTEM-SIGNAL UUID="Na0753a5160d357a3992d2d8xNa0753a5160d357a3992d33100">
+              <SHORT-NAME>Learn_Percent</SHORT-NAME>
+            </SYSTEM-SIGNAL>
+            <SYSTEM-SIGNAL UUID="Na0753a5160d357a3992d2d8xNa0753a5160d357a3992d3ae00">
+              <SHORT-NAME>Learn_Request</SHORT-NAME>
+              <PHYSICAL-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Learn_Active1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </PHYSICAL-PROPS>
+            </SYSTEM-SIGNAL>
+            <SYSTEM-SIGNAL UUID="Na0753a5160d357a3992d2d8xNa0753a5160d357a3992d34a00">
+              <SHORT-NAME>Learn_Result</SHORT-NAME>
+              <PHYSICAL-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Learn_Result1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </PHYSICAL-PROPS>
+            </SYSTEM-SIGNAL>
+            <SYSTEM-SIGNAL UUID="Na0753a5160d357a3992d2d8xNa0753a5160d357a3992d39500">
+              <SHORT-NAME>Powermode</SHORT-NAME>
+              <PHYSICAL-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/PowerModeStatus1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </PHYSICAL-PROPS>
+            </SYSTEM-SIGNAL>
+          </ELEMENTS>
+        </AR-PACKAGE>
+      </AR-PACKAGES>
+    </AR-PACKAGE>
+    <AR-PACKAGE UUID="39361e6423b83087acdf88a806d830a3">
+      <SHORT-NAME>Constants</SHORT-NAME>
+    </AR-PACKAGE>
+    <AR-PACKAGE UUID="3a9d9d5ba064311caf68b24ed18841b5">
+      <SHORT-NAME>DataTypeMappingSets</SHORT-NAME>
+      <ELEMENTS>
+        <DATA-TYPE-MAPPING-SET UUID="Na0753991606c4219322f3e6XNa0753991606c4219322f3e500">
+          <SHORT-NAME>Data_Type_Mappings</SHORT-NAME>
+          <DATA-TYPE-MAPS>
+            <DATA-TYPE-MAP>
+              <APPLICATION-DATA-TYPE-REF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtDelete_Request1</APPLICATION-DATA-TYPE-REF>
+              <IMPLEMENTATION-DATA-TYPE-REF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/ImplementationDataTypes/IdtDelete_Request1</IMPLEMENTATION-DATA-TYPE-REF>
+            </DATA-TYPE-MAP>
+            <DATA-TYPE-MAP>
+              <APPLICATION-DATA-TYPE-REF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtDelete_Status1</APPLICATION-DATA-TYPE-REF>
+              <IMPLEMENTATION-DATA-TYPE-REF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/ImplementationDataTypes/IdtDelete_Status1</IMPLEMENTATION-DATA-TYPE-REF>
+            </DATA-TYPE-MAP>
+            <DATA-TYPE-MAP>
+              <APPLICATION-DATA-TYPE-REF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtDoorStatus1</APPLICATION-DATA-TYPE-REF>
+              <IMPLEMENTATION-DATA-TYPE-REF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/ImplementationDataTypes/IdtDoorStatus1</IMPLEMENTATION-DATA-TYPE-REF>
+            </DATA-TYPE-MAP>
+            <DATA-TYPE-MAP>
+              <APPLICATION-DATA-TYPE-REF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtLearn_Inative1</APPLICATION-DATA-TYPE-REF>
+              <IMPLEMENTATION-DATA-TYPE-REF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/ImplementationDataTypes/IdtLearn_Inative1</IMPLEMENTATION-DATA-TYPE-REF>
+            </DATA-TYPE-MAP>
+            <DATA-TYPE-MAP>
+              <APPLICATION-DATA-TYPE-REF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtLearn_Percent1</APPLICATION-DATA-TYPE-REF>
+              <IMPLEMENTATION-DATA-TYPE-REF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/ImplementationDataTypes/IdtLearn_Percent1</IMPLEMENTATION-DATA-TYPE-REF>
+            </DATA-TYPE-MAP>
+            <DATA-TYPE-MAP>
+              <APPLICATION-DATA-TYPE-REF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtInactive_Result1</APPLICATION-DATA-TYPE-REF>
+              <IMPLEMENTATION-DATA-TYPE-REF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/ImplementationDataTypes/IdtInactive_Result1</IMPLEMENTATION-DATA-TYPE-REF>
+            </DATA-TYPE-MAP>
+            <DATA-TYPE-MAP>
+              <APPLICATION-DATA-TYPE-REF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtLearn_Request1</APPLICATION-DATA-TYPE-REF>
+              <IMPLEMENTATION-DATA-TYPE-REF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/ImplementationDataTypes/IdtLearn_Request1</IMPLEMENTATION-DATA-TYPE-REF>
+            </DATA-TYPE-MAP>
+            <DATA-TYPE-MAP>
+              <APPLICATION-DATA-TYPE-REF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtLearn_Result1</APPLICATION-DATA-TYPE-REF>
+              <IMPLEMENTATION-DATA-TYPE-REF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/ImplementationDataTypes/IdtLearn_Result1</IMPLEMENTATION-DATA-TYPE-REF>
+            </DATA-TYPE-MAP>
+            <DATA-TYPE-MAP>
+              <APPLICATION-DATA-TYPE-REF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtPowerModeStatus1</APPLICATION-DATA-TYPE-REF>
+              <IMPLEMENTATION-DATA-TYPE-REF DEST="IMPLEMENTATION-DATA-TYPE">/DataTypes/ImplementationDataTypes/IdtPowerModeStatus1</IMPLEMENTATION-DATA-TYPE-REF>
+            </DATA-TYPE-MAP>
+          </DATA-TYPE-MAPS>
+        </DATA-TYPE-MAPPING-SET>
+      </ELEMENTS>
+    </AR-PACKAGE>
+    <AR-PACKAGE UUID="f771792e92c533f297a1b6eb53ac2ad9">
+      <SHORT-NAME>DataTypes</SHORT-NAME>
+      <AR-PACKAGES>
+        <AR-PACKAGE UUID="601e6d60b0f93899bf506b2d633dd39d">
+          <SHORT-NAME>ApplicationDataTypes</SHORT-NAME>
+          <ELEMENTS>
+            <APPLICATION-PRIMITIVE-DATA-TYPE UUID="Na0753a5160d357a399267ffXNa0753a5160d357a399267fe00">
+              <SHORT-NAME>AdtDelete_Request1</SHORT-NAME>
+              <CATEGORY>VALUE</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/DeleteFunction_FingerPrintDelete1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </APPLICATION-PRIMITIVE-DATA-TYPE>
+            <APPLICATION-PRIMITIVE-DATA-TYPE UUID="Na0753a5160d357a399267f7XNa0753a5160d357a399267f600">
+              <SHORT-NAME>AdtDelete_Status1</SHORT-NAME>
+              <CATEGORY>BOOLEAN</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Delete_Result1</COMPU-METHOD-REF>
+                    <SW-INTERPOLATION-METHOD>USEINPUTNEAREST</SW-INTERPOLATION-METHOD>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </APPLICATION-PRIMITIVE-DATA-TYPE>
+            <APPLICATION-PRIMITIVE-DATA-TYPE UUID="Na0753a5160d357a399267f9XNa0753a5160d357a399267f800">
+              <SHORT-NAME>AdtDoorStatus1</SHORT-NAME>
+              <CATEGORY>BOOLEAN</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/DoorStatus1</COMPU-METHOD-REF>
+                    <SW-REFRESH-TIMING>
+                      <CSE-CODE>3</CSE-CODE>
+                      <CSE-CODE-FACTOR>200</CSE-CODE-FACTOR>
+                    </SW-REFRESH-TIMING>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </APPLICATION-PRIMITIVE-DATA-TYPE>
+            <APPLICATION-PRIMITIVE-DATA-TYPE UUID="Na0753a5160d357a3992776cXNa0753a5160d357a3992776b00">
+              <SHORT-NAME>AdtInactive_Result1</SHORT-NAME>
+              <CATEGORY>BOOLEAN</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Inactive_Result1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </APPLICATION-PRIMITIVE-DATA-TYPE>
+            <APPLICATION-PRIMITIVE-DATA-TYPE UUID="Na0753a5160d357a399267fbXNa0753a5160d357a399267fa00">
+              <SHORT-NAME>AdtLearn_Inative1</SHORT-NAME>
+              <CATEGORY>BOOLEAN</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Learn_Inactive1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </APPLICATION-PRIMITIVE-DATA-TYPE>
+            <APPLICATION-PRIMITIVE-DATA-TYPE UUID="Na0753a5160d357a39926801XNa0753a5160d357a3992680000">
+              <SHORT-NAME>AdtLearn_Percent1</SHORT-NAME>
+              <CATEGORY>VALUE</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                    <SW-INTERPOLATION-METHOD>USEINPUTNEAREST</SW-INTERPOLATION-METHOD>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </APPLICATION-PRIMITIVE-DATA-TYPE>
+            <APPLICATION-PRIMITIVE-DATA-TYPE UUID="Na0753a5160d357a399267fdXNa0753a5160d357a399267fc00">
+              <SHORT-NAME>AdtLearn_Request1</SHORT-NAME>
+              <CATEGORY>BOOLEAN</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Learn_Active1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </APPLICATION-PRIMITIVE-DATA-TYPE>
+            <APPLICATION-PRIMITIVE-DATA-TYPE UUID="Na0753a5160d357a39926803XNa0753a5160d357a3992680200">
+              <SHORT-NAME>AdtLearn_Result1</SHORT-NAME>
+              <CATEGORY>VALUE</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Learn_Result1</COMPU-METHOD-REF>
+                    <SW-INTERPOLATION-METHOD>USEINPUTNEAREST</SW-INTERPOLATION-METHOD>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </APPLICATION-PRIMITIVE-DATA-TYPE>
+            <APPLICATION-PRIMITIVE-DATA-TYPE UUID="Na0753a5160d357a39926805XNa0753a5160d357a3992680400">
+              <SHORT-NAME>AdtPowerModeStatus1</SHORT-NAME>
+              <CATEGORY>VALUE</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/PowerModeStatus1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </APPLICATION-PRIMITIVE-DATA-TYPE>
+          </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE UUID="52bf5f499fbc3c2687e8f61a9e45cd41">
+          <SHORT-NAME>BaseTypes</SHORT-NAME>
+          <ELEMENTS>
+            <SW-BASE-TYPE UUID="Na0753a21609aa2cba9300adXNa0753a21609aa2cba9300ac00">
+              <SHORT-NAME>boolean</SHORT-NAME>
+              <CATEGORY>FIXED_LENGTH</CATEGORY>
+              <BASE-TYPE-SIZE>8</BASE-TYPE-SIZE>
+              <MAX-BASE-TYPE-SIZE>0</MAX-BASE-TYPE-SIZE>
+              <BASE-TYPE-ENCODING>BOOLEAN</BASE-TYPE-ENCODING>
+              <MEM-ALIGNMENT>0</MEM-ALIGNMENT>
+              <BYTE-ORDER>MOST-SIGNIFICANT-BYTE-FIRST</BYTE-ORDER>
+              <NATIVE-DECLARATION>boolean</NATIVE-DECLARATION>
+            </SW-BASE-TYPE>
+            <SW-BASE-TYPE UUID="Na0753a5160d357a3992694aXNa0753a5160d357a3992694900">
+              <SHORT-NAME>boolean_1</SHORT-NAME>
+              <CATEGORY>FIXED_LENGTH</CATEGORY>
+              <BASE-TYPE-SIZE>8</BASE-TYPE-SIZE>
+              <MAX-BASE-TYPE-SIZE>0</MAX-BASE-TYPE-SIZE>
+              <BASE-TYPE-ENCODING>BOOLEAN</BASE-TYPE-ENCODING>
+              <MEM-ALIGNMENT>0</MEM-ALIGNMENT>
+              <BYTE-ORDER>MOST-SIGNIFICANT-BYTE-FIRST</BYTE-ORDER>
+              <NATIVE-DECLARATION>boolean</NATIVE-DECLARATION>
+            </SW-BASE-TYPE>
+            <SW-BASE-TYPE UUID="Na0753a21609aa2cba9300b7XNa0753a21609aa2cba9300b600">
+              <SHORT-NAME>uint8</SHORT-NAME>
+              <CATEGORY>FIXED_LENGTH</CATEGORY>
+              <BASE-TYPE-SIZE>8</BASE-TYPE-SIZE>
+              <MAX-BASE-TYPE-SIZE>0</MAX-BASE-TYPE-SIZE>
+              <BASE-TYPE-ENCODING>NONE</BASE-TYPE-ENCODING>
+              <MEM-ALIGNMENT>0</MEM-ALIGNMENT>
+              <BYTE-ORDER>MOST-SIGNIFICANT-BYTE-FIRST</BYTE-ORDER>
+              <NATIVE-DECLARATION>uint8</NATIVE-DECLARATION>
+            </SW-BASE-TYPE>
+            <SW-BASE-TYPE UUID="Na0753a5160d357a39926954XNa0753a5160d357a3992695300">
+              <SHORT-NAME>uint8_1</SHORT-NAME>
+              <CATEGORY>FIXED_LENGTH</CATEGORY>
+              <BASE-TYPE-SIZE>8</BASE-TYPE-SIZE>
+              <MAX-BASE-TYPE-SIZE>0</MAX-BASE-TYPE-SIZE>
+              <BASE-TYPE-ENCODING>NONE</BASE-TYPE-ENCODING>
+              <MEM-ALIGNMENT>0</MEM-ALIGNMENT>
+              <BYTE-ORDER>MOST-SIGNIFICANT-BYTE-FIRST</BYTE-ORDER>
+              <NATIVE-DECLARATION>uint8</NATIVE-DECLARATION>
+            </SW-BASE-TYPE>
+          </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE UUID="d0c477af727330c9bba069b6d9b3d249">
+          <SHORT-NAME>CompuMethods</SHORT-NAME>
+          <ELEMENTS>
+            <COMPU-METHOD UUID="Na0753a5160d357a39926849XNa0753a5160d357a3992684800">
+              <SHORT-NAME>DeleteFunction_FingerPrintDelete1</SHORT-NAME>
+              <CATEGORY>TEXTTABLE</CATEGORY>
+              <COMPU-INTERNAL-TO-PHYS>
+                <COMPU-SCALES>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">0</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_AllFingers</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">1</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">1</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger1</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">2</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">2</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger2</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">3</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">3</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger3</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">8</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">8</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger8</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">4</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">4</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger4</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">5</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">5</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger5</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">6</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">6</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger6</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">7</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">7</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger7</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                </COMPU-SCALES>
+              </COMPU-INTERNAL-TO-PHYS>
+            </COMPU-METHOD>
+            <COMPU-METHOD UUID="Na0753a21609aa2cba930033XNa0753a21609aa2cba93003200">
+              <SHORT-NAME>DeleteFunction_ITS_FingerPrintDelete</SHORT-NAME>
+              <CATEGORY>TEXTTABLE</CATEGORY>
+              <COMPU-INTERNAL-TO-PHYS>
+                <COMPU-SCALES>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">0</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_AllFingers</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">1</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">1</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger1</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">2</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">2</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger2</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">3</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">3</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger3</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">8</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">8</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger8</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">4</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">4</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger4</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">5</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">5</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger5</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">6</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">6</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger6</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">7</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">7</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Finger7</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                </COMPU-SCALES>
+              </COMPU-INTERNAL-TO-PHYS>
+            </COMPU-METHOD>
+            <COMPU-METHOD UUID="Na0753a21609aa2cba930077XNa0753a21609aa2cba93007600">
+              <SHORT-NAME>Delete_Result</SHORT-NAME>
+              <CATEGORY>TEXTTABLE</CATEGORY>
+              <COMPU-INTERNAL-TO-PHYS>
+                <COMPU-SCALES>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">0</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Result_Sucessful</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">1</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">1</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Result_Failed</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                </COMPU-SCALES>
+              </COMPU-INTERNAL-TO-PHYS>
+            </COMPU-METHOD>
+            <COMPU-METHOD UUID="Na0753a5160d357a39926841XNa0753a5160d357a3992684000">
+              <SHORT-NAME>Delete_Result1</SHORT-NAME>
+              <CATEGORY>TEXTTABLE</CATEGORY>
+              <COMPU-INTERNAL-TO-PHYS>
+                <COMPU-SCALES>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">0</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Result_Sucessful</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">1</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">1</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Delete_Result_Failed</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                </COMPU-SCALES>
+              </COMPU-INTERNAL-TO-PHYS>
+            </COMPU-METHOD>
+            <COMPU-METHOD UUID="Na0753a21609aa2cba92fff1XNa0753a21609aa2cba92fff000">
+              <SHORT-NAME>DoorStatus</SHORT-NAME>
+              <CATEGORY>TEXTTABLE</CATEGORY>
+              <COMPU-INTERNAL-TO-PHYS>
+                <COMPU-SCALES>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">0</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>DoorStatusClosed</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">1</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">1</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>DoorStatusOpen</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                </COMPU-SCALES>
+              </COMPU-INTERNAL-TO-PHYS>
+            </COMPU-METHOD>
+            <COMPU-METHOD UUID="Na0753a5160d357a3992685fXNa0753a5160d357a3992685e00">
+              <SHORT-NAME>DoorStatus1</SHORT-NAME>
+              <CATEGORY>TEXTTABLE</CATEGORY>
+              <COMPU-INTERNAL-TO-PHYS>
+                <COMPU-SCALES>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">0</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>DoorStatusClosed</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">1</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">1</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>DoorStatusOpen</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                </COMPU-SCALES>
+              </COMPU-INTERNAL-TO-PHYS>
+            </COMPU-METHOD>
+            <COMPU-METHOD UUID="Na0753a5160d357a39926867XNa0753a5160d357a3992686600">
+              <SHORT-NAME>Inactive_Result1</SHORT-NAME>
+              <CATEGORY>TEXTTABLE</CATEGORY>
+              <COMPU-INTERNAL-TO-PHYS>
+                <COMPU-SCALES>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">0</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Inactive_ResultSucessful</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">1</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">1</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Inactive_ResultFailed</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                </COMPU-SCALES>
+              </COMPU-INTERNAL-TO-PHYS>
+            </COMPU-METHOD>
+            <COMPU-METHOD UUID="Na0753a21609aa2cba930085XNa0753a21609aa2cba93008400">
+              <SHORT-NAME>Learn_Active</SHORT-NAME>
+              <CATEGORY>TEXTTABLE</CATEGORY>
+              <COMPU-INTERNAL-TO-PHYS>
+                <COMPU-SCALES>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">0</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Learn_Active</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                </COMPU-SCALES>
+              </COMPU-INTERNAL-TO-PHYS>
+            </COMPU-METHOD>
+            <COMPU-METHOD UUID="Na0753a5160d357a3992686fXNa0753a5160d357a3992686e00">
+              <SHORT-NAME>Learn_Active1</SHORT-NAME>
+              <CATEGORY>TEXTTABLE</CATEGORY>
+              <COMPU-INTERNAL-TO-PHYS>
+                <COMPU-SCALES>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">0</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Learn_Active</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                </COMPU-SCALES>
+              </COMPU-INTERNAL-TO-PHYS>
+            </COMPU-METHOD>
+            <COMPU-METHOD UUID="Na0753a21609aa2cba93007fXNa0753a21609aa2cba93007e00">
+              <SHORT-NAME>Learn_Inactive</SHORT-NAME>
+              <CATEGORY>TEXTTABLE</CATEGORY>
+              <COMPU-INTERNAL-TO-PHYS>
+                <COMPU-SCALES>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">0</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Learn_Inactive</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                </COMPU-SCALES>
+              </COMPU-INTERNAL-TO-PHYS>
+            </COMPU-METHOD>
+            <COMPU-METHOD UUID="Na0753a5160d357a39926875XNa0753a5160d357a3992687400">
+              <SHORT-NAME>Learn_Inactive1</SHORT-NAME>
+              <CATEGORY>TEXTTABLE</CATEGORY>
+              <COMPU-INTERNAL-TO-PHYS>
+                <COMPU-SCALES>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">0</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Learn_Inactive</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                </COMPU-SCALES>
+              </COMPU-INTERNAL-TO-PHYS>
+            </COMPU-METHOD>
+            <COMPU-METHOD UUID="Na0753a21609aa2cba930069XNa0753a21609aa2cba93006800">
+              <SHORT-NAME>Learn_Result</SHORT-NAME>
+              <CATEGORY>TEXTTABLE</CATEGORY>
+              <COMPU-INTERNAL-TO-PHYS>
+                <COMPU-SCALES>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">0</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Learn_ActiveResult_Sucessful</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">1</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">1</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Learn_ActiveResult_failed</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">2</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">2</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Learn_ActiveResult_ITScheckfailed</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">3</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">3</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Learn_ActiveResult_ETScheckfailed</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">4</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">4</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Learning_ActiveResult_ITScheckSucessful</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                </COMPU-SCALES>
+              </COMPU-INTERNAL-TO-PHYS>
+            </COMPU-METHOD>
+            <COMPU-METHOD UUID="Na0753a5160d357a3992687bXNa0753a5160d357a3992687a00">
+              <SHORT-NAME>Learn_Result1</SHORT-NAME>
+              <CATEGORY>TEXTTABLE</CATEGORY>
+              <COMPU-INTERNAL-TO-PHYS>
+                <COMPU-SCALES>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">0</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Learn_ActiveResult_Sucessful</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">1</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">1</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Learn_ActiveResult_failed</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">2</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">2</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Learn_ActiveResult_ITScheckfailed</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">3</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">3</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Learn_ActiveResult_ETScheckfailed</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">4</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">4</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>Learning_ActiveResult_ITScheckSucessful</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                </COMPU-SCALES>
+              </COMPU-INTERNAL-TO-PHYS>
+            </COMPU-METHOD>
+            <COMPU-METHOD UUID="Na0753a21609aa2cba92fff9XNa0753a21609aa2cba92fff800">
+              <SHORT-NAME>PowerModeStatus</SHORT-NAME>
+              <CATEGORY>TEXTTABLE</CATEGORY>
+              <COMPU-INTERNAL-TO-PHYS>
+                <COMPU-SCALES>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">1</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">1</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>SwitchRequest_ACC</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">0</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>SwitchRequest_OFF</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">2</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">2</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>SwitchRequest_RUN</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                </COMPU-SCALES>
+              </COMPU-INTERNAL-TO-PHYS>
+            </COMPU-METHOD>
+            <COMPU-METHOD UUID="Na0753a5160d357a39926889XNa0753a5160d357a3992688800">
+              <SHORT-NAME>PowerModeStatus1</SHORT-NAME>
+              <CATEGORY>TEXTTABLE</CATEGORY>
+              <COMPU-INTERNAL-TO-PHYS>
+                <COMPU-SCALES>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">1</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">1</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>SwitchRequest_ACC</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">0</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">0</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>SwitchRequest_OFF</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                  <COMPU-SCALE>
+                    <LOWER-LIMIT INTERVAL-TYPE="CLOSED">2</LOWER-LIMIT>
+                    <UPPER-LIMIT INTERVAL-TYPE="CLOSED">2</UPPER-LIMIT>
+                    <COMPU-CONST>
+                      <VT>SwitchRequest_RUN</VT>
+                    </COMPU-CONST>
+                  </COMPU-SCALE>
+                </COMPU-SCALES>
+              </COMPU-INTERNAL-TO-PHYS>
+            </COMPU-METHOD>
+          </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE UUID="f98090829fe83006adf84d1317881500">
+          <SHORT-NAME>ImplementationDataTypes</SHORT-NAME>
+          <ELEMENTS>
+            <IMPLEMENTATION-DATA-TYPE UUID="Na0753a21609aa2cba9300f5XNa0753a21609aa2cba9300f400">
+              <SHORT-NAME>IdtDelete_Request</SHORT-NAME>
+              <CATEGORY>VALUE</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/BaseTypes/uint8</BASE-TYPE-REF>
+                    <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/DeleteFunction_ITS_FingerPrintDelete</COMPU-METHOD-REF>
+                    <INVALID-VALUE>
+                      <NUMERICAL-VALUE-SPECIFICATION>
+                        <SHORT-LABEL>X1</SHORT-LABEL>
+                        <VALUE>-1</VALUE>
+                      </NUMERICAL-VALUE-SPECIFICATION>
+                    </INVALID-VALUE>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </IMPLEMENTATION-DATA-TYPE>
+            <IMPLEMENTATION-DATA-TYPE UUID="Na0753a5160d357a3992691bXNa0753a5160d357a3992691a00">
+              <SHORT-NAME>IdtDelete_Request1</SHORT-NAME>
+              <CATEGORY>VALUE</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/BaseTypes/uint8</BASE-TYPE-REF>
+                    <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/DeleteFunction_ITS_FingerPrintDelete</COMPU-METHOD-REF>
+                    <INVALID-VALUE>
+                      <NUMERICAL-VALUE-SPECIFICATION>
+                        <SHORT-LABEL>X1</SHORT-LABEL>
+                        <VALUE>-1</VALUE>
+                      </NUMERICAL-VALUE-SPECIFICATION>
+                    </INVALID-VALUE>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </IMPLEMENTATION-DATA-TYPE>
+            <IMPLEMENTATION-DATA-TYPE UUID="Na0753a5160d357a3992691dXNa0753a5160d357a3992691c00">
+              <SHORT-NAME>IdtDelete_Status1</SHORT-NAME>
+              <CATEGORY>VALUE</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/BaseTypes/boolean</BASE-TYPE-REF>
+                    <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Delete_Result</COMPU-METHOD-REF>
+                    <INVALID-VALUE>
+                      <NUMERICAL-VALUE-SPECIFICATION>
+                        <SHORT-LABEL>X1</SHORT-LABEL>
+                        <VALUE>-1</VALUE>
+                      </NUMERICAL-VALUE-SPECIFICATION>
+                    </INVALID-VALUE>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </IMPLEMENTATION-DATA-TYPE>
+            <IMPLEMENTATION-DATA-TYPE UUID="Na0753a5160d357a3992691fXNa0753a5160d357a3992691e00">
+              <SHORT-NAME>IdtDoorStatus1</SHORT-NAME>
+              <CATEGORY>VALUE</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/BaseTypes/boolean</BASE-TYPE-REF>
+                    <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/DoorStatus</COMPU-METHOD-REF>
+                    <INVALID-VALUE>
+                      <NUMERICAL-VALUE-SPECIFICATION>
+                        <SHORT-LABEL>X1</SHORT-LABEL>
+                        <VALUE>-1</VALUE>
+                      </NUMERICAL-VALUE-SPECIFICATION>
+                    </INVALID-VALUE>
+                    <SW-REFRESH-TIMING>
+                      <CSE-CODE>3</CSE-CODE>
+                      <CSE-CODE-FACTOR>200</CSE-CODE-FACTOR>
+                    </SW-REFRESH-TIMING>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </IMPLEMENTATION-DATA-TYPE>
+            <IMPLEMENTATION-DATA-TYPE UUID="Na0753a5160d357a399276f7XNa0753a5160d357a399276f600">
+              <SHORT-NAME>IdtInactive_Result1</SHORT-NAME>
+              <CATEGORY>VALUE</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Inactive_Result1</COMPU-METHOD-REF>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </IMPLEMENTATION-DATA-TYPE>
+            <IMPLEMENTATION-DATA-TYPE UUID="Na0753a5160d357a39926921XNa0753a5160d357a3992692000">
+              <SHORT-NAME>IdtLearn_Inative1</SHORT-NAME>
+              <CATEGORY>VALUE</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/BaseTypes/boolean</BASE-TYPE-REF>
+                    <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Learn_Inactive</COMPU-METHOD-REF>
+                    <INVALID-VALUE>
+                      <NUMERICAL-VALUE-SPECIFICATION>
+                        <SHORT-LABEL>X1</SHORT-LABEL>
+                        <VALUE>-1</VALUE>
+                      </NUMERICAL-VALUE-SPECIFICATION>
+                    </INVALID-VALUE>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </IMPLEMENTATION-DATA-TYPE>
+            <IMPLEMENTATION-DATA-TYPE UUID="Na0753a5160d357a39926923XNa0753a5160d357a3992692200">
+              <SHORT-NAME>IdtLearn_Percent1</SHORT-NAME>
+              <CATEGORY>VALUE</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/BaseTypes/uint8</BASE-TYPE-REF>
+                    <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                    <INVALID-VALUE>
+                      <NUMERICAL-VALUE-SPECIFICATION>
+                        <SHORT-LABEL>X1</SHORT-LABEL>
+                        <VALUE>-1</VALUE>
+                      </NUMERICAL-VALUE-SPECIFICATION>
+                    </INVALID-VALUE>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </IMPLEMENTATION-DATA-TYPE>
+            <IMPLEMENTATION-DATA-TYPE UUID="Na0753a5160d357a39926925XNa0753a5160d357a3992692400">
+              <SHORT-NAME>IdtLearn_Request1</SHORT-NAME>
+              <CATEGORY>VALUE</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/BaseTypes/boolean</BASE-TYPE-REF>
+                    <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Learn_Active</COMPU-METHOD-REF>
+                    <INVALID-VALUE>
+                      <NUMERICAL-VALUE-SPECIFICATION>
+                        <SHORT-LABEL>X1</SHORT-LABEL>
+                        <VALUE>-1</VALUE>
+                      </NUMERICAL-VALUE-SPECIFICATION>
+                    </INVALID-VALUE>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </IMPLEMENTATION-DATA-TYPE>
+            <IMPLEMENTATION-DATA-TYPE UUID="Na0753a5160d357a39926927XNa0753a5160d357a3992692600">
+              <SHORT-NAME>IdtLearn_Result1</SHORT-NAME>
+              <CATEGORY>VALUE</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/BaseTypes/uint8</BASE-TYPE-REF>
+                    <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/Learn_Result</COMPU-METHOD-REF>
+                    <INVALID-VALUE>
+                      <NUMERICAL-VALUE-SPECIFICATION>
+                        <SHORT-LABEL>X1</SHORT-LABEL>
+                        <VALUE>-1</VALUE>
+                      </NUMERICAL-VALUE-SPECIFICATION>
+                    </INVALID-VALUE>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </IMPLEMENTATION-DATA-TYPE>
+            <IMPLEMENTATION-DATA-TYPE UUID="Na0753a5160d357a39926929XNa0753a5160d357a3992692800">
+              <SHORT-NAME>IdtPowerModeStatus1</SHORT-NAME>
+              <CATEGORY>VALUE</CATEGORY>
+              <SW-DATA-DEF-PROPS>
+                <SW-DATA-DEF-PROPS-VARIANTS>
+                  <SW-DATA-DEF-PROPS-CONDITIONAL>
+                    <BASE-TYPE-REF DEST="SW-BASE-TYPE">/DataTypes/BaseTypes/uint8</BASE-TYPE-REF>
+                    <SW-CALIBRATION-ACCESS>READ-WRITE</SW-CALIBRATION-ACCESS>
+                    <COMPU-METHOD-REF DEST="COMPU-METHOD">/DataTypes/CompuMethods/PowerModeStatus</COMPU-METHOD-REF>
+                    <INVALID-VALUE>
+                      <NUMERICAL-VALUE-SPECIFICATION>
+                        <SHORT-LABEL>X1</SHORT-LABEL>
+                        <VALUE>-1</VALUE>
+                      </NUMERICAL-VALUE-SPECIFICATION>
+                    </INVALID-VALUE>
+                    <SW-REFRESH-TIMING>
+                      <CSE-CODE>3</CSE-CODE>
+                      <CSE-CODE-FACTOR>200</CSE-CODE-FACTOR>
+                    </SW-REFRESH-TIMING>
+                  </SW-DATA-DEF-PROPS-CONDITIONAL>
+                </SW-DATA-DEF-PROPS-VARIANTS>
+              </SW-DATA-DEF-PROPS>
+            </IMPLEMENTATION-DATA-TYPE>
+          </ELEMENTS>
+        </AR-PACKAGE>
+      </AR-PACKAGES>
+    </AR-PACKAGE>
+    <AR-PACKAGE UUID="a6d3ea9731e031668c161933c19cb8d6">
+      <SHORT-NAME>SoftwareTypes</SHORT-NAME>
+      <AR-PACKAGES>
+        <AR-PACKAGE UUID="5a099a20b9943503bdbfb2d67e1094a4">
+          <SHORT-NAME>ComponentTypes</SHORT-NAME>
+          <ELEMENTS>
+            <APPLICATION-SW-COMPONENT-TYPE UUID="Na0753a5160d357a39929046XNa0753a5160d357a3992904500">
+              <SHORT-NAME>FingerprintHMI</SHORT-NAME>
+              <PORTS>
+                <R-PORT-PROTOTYPE UUID="Na0753a5160d357a39929046xNa0753a5160d357a3992908400">
+                  <SHORT-NAME>Learn_PercentInterface</SHORT-NAME>
+                  <REQUIRED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/SoftwareTypes/Interfaces/Learn_PercentInterface</REQUIRED-INTERFACE-TREF>
+                </R-PORT-PROTOTYPE>
+                <R-PORT-PROTOTYPE UUID="Na0753a5160d357a39929046xNa0753a5160d357a3992908600">
+                  <SHORT-NAME>DoorStatusInterface</SHORT-NAME>
+                  <REQUIRED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/SoftwareTypes/Interfaces/DoorStatusInterface</REQUIRED-INTERFACE-TREF>
+                </R-PORT-PROTOTYPE>
+                <R-PORT-PROTOTYPE UUID="Na0753a5160d357a39929046xNa0753a5160d357a3992908800">
+                  <SHORT-NAME>Fingerpint_ManagementInterface</SHORT-NAME>
+                  <REQUIRED-INTERFACE-TREF DEST="CLIENT-SERVER-INTERFACE">/SoftwareTypes/Interfaces/Fingerpint_ManagementInterface</REQUIRED-INTERFACE-TREF>
+                </R-PORT-PROTOTYPE>
+                <R-PORT-PROTOTYPE UUID="Na0753a5160d357a39929046xNa0753a5160d357a3992908a00">
+                  <SHORT-NAME>PowermodeInterface</SHORT-NAME>
+                  <REQUIRED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/SoftwareTypes/Interfaces/PowermodeInterface</REQUIRED-INTERFACE-TREF>
+                </R-PORT-PROTOTYPE>
+              </PORTS>
+            </APPLICATION-SW-COMPONENT-TYPE>
+            <APPLICATION-SW-COMPONENT-TYPE UUID="Na0753a5160d357a39929049XNa0753a5160d357a3992904800">
+              <SHORT-NAME>FingerprintManagement</SHORT-NAME>
+              <PORTS>
+                <P-PORT-PROTOTYPE UUID="Na0753a5160d357a39929049xNa0753a5160d357a3992907c00">
+                  <SHORT-NAME>Learn_PercentInterface</SHORT-NAME>
+                  <PROVIDED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/SoftwareTypes/Interfaces/Learn_PercentInterface</PROVIDED-INTERFACE-TREF>
+                </P-PORT-PROTOTYPE>
+                <P-PORT-PROTOTYPE UUID="Na0753a5160d357a39929049xNa0753a5160d357a3992907e00">
+                  <SHORT-NAME>DoorStatusInterface</SHORT-NAME>
+                  <PROVIDED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/SoftwareTypes/Interfaces/DoorStatusInterface</PROVIDED-INTERFACE-TREF>
+                </P-PORT-PROTOTYPE>
+                <P-PORT-PROTOTYPE UUID="Na0753a5160d357a39929049xNa0753a5160d357a3992908000">
+                  <SHORT-NAME>Fingerpint_ManagementInterface</SHORT-NAME>
+                  <PROVIDED-INTERFACE-TREF DEST="CLIENT-SERVER-INTERFACE">/SoftwareTypes/Interfaces/Fingerpint_ManagementInterface</PROVIDED-INTERFACE-TREF>
+                </P-PORT-PROTOTYPE>
+                <P-PORT-PROTOTYPE UUID="Na0753a5160d357a39929049xNa0753a5160d357a3992908200">
+                  <SHORT-NAME>PowermodeInterface</SHORT-NAME>
+                  <PROVIDED-INTERFACE-TREF DEST="SENDER-RECEIVER-INTERFACE">/SoftwareTypes/Interfaces/PowermodeInterface</PROVIDED-INTERFACE-TREF>
+                </P-PORT-PROTOTYPE>
+              </PORTS>
+            </APPLICATION-SW-COMPONENT-TYPE>
+            <COMPOSITION-SW-COMPONENT-TYPE UUID="Na0753a5160d357a3992baf9XNa0753a5160d357a3992baf800">
+              <SHORT-NAME>CtCotc297_J6</SHORT-NAME>
+              <COMPONENTS>
+                <SW-COMPONENT-PROTOTYPE UUID="Na0753a5160d357a3992bb05XNa0753a5160d357a3992bb0400">
+                  <SHORT-NAME>FingerprintHMI_J6</SHORT-NAME>
+                  <TYPE-TREF DEST="APPLICATION-SW-COMPONENT-TYPE">/SoftwareTypes/ComponentTypes/FingerprintHMI</TYPE-TREF>
+                </SW-COMPONENT-PROTOTYPE>
+                <SW-COMPONENT-PROTOTYPE UUID="Na0753a5160d357a3992bbbfXNa0753a5160d357a3992bbbe00">
+                  <SHORT-NAME>FingerprintManagement_TC297</SHORT-NAME>
+                  <TYPE-TREF DEST="APPLICATION-SW-COMPONENT-TYPE">/SoftwareTypes/ComponentTypes/FingerprintManagement</TYPE-TREF>
+                </SW-COMPONENT-PROTOTYPE>
+              </COMPONENTS>
+              <CONNECTORS>
+                <ASSEMBLY-SW-CONNECTOR UUID="Na0753a5160d357a3992cd02XNa0753a5160d357a3992cd0100">
+                  <SHORT-NAME>Assembly2041</SHORT-NAME>
+                  <PROVIDER-IREF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintManagement_TC297</CONTEXT-COMPONENT-REF>
+                    <TARGET-P-PORT-REF DEST="P-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintManagement/Learn_PercentInterface</TARGET-P-PORT-REF>
+                  </PROVIDER-IREF>
+                  <REQUESTER-IREF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintHMI_J6</CONTEXT-COMPONENT-REF>
+                    <TARGET-R-PORT-REF DEST="R-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintHMI/Learn_PercentInterface</TARGET-R-PORT-REF>
+                  </REQUESTER-IREF>
+                </ASSEMBLY-SW-CONNECTOR>
+                <ASSEMBLY-SW-CONNECTOR UUID="Na0753a5160d357a3992cdb9XNa0753a5160d357a3992cdb800">
+                  <SHORT-NAME>Assembly2042</SHORT-NAME>
+                  <PROVIDER-IREF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintManagement_TC297</CONTEXT-COMPONENT-REF>
+                    <TARGET-P-PORT-REF DEST="P-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintManagement/DoorStatusInterface</TARGET-P-PORT-REF>
+                  </PROVIDER-IREF>
+                  <REQUESTER-IREF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintHMI_J6</CONTEXT-COMPONENT-REF>
+                    <TARGET-R-PORT-REF DEST="R-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintHMI/DoorStatusInterface</TARGET-R-PORT-REF>
+                  </REQUESTER-IREF>
+                </ASSEMBLY-SW-CONNECTOR>
+                <ASSEMBLY-SW-CONNECTOR UUID="Na0753a5160d357a3992ce00XNa0753a5160d357a3992cdff00">
+                  <SHORT-NAME>Assembly2043</SHORT-NAME>
+                  <PROVIDER-IREF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintManagement_TC297</CONTEXT-COMPONENT-REF>
+                    <TARGET-P-PORT-REF DEST="P-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintManagement/Fingerpint_ManagementInterface</TARGET-P-PORT-REF>
+                  </PROVIDER-IREF>
+                  <REQUESTER-IREF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintHMI_J6</CONTEXT-COMPONENT-REF>
+                    <TARGET-R-PORT-REF DEST="R-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintHMI/Fingerpint_ManagementInterface</TARGET-R-PORT-REF>
+                  </REQUESTER-IREF>
+                </ASSEMBLY-SW-CONNECTOR>
+                <ASSEMBLY-SW-CONNECTOR UUID="Na0753a5160d357a3992ce3aXNa0753a5160d357a3992ce3900">
+                  <SHORT-NAME>Assembly2044</SHORT-NAME>
+                  <PROVIDER-IREF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintManagement_TC297</CONTEXT-COMPONENT-REF>
+                    <TARGET-P-PORT-REF DEST="P-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintManagement/PowermodeInterface</TARGET-P-PORT-REF>
+                  </PROVIDER-IREF>
+                  <REQUESTER-IREF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintHMI_J6</CONTEXT-COMPONENT-REF>
+                    <TARGET-R-PORT-REF DEST="R-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintHMI/PowermodeInterface</TARGET-R-PORT-REF>
+                  </REQUESTER-IREF>
+                </ASSEMBLY-SW-CONNECTOR>
+              </CONNECTORS>
+            </COMPOSITION-SW-COMPONENT-TYPE>
+            <COMPOSITION-SW-COMPONENT-TYPE UUID="Na0753a5160d357a3992baf3XNa0753a5160d357a3992baf200">
+              <SHORT-NAME>Fingerprint</SHORT-NAME>
+              <COMPONENTS>
+                <SW-COMPONENT-PROTOTYPE UUID="Na0753a5160d357a3992bafcXNa0753a5160d357a3992bafb00">
+                  <SHORT-NAME>CtCotc297_J6</SHORT-NAME>
+                  <TYPE-TREF DEST="COMPOSITION-SW-COMPONENT-TYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6</TYPE-TREF>
+                </SW-COMPONENT-PROTOTYPE>
+              </COMPONENTS>
+            </COMPOSITION-SW-COMPONENT-TYPE>
+          </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE UUID="343af3c2383e360e8acf537589d92d54">
+          <SHORT-NAME>Interfaces</SHORT-NAME>
+          <ELEMENTS>
+            <CLIENT-SERVER-INTERFACE UUID="Na0753a5160d357a3992904dXNa0753a5160d357a3992904c00">
+              <SHORT-NAME>Fingerpint_ManagementInterface</SHORT-NAME>
+              <IS-SERVICE>false</IS-SERVICE>
+              <OPERATIONS>
+                <CLIENT-SERVER-OPERATION UUID="Na0753a5160d357a39929050XNa0753a5160d357a3992904f00">
+                  <SHORT-NAME>HMI_FingerPrint_Active</SHORT-NAME>
+                  <ARGUMENTS>
+                    <ARGUMENT-DATA-PROTOTYPE UUID="Na0753a5160d357a39929053XNa0753a5160d357a3992905200">
+                      <SHORT-NAME>Learn_Active</SHORT-NAME>
+                      <TYPE-TREF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtLearn_Request1</TYPE-TREF>
+                      <DIRECTION>IN</DIRECTION>
+                    </ARGUMENT-DATA-PROTOTYPE>
+                    <ARGUMENT-DATA-PROTOTYPE UUID="Na0753a5160d357a39929056XNa0753a5160d357a3992905500">
+                      <SHORT-NAME>Learn_Result</SHORT-NAME>
+                      <TYPE-TREF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtLearn_Result1</TYPE-TREF>
+                      <DIRECTION>OUT</DIRECTION>
+                    </ARGUMENT-DATA-PROTOTYPE>
+                  </ARGUMENTS>
+                </CLIENT-SERVER-OPERATION>
+                <CLIENT-SERVER-OPERATION UUID="Na0753a5160d357a39929059XNa0753a5160d357a3992905800">
+                  <SHORT-NAME>HMI_FingerPrint_Delete</SHORT-NAME>
+                  <ARGUMENTS>
+                    <ARGUMENT-DATA-PROTOTYPE UUID="Na0753a5160d357a3992905cXNa0753a5160d357a3992905b00">
+                      <SHORT-NAME>Delete_Request</SHORT-NAME>
+                      <TYPE-TREF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtDelete_Request1</TYPE-TREF>
+                      <DIRECTION>IN</DIRECTION>
+                    </ARGUMENT-DATA-PROTOTYPE>
+                    <ARGUMENT-DATA-PROTOTYPE UUID="Na0753a5160d357a3992905fXNa0753a5160d357a3992905e00">
+                      <SHORT-NAME>Delete_Result</SHORT-NAME>
+                      <TYPE-TREF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtDelete_Status1</TYPE-TREF>
+                      <DIRECTION>OUT</DIRECTION>
+                    </ARGUMENT-DATA-PROTOTYPE>
+                  </ARGUMENTS>
+                </CLIENT-SERVER-OPERATION>
+                <CLIENT-SERVER-OPERATION UUID="Na0753a5160d357a39929062XNa0753a5160d357a3992906100">
+                  <SHORT-NAME>HMI_FingerPrint_Inactive</SHORT-NAME>
+                  <ARGUMENTS>
+                    <ARGUMENT-DATA-PROTOTYPE UUID="Na0753a5160d357a39929065XNa0753a5160d357a3992906400">
+                      <SHORT-NAME>Inactive_Request</SHORT-NAME>
+                      <TYPE-TREF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtLearn_Inative1</TYPE-TREF>
+                      <DIRECTION>IN</DIRECTION>
+                    </ARGUMENT-DATA-PROTOTYPE>
+                    <ARGUMENT-DATA-PROTOTYPE UUID="Na0753a5160d357a39929068XNa0753a5160d357a3992906700">
+                      <SHORT-NAME>Inactive_Result</SHORT-NAME>
+                      <TYPE-TREF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtInactive_Result1</TYPE-TREF>
+                      <DIRECTION>OUT</DIRECTION>
+                    </ARGUMENT-DATA-PROTOTYPE>
+                  </ARGUMENTS>
+                </CLIENT-SERVER-OPERATION>
+              </OPERATIONS>
+            </CLIENT-SERVER-INTERFACE>
+            <SENDER-RECEIVER-INTERFACE UUID="Na0753a5160d357a3992906bXNa0753a5160d357a3992906a00">
+              <SHORT-NAME>DoorStatusInterface</SHORT-NAME>
+              <IS-SERVICE>false</IS-SERVICE>
+              <DATA-ELEMENTS>
+                <VARIABLE-DATA-PROTOTYPE UUID="Na0753a5160d357a3992906eXNa0753a5160d357a3992906d00">
+                  <SHORT-NAME>DoorStatusDataElement</SHORT-NAME>
+                  <TYPE-TREF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtDoorStatus1</TYPE-TREF>
+                </VARIABLE-DATA-PROTOTYPE>
+              </DATA-ELEMENTS>
+            </SENDER-RECEIVER-INTERFACE>
+            <SENDER-RECEIVER-INTERFACE UUID="Na0753a5160d357a39929071XNa0753a5160d357a3992907000">
+              <SHORT-NAME>Learn_PercentInterface</SHORT-NAME>
+              <IS-SERVICE>false</IS-SERVICE>
+              <DATA-ELEMENTS>
+                <VARIABLE-DATA-PROTOTYPE UUID="Na0753a5160d357a39929074XNa0753a5160d357a3992907300">
+                  <SHORT-NAME>Learn_PercentDataElement</SHORT-NAME>
+                  <TYPE-TREF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtLearn_Percent1</TYPE-TREF>
+                </VARIABLE-DATA-PROTOTYPE>
+              </DATA-ELEMENTS>
+            </SENDER-RECEIVER-INTERFACE>
+            <SENDER-RECEIVER-INTERFACE UUID="Na0753a5160d357a39929077XNa0753a5160d357a3992907600">
+              <SHORT-NAME>PowermodeInterface</SHORT-NAME>
+              <IS-SERVICE>false</IS-SERVICE>
+              <DATA-ELEMENTS>
+                <VARIABLE-DATA-PROTOTYPE UUID="Na0753a5160d357a3992907aXNa0753a5160d357a3992907900">
+                  <SHORT-NAME>PowermodeDataElement</SHORT-NAME>
+                  <TYPE-TREF DEST="APPLICATION-PRIMITIVE-DATA-TYPE">/DataTypes/ApplicationDataTypes/AdtPowerModeStatus1</TYPE-TREF>
+                </VARIABLE-DATA-PROTOTYPE>
+              </DATA-ELEMENTS>
+            </SENDER-RECEIVER-INTERFACE>
+          </ELEMENTS>
+        </AR-PACKAGE>
+      </AR-PACKAGES>
+    </AR-PACKAGE>
+    <AR-PACKAGE>
+      <SHORT-NAME>System</SHORT-NAME>
+      <ELEMENTS>
+        <SYSTEM>
+          <SHORT-NAME>System</SHORT-NAME>
+          <CATEGORY>SYSTEM_DESCRIPTION</CATEGORY>
+          <FIBEX-ELEMENTS>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL">/Communication/Signals/Learn_Request</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL">/Communication/Signals/Learn_Percent</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL">/Communication/Signals/Learn_Result</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL">/Communication/Signals/Inactive_Result</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL">/Communication/Signals/Inactive_Request</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL">/Communication/Signals/Delete_Result</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL">/Communication/Signals/Delete_Request</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL">/Communication/Signals/DoorStatus</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL">/Communication/Signals/Powermode</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="ETHERNET-CLUSTER">/Topology/Clusters/FingerprintEthernetCluster</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/DoorStatusSignalIPDU</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Delete_ResultSignalIPDU</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Learn_PercentSignalIPDU</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Learn_ResultSignalIPDU</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/PowermodeSignalIPDU</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Inactive_ResultSignalIPDU</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Learn_RequestSignalIPDU</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Inactive_RequestSignalIPDU</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Delete_RequestSignalIPDU</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL-I-PDU-GROUP">/Communication/PDUs/TC297_BusSystem56_Rx</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL-I-PDU-GROUP">/Communication/PDUs/TC297_BusSystem56_Tx</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL-I-PDU-GROUP">/Communication/PDUs/J6_BusSystem57_Rx</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="I-SIGNAL-I-PDU-GROUP">/Communication/PDUs/J6_BusSystem57_Tx</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="ECU-INSTANCE">/Topology/HardwareComponents/J6</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="ECU-INSTANCE">/Topology/HardwareComponents/TC297</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+            <FIBEX-ELEMENT-REF-CONDITIONAL>
+              <FIBEX-ELEMENT-REF DEST="COUPLING-ELEMENT">/Topology/HardwareComponents/CouplingElement8</FIBEX-ELEMENT-REF>
+            </FIBEX-ELEMENT-REF-CONDITIONAL>
+          </FIBEX-ELEMENTS>
+          <MAPPINGS>
+            <SYSTEM-MAPPING>
+              <SHORT-NAME>Mapping</SHORT-NAME>
+              <DATA-MAPPINGS>
+                <CLIENT-SERVER-TO-SIGNAL-MAPPING>
+                  <CALL-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Delete_Request</CALL-SIGNAL-REF>
+                  <CLIENT-SERVER-OPERATION-IREF>
+                    <CONTEXT-COMPOSITION-REF DEST="ROOT-SW-COMPOSITION-PROTOTYPE">/System/System/Fingerprint</CONTEXT-COMPOSITION-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/Fingerprint/CtCotc297_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintManagement_TC297</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-PORT-REF DEST="P-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintManagement/Fingerpint_ManagementInterface</CONTEXT-PORT-REF>
+                    <TARGET-OPERATION-REF DEST="CLIENT-SERVER-OPERATION">/SoftwareTypes/Interfaces/Fingerpint_ManagementInterface/HMI_FingerPrint_Delete</TARGET-OPERATION-REF>
+                  </CLIENT-SERVER-OPERATION-IREF>
+                </CLIENT-SERVER-TO-SIGNAL-MAPPING>
+                <CLIENT-SERVER-TO-SIGNAL-MAPPING>
+                  <CLIENT-SERVER-OPERATION-IREF>
+                    <CONTEXT-COMPOSITION-REF DEST="ROOT-SW-COMPOSITION-PROTOTYPE">/System/System/Fingerprint</CONTEXT-COMPOSITION-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/Fingerprint/CtCotc297_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintHMI_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-PORT-REF DEST="R-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintHMI/Fingerpint_ManagementInterface</CONTEXT-PORT-REF>
+                    <TARGET-OPERATION-REF DEST="CLIENT-SERVER-OPERATION">/SoftwareTypes/Interfaces/Fingerpint_ManagementInterface/HMI_FingerPrint_Inactive</TARGET-OPERATION-REF>
+                  </CLIENT-SERVER-OPERATION-IREF>
+                  <RETURN-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Inactive_Result</RETURN-SIGNAL-REF>
+                </CLIENT-SERVER-TO-SIGNAL-MAPPING>
+                <CLIENT-SERVER-TO-SIGNAL-MAPPING>
+                  <CLIENT-SERVER-OPERATION-IREF>
+                    <CONTEXT-COMPOSITION-REF DEST="ROOT-SW-COMPOSITION-PROTOTYPE">/System/System/Fingerprint</CONTEXT-COMPOSITION-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/Fingerprint/CtCotc297_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintHMI_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-PORT-REF DEST="R-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintHMI/Fingerpint_ManagementInterface</CONTEXT-PORT-REF>
+                    <TARGET-OPERATION-REF DEST="CLIENT-SERVER-OPERATION">/SoftwareTypes/Interfaces/Fingerpint_ManagementInterface/HMI_FingerPrint_Active</TARGET-OPERATION-REF>
+                  </CLIENT-SERVER-OPERATION-IREF>
+                  <RETURN-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Learn_Result</RETURN-SIGNAL-REF>
+                </CLIENT-SERVER-TO-SIGNAL-MAPPING>
+                <CLIENT-SERVER-TO-SIGNAL-MAPPING>
+                  <CLIENT-SERVER-OPERATION-IREF>
+                    <CONTEXT-COMPOSITION-REF DEST="ROOT-SW-COMPOSITION-PROTOTYPE">/System/System/Fingerprint</CONTEXT-COMPOSITION-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/Fingerprint/CtCotc297_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintHMI_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-PORT-REF DEST="R-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintHMI/Fingerpint_ManagementInterface</CONTEXT-PORT-REF>
+                    <TARGET-OPERATION-REF DEST="CLIENT-SERVER-OPERATION">/SoftwareTypes/Interfaces/Fingerpint_ManagementInterface/HMI_FingerPrint_Delete</TARGET-OPERATION-REF>
+                  </CLIENT-SERVER-OPERATION-IREF>
+                  <RETURN-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Delete_Result</RETURN-SIGNAL-REF>
+                </CLIENT-SERVER-TO-SIGNAL-MAPPING>
+                <CLIENT-SERVER-TO-SIGNAL-MAPPING>
+                  <CALL-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Inactive_Request</CALL-SIGNAL-REF>
+                  <CLIENT-SERVER-OPERATION-IREF>
+                    <CONTEXT-COMPOSITION-REF DEST="ROOT-SW-COMPOSITION-PROTOTYPE">/System/System/Fingerprint</CONTEXT-COMPOSITION-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/Fingerprint/CtCotc297_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintManagement_TC297</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-PORT-REF DEST="P-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintManagement/Fingerpint_ManagementInterface</CONTEXT-PORT-REF>
+                    <TARGET-OPERATION-REF DEST="CLIENT-SERVER-OPERATION">/SoftwareTypes/Interfaces/Fingerpint_ManagementInterface/HMI_FingerPrint_Inactive</TARGET-OPERATION-REF>
+                  </CLIENT-SERVER-OPERATION-IREF>
+                </CLIENT-SERVER-TO-SIGNAL-MAPPING>
+                <CLIENT-SERVER-TO-SIGNAL-MAPPING>
+                  <CALL-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Learn_Request</CALL-SIGNAL-REF>
+                  <CLIENT-SERVER-OPERATION-IREF>
+                    <CONTEXT-COMPOSITION-REF DEST="ROOT-SW-COMPOSITION-PROTOTYPE">/System/System/Fingerprint</CONTEXT-COMPOSITION-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/Fingerprint/CtCotc297_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintManagement_TC297</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-PORT-REF DEST="P-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintManagement/Fingerpint_ManagementInterface</CONTEXT-PORT-REF>
+                    <TARGET-OPERATION-REF DEST="CLIENT-SERVER-OPERATION">/SoftwareTypes/Interfaces/Fingerpint_ManagementInterface/HMI_FingerPrint_Active</TARGET-OPERATION-REF>
+                  </CLIENT-SERVER-OPERATION-IREF>
+                </CLIENT-SERVER-TO-SIGNAL-MAPPING>
+                <SENDER-RECEIVER-TO-SIGNAL-MAPPING>
+                  <DATA-ELEMENT-IREF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/Fingerprint/CtCotc297_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintHMI_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPOSITION-REF DEST="ROOT-SW-COMPOSITION-PROTOTYPE">/System/System/Fingerprint</CONTEXT-COMPOSITION-REF>
+                    <CONTEXT-PORT-REF DEST="R-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintHMI/DoorStatusInterface</CONTEXT-PORT-REF>
+                    <TARGET-DATA-PROTOTYPE-REF DEST="VARIABLE-DATA-PROTOTYPE">/SoftwareTypes/Interfaces/DoorStatusInterface/DoorStatusDataElement</TARGET-DATA-PROTOTYPE-REF>
+                  </DATA-ELEMENT-IREF>
+                  <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/DoorStatus</SYSTEM-SIGNAL-REF>
+                </SENDER-RECEIVER-TO-SIGNAL-MAPPING>
+                <SENDER-RECEIVER-TO-SIGNAL-MAPPING>
+                  <DATA-ELEMENT-IREF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/Fingerprint/CtCotc297_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintManagement_TC297</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPOSITION-REF DEST="ROOT-SW-COMPOSITION-PROTOTYPE">/System/System/Fingerprint</CONTEXT-COMPOSITION-REF>
+                    <CONTEXT-PORT-REF DEST="P-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintManagement/DoorStatusInterface</CONTEXT-PORT-REF>
+                    <TARGET-DATA-PROTOTYPE-REF DEST="VARIABLE-DATA-PROTOTYPE">/SoftwareTypes/Interfaces/DoorStatusInterface/DoorStatusDataElement</TARGET-DATA-PROTOTYPE-REF>
+                  </DATA-ELEMENT-IREF>
+                  <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/DoorStatus</SYSTEM-SIGNAL-REF>
+                </SENDER-RECEIVER-TO-SIGNAL-MAPPING>
+                <SENDER-RECEIVER-TO-SIGNAL-MAPPING>
+                  <DATA-ELEMENT-IREF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/Fingerprint/CtCotc297_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintManagement_TC297</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPOSITION-REF DEST="ROOT-SW-COMPOSITION-PROTOTYPE">/System/System/Fingerprint</CONTEXT-COMPOSITION-REF>
+                    <CONTEXT-PORT-REF DEST="P-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintManagement/Learn_PercentInterface</CONTEXT-PORT-REF>
+                    <TARGET-DATA-PROTOTYPE-REF DEST="VARIABLE-DATA-PROTOTYPE">/SoftwareTypes/Interfaces/Learn_PercentInterface/Learn_PercentDataElement</TARGET-DATA-PROTOTYPE-REF>
+                  </DATA-ELEMENT-IREF>
+                  <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Learn_Percent</SYSTEM-SIGNAL-REF>
+                </SENDER-RECEIVER-TO-SIGNAL-MAPPING>
+                <SENDER-RECEIVER-TO-SIGNAL-MAPPING>
+                  <DATA-ELEMENT-IREF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/Fingerprint/CtCotc297_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintHMI_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPOSITION-REF DEST="ROOT-SW-COMPOSITION-PROTOTYPE">/System/System/Fingerprint</CONTEXT-COMPOSITION-REF>
+                    <CONTEXT-PORT-REF DEST="R-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintHMI/Learn_PercentInterface</CONTEXT-PORT-REF>
+                    <TARGET-DATA-PROTOTYPE-REF DEST="VARIABLE-DATA-PROTOTYPE">/SoftwareTypes/Interfaces/Learn_PercentInterface/Learn_PercentDataElement</TARGET-DATA-PROTOTYPE-REF>
+                  </DATA-ELEMENT-IREF>
+                  <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Learn_Percent</SYSTEM-SIGNAL-REF>
+                </SENDER-RECEIVER-TO-SIGNAL-MAPPING>
+                <SENDER-RECEIVER-TO-SIGNAL-MAPPING>
+                  <DATA-ELEMENT-IREF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/Fingerprint/CtCotc297_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintHMI_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPOSITION-REF DEST="ROOT-SW-COMPOSITION-PROTOTYPE">/System/System/Fingerprint</CONTEXT-COMPOSITION-REF>
+                    <CONTEXT-PORT-REF DEST="R-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintHMI/PowermodeInterface</CONTEXT-PORT-REF>
+                    <TARGET-DATA-PROTOTYPE-REF DEST="VARIABLE-DATA-PROTOTYPE">/SoftwareTypes/Interfaces/PowermodeInterface/PowermodeDataElement</TARGET-DATA-PROTOTYPE-REF>
+                  </DATA-ELEMENT-IREF>
+                  <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Powermode</SYSTEM-SIGNAL-REF>
+                </SENDER-RECEIVER-TO-SIGNAL-MAPPING>
+                <SENDER-RECEIVER-TO-SIGNAL-MAPPING>
+                  <DATA-ELEMENT-IREF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/Fingerprint/CtCotc297_J6</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintManagement_TC297</CONTEXT-COMPONENT-REF>
+                    <CONTEXT-COMPOSITION-REF DEST="ROOT-SW-COMPOSITION-PROTOTYPE">/System/System/Fingerprint</CONTEXT-COMPOSITION-REF>
+                    <CONTEXT-PORT-REF DEST="P-PORT-PROTOTYPE">/SoftwareTypes/ComponentTypes/FingerprintManagement/PowermodeInterface</CONTEXT-PORT-REF>
+                    <TARGET-DATA-PROTOTYPE-REF DEST="VARIABLE-DATA-PROTOTYPE">/SoftwareTypes/Interfaces/PowermodeInterface/PowermodeDataElement</TARGET-DATA-PROTOTYPE-REF>
+                  </DATA-ELEMENT-IREF>
+                  <SYSTEM-SIGNAL-REF DEST="SYSTEM-SIGNAL">/Communication/SystemSignals/Powermode</SYSTEM-SIGNAL-REF>
+                </SENDER-RECEIVER-TO-SIGNAL-MAPPING>
+              </DATA-MAPPINGS>
+              <SW-MAPPINGS>
+                <SWC-TO-ECU-MAPPING UUID="imex_a0753a5160d357a3992bbcd_a0753a5160d357a3992bbcc">
+                  <SHORT-NAME>SW_NET_Component_Mapping237</SHORT-NAME>
+                  <COMPONENT-IREFS>
+                    <COMPONENT-IREF>
+                      <CONTEXT-COMPOSITION-REF DEST="ROOT-SW-COMPOSITION-PROTOTYPE">/System/System/Fingerprint</CONTEXT-COMPOSITION-REF>
+                      <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/Fingerprint/CtCotc297_J6</CONTEXT-COMPONENT-REF>
+                      <TARGET-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintManagement_TC297</TARGET-COMPONENT-REF>
+                    </COMPONENT-IREF>
+                  </COMPONENT-IREFS>
+                  <ECU-INSTANCE-REF DEST="ECU-INSTANCE">/Topology/HardwareComponents/TC297</ECU-INSTANCE-REF>
+                </SWC-TO-ECU-MAPPING>
+                <SWC-TO-ECU-MAPPING UUID="imex_a0753a5160d357a3992bb13_a0753a5160d357a3992bb12">
+                  <SHORT-NAME>SW_NET_Component_Mapping236</SHORT-NAME>
+                  <COMPONENT-IREFS>
+                    <COMPONENT-IREF>
+                      <CONTEXT-COMPOSITION-REF DEST="ROOT-SW-COMPOSITION-PROTOTYPE">/System/System/Fingerprint</CONTEXT-COMPOSITION-REF>
+                      <CONTEXT-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/Fingerprint/CtCotc297_J6</CONTEXT-COMPONENT-REF>
+                      <TARGET-COMPONENT-REF DEST="SW-COMPONENT-PROTOTYPE">/SoftwareTypes/ComponentTypes/CtCotc297_J6/FingerprintHMI_J6</TARGET-COMPONENT-REF>
+                    </COMPONENT-IREF>
+                  </COMPONENT-IREFS>
+                  <ECU-INSTANCE-REF DEST="ECU-INSTANCE">/Topology/HardwareComponents/J6</ECU-INSTANCE-REF>
+                </SWC-TO-ECU-MAPPING>
+              </SW-MAPPINGS>
+            </SYSTEM-MAPPING>
+          </MAPPINGS>
+          <ROOT-SOFTWARE-COMPOSITIONS>
+            <ROOT-SW-COMPOSITION-PROTOTYPE UUID="Na0753a5160d357a3992baf6XNa0753a5160d357a3992baf500">
+              <SHORT-NAME>Fingerprint</SHORT-NAME>
+              <SOFTWARE-COMPOSITION-TREF DEST="COMPOSITION-SW-COMPONENT-TYPE">/SoftwareTypes/ComponentTypes/Fingerprint</SOFTWARE-COMPOSITION-TREF>
+            </ROOT-SW-COMPOSITION-PROTOTYPE>
+          </ROOT-SOFTWARE-COMPOSITIONS>
+        </SYSTEM>
+      </ELEMENTS>
+    </AR-PACKAGE>
+    <AR-PACKAGE UUID="e02953f3dc2732e4a64a0d10e1f81c98">
+      <SHORT-NAME>Topology</SHORT-NAME>
+      <AR-PACKAGES>
+        <AR-PACKAGE UUID="d3b99285c5933f55ac710621851679ed">
+          <SHORT-NAME>Clusters</SHORT-NAME>
+          <ELEMENTS>
+            <ETHERNET-CLUSTER UUID="Na0753a5160d357a3992a2acXNa0753a5160d357a3992a2ab00">
+              <SHORT-NAME>FingerprintEthernetCluster</SHORT-NAME>
+              <ETHERNET-CLUSTER-VARIANTS>
+                <ETHERNET-CLUSTER-CONDITIONAL>
+                  <PHYSICAL-CHANNELS>
+                    <ETHERNET-PHYSICAL-CHANNEL UUID="Na0753a5160d357a3992a49bXNa0753a5160d357a3992a49a00">
+                      <SHORT-NAME>ChannelCommunication195</SHORT-NAME>
+                      <COMM-CONNECTORS>
+                        <COMMUNICATION-CONNECTOR-REF-CONDITIONAL>
+                          <COMMUNICATION-CONNECTOR-REF DEST="ETHERNET-COMMUNICATION-CONNECTOR">/Topology/HardwareComponents/J6/BA_J6_0_EEI</COMMUNICATION-CONNECTOR-REF>
+                        </COMMUNICATION-CONNECTOR-REF-CONDITIONAL>
+                        <COMMUNICATION-CONNECTOR-REF-CONDITIONAL>
+                          <COMMUNICATION-CONNECTOR-REF DEST="ETHERNET-COMMUNICATION-CONNECTOR">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI</COMMUNICATION-CONNECTOR-REF>
+                        </COMMUNICATION-CONNECTOR-REF-CONDITIONAL>
+                      </COMM-CONNECTORS>
+                      <I-SIGNAL-TRIGGERINGS>
+                        <I-SIGNAL-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d2f500">
+                          <SHORT-NAME>DoorStatus</SHORT-NAME>
+                          <I-SIGNAL-PORT-REFS>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/DoorStatus_BA_J6_0_EEI_in</I-SIGNAL-PORT-REF>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/DoorStatus_BA_TC297_0_EEI_out</I-SIGNAL-PORT-REF>
+                          </I-SIGNAL-PORT-REFS>
+                          <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/DoorStatus</I-SIGNAL-REF>
+                        </I-SIGNAL-TRIGGERING>
+                        <I-SIGNAL-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d33500">
+                          <SHORT-NAME>Learn_Percent</SHORT-NAME>
+                          <I-SIGNAL-PORT-REFS>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/Learn_Percent_BA_J6_0_EEI_in</I-SIGNAL-PORT-REF>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/Learn_Percent_BA_TC297_0_EEI_out</I-SIGNAL-PORT-REF>
+                          </I-SIGNAL-PORT-REFS>
+                          <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Learn_Percent</I-SIGNAL-REF>
+                        </I-SIGNAL-TRIGGERING>
+                        <I-SIGNAL-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d35c00">
+                          <SHORT-NAME>Learn_Result</SHORT-NAME>
+                          <I-SIGNAL-PORT-REFS>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/Learn_Result_BA_J6_0_EEI_in</I-SIGNAL-PORT-REF>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/Learn_Result_BA_TC297_0_EEI_out</I-SIGNAL-PORT-REF>
+                          </I-SIGNAL-PORT-REFS>
+                          <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Learn_Result</I-SIGNAL-REF>
+                        </I-SIGNAL-TRIGGERING>
+                        <I-SIGNAL-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d36000">
+                          <SHORT-NAME>Inactive_Result</SHORT-NAME>
+                          <I-SIGNAL-PORT-REFS>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/Inactive_Result_BA_J6_0_EEI_in</I-SIGNAL-PORT-REF>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/Inactive_Result_BA_TC297_0_EEI_out</I-SIGNAL-PORT-REF>
+                          </I-SIGNAL-PORT-REFS>
+                          <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Inactive_Result</I-SIGNAL-REF>
+                        </I-SIGNAL-TRIGGERING>
+                        <I-SIGNAL-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d36400">
+                          <SHORT-NAME>Delete_Result</SHORT-NAME>
+                          <I-SIGNAL-PORT-REFS>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/Delete_Result_BA_J6_0_EEI_in</I-SIGNAL-PORT-REF>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/Delete_Result_BA_TC297_0_EEI_out</I-SIGNAL-PORT-REF>
+                          </I-SIGNAL-PORT-REFS>
+                          <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Delete_Result</I-SIGNAL-REF>
+                        </I-SIGNAL-TRIGGERING>
+                        <I-SIGNAL-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d39900">
+                          <SHORT-NAME>Powermode</SHORT-NAME>
+                          <I-SIGNAL-PORT-REFS>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/Powermode_BA_J6_0_EEI_in</I-SIGNAL-PORT-REF>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/Powermode_BA_TC297_0_EEI_out</I-SIGNAL-PORT-REF>
+                          </I-SIGNAL-PORT-REFS>
+                          <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Powermode</I-SIGNAL-REF>
+                        </I-SIGNAL-TRIGGERING>
+                        <I-SIGNAL-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d3c000">
+                          <SHORT-NAME>Learn_Request</SHORT-NAME>
+                          <I-SIGNAL-PORT-REFS>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/Learn_Request_BA_TC297_0_EEI_in</I-SIGNAL-PORT-REF>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/Learn_Request_BA_J6_0_EEI_out</I-SIGNAL-PORT-REF>
+                          </I-SIGNAL-PORT-REFS>
+                          <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Learn_Request</I-SIGNAL-REF>
+                        </I-SIGNAL-TRIGGERING>
+                        <I-SIGNAL-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d3c400">
+                          <SHORT-NAME>Inactive_Request</SHORT-NAME>
+                          <I-SIGNAL-PORT-REFS>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/Inactive_Request_BA_TC297_0_EEI_in</I-SIGNAL-PORT-REF>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/Inactive_Request_BA_J6_0_EEI_out</I-SIGNAL-PORT-REF>
+                          </I-SIGNAL-PORT-REFS>
+                          <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Inactive_Request</I-SIGNAL-REF>
+                        </I-SIGNAL-TRIGGERING>
+                        <I-SIGNAL-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d3c800">
+                          <SHORT-NAME>Delete_Request</SHORT-NAME>
+                          <I-SIGNAL-PORT-REFS>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/Delete_Request_BA_TC297_0_EEI_in</I-SIGNAL-PORT-REF>
+                            <I-SIGNAL-PORT-REF DEST="I-SIGNAL-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/Delete_Request_BA_J6_0_EEI_out</I-SIGNAL-PORT-REF>
+                          </I-SIGNAL-PORT-REFS>
+                          <I-SIGNAL-REF DEST="I-SIGNAL">/Communication/Signals/Delete_Request</I-SIGNAL-REF>
+                        </I-SIGNAL-TRIGGERING>
+                      </I-SIGNAL-TRIGGERINGS>
+                      <PDU-TRIGGERINGS>
+                        <PDU-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d31100">
+                          <SHORT-NAME>DoorStatusPDUTransmission</SHORT-NAME>
+                          <I-PDU-PORT-REFS>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/DoorStatusSignalIPDU_TC297</I-PDU-PORT-REF>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/DoorStatusSignalIPDU_J6</I-PDU-PORT-REF>
+                          </I-PDU-PORT-REFS>
+                          <I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/DoorStatusSignalIPDU</I-PDU-REF>
+                          <I-SIGNAL-TRIGGERINGS>
+                            <I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                              <I-SIGNAL-TRIGGERING-REF DEST="I-SIGNAL-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/DoorStatus</I-SIGNAL-TRIGGERING-REF>
+                            </I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                          </I-SIGNAL-TRIGGERINGS>
+                        </PDU-TRIGGERING>
+                        <PDU-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d34200">
+                          <SHORT-NAME>Learn_PercentPDUTransmission</SHORT-NAME>
+                          <I-PDU-PORT-REFS>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/Learn_PercentSignalIPDU_TC297</I-PDU-PORT-REF>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/Learn_PercentSignalIPDU_J6</I-PDU-PORT-REF>
+                          </I-PDU-PORT-REFS>
+                          <I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Learn_PercentSignalIPDU</I-PDU-REF>
+                          <I-SIGNAL-TRIGGERINGS>
+                            <I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                              <I-SIGNAL-TRIGGERING-REF DEST="I-SIGNAL-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/Learn_Percent</I-SIGNAL-TRIGGERING-REF>
+                            </I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                          </I-SIGNAL-TRIGGERINGS>
+                        </PDU-TRIGGERING>
+                        <PDU-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d37700">
+                          <SHORT-NAME>Inactive_ResultPDUTransmission</SHORT-NAME>
+                          <I-PDU-PORT-REFS>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/Inactive_ResultSignalIPDU_TC297</I-PDU-PORT-REF>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/Inactive_ResultSignalIPDU_J6</I-PDU-PORT-REF>
+                          </I-PDU-PORT-REFS>
+                          <I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Inactive_ResultSignalIPDU</I-PDU-REF>
+                          <I-SIGNAL-TRIGGERINGS>
+                            <I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                              <I-SIGNAL-TRIGGERING-REF DEST="I-SIGNAL-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/Inactive_Result</I-SIGNAL-TRIGGERING-REF>
+                            </I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                          </I-SIGNAL-TRIGGERINGS>
+                        </PDU-TRIGGERING>
+                        <PDU-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d38500">
+                          <SHORT-NAME>Learn_ResultPDUTransmission</SHORT-NAME>
+                          <I-PDU-PORT-REFS>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/Learn_ResultSignalIPDU_TC297</I-PDU-PORT-REF>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/Learn_ResultSignalIPDU_J6</I-PDU-PORT-REF>
+                          </I-PDU-PORT-REFS>
+                          <I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Learn_ResultSignalIPDU</I-PDU-REF>
+                          <I-SIGNAL-TRIGGERINGS>
+                            <I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                              <I-SIGNAL-TRIGGERING-REF DEST="I-SIGNAL-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/Learn_Result</I-SIGNAL-TRIGGERING-REF>
+                            </I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                          </I-SIGNAL-TRIGGERINGS>
+                        </PDU-TRIGGERING>
+                        <PDU-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d38d00">
+                          <SHORT-NAME>Delete_ResultPDUTransmission</SHORT-NAME>
+                          <I-PDU-PORT-REFS>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/Delete_ResultSignalIPDU_TC297</I-PDU-PORT-REF>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/Delete_ResultSignalIPDU_J6</I-PDU-PORT-REF>
+                          </I-PDU-PORT-REFS>
+                          <I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Delete_ResultSignalIPDU</I-PDU-REF>
+                          <I-SIGNAL-TRIGGERINGS>
+                            <I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                              <I-SIGNAL-TRIGGERING-REF DEST="I-SIGNAL-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/Delete_Result</I-SIGNAL-TRIGGERING-REF>
+                            </I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                          </I-SIGNAL-TRIGGERINGS>
+                        </PDU-TRIGGERING>
+                        <PDU-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d3a600">
+                          <SHORT-NAME>PowermodePDUTransmission</SHORT-NAME>
+                          <I-PDU-PORT-REFS>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/PowermodeSignalIPDU_TC297</I-PDU-PORT-REF>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/PowermodeSignalIPDU_J6</I-PDU-PORT-REF>
+                          </I-PDU-PORT-REFS>
+                          <I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/PowermodeSignalIPDU</I-PDU-REF>
+                          <I-SIGNAL-TRIGGERINGS>
+                            <I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                              <I-SIGNAL-TRIGGERING-REF DEST="I-SIGNAL-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/Powermode</I-SIGNAL-TRIGGERING-REF>
+                            </I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                          </I-SIGNAL-TRIGGERINGS>
+                        </PDU-TRIGGERING>
+                        <PDU-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d3db00">
+                          <SHORT-NAME>Learn_RequestPDUTransmission</SHORT-NAME>
+                          <I-PDU-PORT-REFS>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/Learn_RequestSignalIPDU_J6</I-PDU-PORT-REF>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/Learn_RequestSignalIPDU_TC297</I-PDU-PORT-REF>
+                          </I-PDU-PORT-REFS>
+                          <I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Learn_RequestSignalIPDU</I-PDU-REF>
+                          <I-SIGNAL-TRIGGERINGS>
+                            <I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                              <I-SIGNAL-TRIGGERING-REF DEST="I-SIGNAL-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/Learn_Request</I-SIGNAL-TRIGGERING-REF>
+                            </I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                          </I-SIGNAL-TRIGGERINGS>
+                        </PDU-TRIGGERING>
+                        <PDU-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d3e300">
+                          <SHORT-NAME>Inactive_RequestPDUTransmission</SHORT-NAME>
+                          <I-PDU-PORT-REFS>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/Inactive_RequestSignalIPDU_J6</I-PDU-PORT-REF>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/Inactive_RequestSignalIPDU_TC297</I-PDU-PORT-REF>
+                          </I-PDU-PORT-REFS>
+                          <I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Inactive_RequestSignalIPDU</I-PDU-REF>
+                          <I-SIGNAL-TRIGGERINGS>
+                            <I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                              <I-SIGNAL-TRIGGERING-REF DEST="I-SIGNAL-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/Inactive_Request</I-SIGNAL-TRIGGERING-REF>
+                            </I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                          </I-SIGNAL-TRIGGERINGS>
+                        </PDU-TRIGGERING>
+                        <PDU-TRIGGERING UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992d3eb00">
+                          <SHORT-NAME>Delete_RequestPDUTransmission</SHORT-NAME>
+                          <I-PDU-PORT-REFS>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EEI/Delete_RequestSignalIPDU_J6</I-PDU-PORT-REF>
+                            <I-PDU-PORT-REF DEST="I-PDU-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI/Delete_RequestSignalIPDU_TC297</I-PDU-PORT-REF>
+                          </I-PDU-PORT-REFS>
+                          <I-PDU-REF DEST="I-SIGNAL-I-PDU">/Communication/PDUs/Delete_RequestSignalIPDU</I-PDU-REF>
+                          <I-SIGNAL-TRIGGERINGS>
+                            <I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                              <I-SIGNAL-TRIGGERING-REF DEST="I-SIGNAL-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/Delete_Request</I-SIGNAL-TRIGGERING-REF>
+                            </I-SIGNAL-TRIGGERING-REF-CONDITIONAL>
+                          </I-SIGNAL-TRIGGERINGS>
+                        </PDU-TRIGGERING>
+                      </PDU-TRIGGERINGS>
+                      <NETWORK-ENDPOINTS>
+                        <NETWORK-ENDPOINT>
+                          <SHORT-NAME>BA_TC297_NEP</SHORT-NAME>
+                          <NETWORK-ENDPOINT-ADDRESSES>
+                            <IPV-4-CONFIGURATION>
+                              <IPV-4-ADDRESS>192.168.1.10</IPV-4-ADDRESS>
+                            </IPV-4-CONFIGURATION>
+                          </NETWORK-ENDPOINT-ADDRESSES>
+                        </NETWORK-ENDPOINT>
+                        <NETWORK-ENDPOINT>
+                          <SHORT-NAME>BA_J6_NEP</SHORT-NAME>
+                          <NETWORK-ENDPOINT-ADDRESSES>
+                            <IPV-4-CONFIGURATION>
+                              <IPV-4-ADDRESS>192.168.1.20</IPV-4-ADDRESS>
+                              <IPV-4-ADDRESS-SOURCE>AUTO-IP</IPV-4-ADDRESS-SOURCE>
+                            </IPV-4-CONFIGURATION>
+                          </NETWORK-ENDPOINT-ADDRESSES>
+                        </NETWORK-ENDPOINT>
+                      </NETWORK-ENDPOINTS>
+                      <SO-AD-CONFIG>
+                        <CONNECTION-BUNDLES>
+                          <SOCKET-CONNECTION-BUNDLE>
+                            <SHORT-NAME>TC297_J6FinggerprintSocketConnectionBundle</SHORT-NAME>
+                            <BUNDLED-CONNECTIONS>
+                              <SOCKET-CONNECTION>
+                                <CLIENT-PORT-REF DEST="SOCKET-ADDRESS">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/J6SocketAddress</CLIENT-PORT-REF>
+                                <PDUS>
+                                  <SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                    <HEADER-ID>65535</HEADER-ID>
+                                    <PDU-TRIGGERING-REF DEST="PDU-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/Inactive_ResultPDUTransmission</PDU-TRIGGERING-REF>
+                                  </SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                  <SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                    <HEADER-ID>65534</HEADER-ID>
+                                    <PDU-TRIGGERING-REF DEST="PDU-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/Learn_ResultPDUTransmission</PDU-TRIGGERING-REF>
+                                  </SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                  <SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                    <HEADER-ID>65533</HEADER-ID>
+                                    <PDU-TRIGGERING-REF DEST="PDU-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/Delete_ResultPDUTransmission</PDU-TRIGGERING-REF>
+                                  </SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                  <SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                    <HEADER-ID>65532</HEADER-ID>
+                                    <PDU-TRIGGERING-REF DEST="PDU-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/Learn_RequestPDUTransmission</PDU-TRIGGERING-REF>
+                                  </SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                  <SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                    <HEADER-ID>65531</HEADER-ID>
+                                    <PDU-TRIGGERING-REF DEST="PDU-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/Inactive_RequestPDUTransmission</PDU-TRIGGERING-REF>
+                                  </SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                  <SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                    <HEADER-ID>65530</HEADER-ID>
+                                    <PDU-TRIGGERING-REF DEST="PDU-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/Delete_RequestPDUTransmission</PDU-TRIGGERING-REF>
+                                  </SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                  <SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                    <HEADER-ID>65529</HEADER-ID>
+                                    <PDU-TRIGGERING-REF DEST="PDU-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/DoorStatusPDUTransmission</PDU-TRIGGERING-REF>
+                                  </SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                  <SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                    <HEADER-ID>65528</HEADER-ID>
+                                    <PDU-TRIGGERING-REF DEST="PDU-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/Learn_PercentPDUTransmission</PDU-TRIGGERING-REF>
+                                  </SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                  <SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                    <HEADER-ID>65527</HEADER-ID>
+                                    <PDU-TRIGGERING-REF DEST="PDU-TRIGGERING">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/PowermodePDUTransmission</PDU-TRIGGERING-REF>
+                                  </SOCKET-CONNECTION-IPDU-IDENTIFIER>
+                                </PDUS>
+                              </SOCKET-CONNECTION>
+                            </BUNDLED-CONNECTIONS>
+                            <SERVER-PORT-REF DEST="SOCKET-ADDRESS">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/TC297SocketAddress</SERVER-PORT-REF>
+                          </SOCKET-CONNECTION-BUNDLE>
+                        </CONNECTION-BUNDLES>
+                        <SOCKET-ADDRESSS>
+                          <SOCKET-ADDRESS UUID="Na0753a5160d46a054b25c01XNa0753a5160d46a054b25bfe00">
+                            <SHORT-NAME>J6SocketAddress</SHORT-NAME>
+                            <APPLICATION-ENDPOINT>
+                              <SHORT-NAME>BA_J6_0_EEI</SHORT-NAME>
+                              <CONSUMED-SERVICE-INSTANCES>
+                                <CONSUMED-SERVICE-INSTANCE>
+                                  <SHORT-NAME>newCSI</SHORT-NAME>
+                                </CONSUMED-SERVICE-INSTANCE>
+                              </CONSUMED-SERVICE-INSTANCES>
+                              <NETWORK-ENDPOINT-REF DEST="NETWORK-ENDPOINT">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/BA_J6_NEP</NETWORK-ENDPOINT-REF>
+                              <TP-CONFIGURATION>
+                                <TCP-TP>
+                                  <TCP-TP-PORT>
+                                    <PORT-NUMBER>100</PORT-NUMBER>
+                                  </TCP-TP-PORT>
+                                </TCP-TP>
+                              </TP-CONFIGURATION>
+                            </APPLICATION-ENDPOINT>
+                            <CONNECTOR-REF DEST="ETHERNET-COMMUNICATION-CONNECTOR">/Topology/HardwareComponents/J6/BA_J6_0_EEI</CONNECTOR-REF>
+                          </SOCKET-ADDRESS>
+                          <SOCKET-ADDRESS UUID="Na0753a5160d46a054b25c8bXNa0753a5160d46a054b25c8800">
+                            <SHORT-NAME>TC297SocketAddress</SHORT-NAME>
+                            <APPLICATION-ENDPOINT>
+                              <SHORT-NAME>BA_TC297_0_EEI</SHORT-NAME>
+                              <NETWORK-ENDPOINT-REF DEST="NETWORK-ENDPOINT">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/BA_TC297_NEP</NETWORK-ENDPOINT-REF>
+                              <PROVIDED-SERVICE-INSTANCES>
+                                <PROVIDED-SERVICE-INSTANCE>
+                                  <SHORT-NAME>newPSI</SHORT-NAME>
+                                </PROVIDED-SERVICE-INSTANCE>
+                              </PROVIDED-SERVICE-INSTANCES>
+                              <TP-CONFIGURATION>
+                                <TCP-TP>
+                                  <TCP-TP-PORT>
+                                    <PORT-NUMBER>100</PORT-NUMBER>
+                                  </TCP-TP-PORT>
+                                </TCP-TP>
+                              </TP-CONFIGURATION>
+                            </APPLICATION-ENDPOINT>
+                            <CONNECTOR-REF DEST="ETHERNET-COMMUNICATION-CONNECTOR">/Topology/HardwareComponents/TC297/BA_TC297_0_EEI</CONNECTOR-REF>
+                          </SOCKET-ADDRESS>
+                        </SOCKET-ADDRESSS>
+                      </SO-AD-CONFIG>
+                      <VLAN>
+                        <SHORT-NAME>Fingerprint_Vlan</SHORT-NAME>
+                        <VLAN-IDENTIFIER>10</VLAN-IDENTIFIER>
+                      </VLAN>
+                    </ETHERNET-PHYSICAL-CHANNEL>
+                  </PHYSICAL-CHANNELS>
+                  <COUPLING-PORT-CONNECTIONS>
+                    <COUPLING-PORT-CONNECTION>
+                      <FIRST-PORT-REF DEST="COUPLING-PORT">/Topology/HardwareComponents/TC297/BA_TC297_0_EPC/BA_TC297_0</FIRST-PORT-REF>
+                      <SECOND-PORT-REF DEST="COUPLING-PORT">/Topology/HardwareComponents/CouplingElement8/BA_Switch_TC297_J6_0</SECOND-PORT-REF>
+                    </COUPLING-PORT-CONNECTION>
+                    <COUPLING-PORT-CONNECTION>
+                      <FIRST-PORT-REF DEST="COUPLING-PORT">/Topology/HardwareComponents/J6/BA_J6_0_EPC/BA_J6_0</FIRST-PORT-REF>
+                      <SECOND-PORT-REF DEST="COUPLING-PORT">/Topology/HardwareComponents/CouplingElement8/BA_Switch_TC297_J6_1</SECOND-PORT-REF>
+                    </COUPLING-PORT-CONNECTION>
+                  </COUPLING-PORT-CONNECTIONS>
+                </ETHERNET-CLUSTER-CONDITIONAL>
+              </ETHERNET-CLUSTER-VARIANTS>
+            </ETHERNET-CLUSTER>
+          </ELEMENTS>
+        </AR-PACKAGE>
+        <AR-PACKAGE UUID="0127c66a2ab03563b55cad94c58faad0">
+          <SHORT-NAME>HardwareComponents</SHORT-NAME>
+          <ELEMENTS>
+            <COUPLING-ELEMENT UUID="Na0753a5160d357a3992d2fbXNa0753a5160d357a3992d2fa00">
+              <SHORT-NAME>CouplingElement8</SHORT-NAME>
+              <COMMUNICATION-CLUSTER-REF DEST="ETHERNET-CLUSTER">/Topology/Clusters/FingerprintEthernetCluster</COMMUNICATION-CLUSTER-REF>
+              <COUPLING-PORTS>
+                <COUPLING-PORT UUID="Na0753a5160d357a3992d2feXNa0753a5160d357a3992d2fd00">
+                  <SHORT-NAME>BA_Switch_TC297_J6_0</SHORT-NAME>
+                  <DEFAULT-VLAN-REF DEST="ETHERNET-PHYSICAL-CHANNEL">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195</DEFAULT-VLAN-REF>
+                  <VLAN-MEMBERSHIPS>
+                    <VLAN-MEMBERSHIP>
+                      <SEND-ACTIVITY>SENT-TAGGED</SEND-ACTIVITY>
+                      <VLAN-REF DEST="ETHERNET-PHYSICAL-CHANNEL">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195</VLAN-REF>
+                    </VLAN-MEMBERSHIP>
+                  </VLAN-MEMBERSHIPS>
+                </COUPLING-PORT>
+                <COUPLING-PORT UUID="Na0753a5160d357a3992d304XNa0753a5160d357a3992d30300">
+                  <SHORT-NAME>BA_Switch_TC297_J6_1</SHORT-NAME>
+                  <DEFAULT-VLAN-REF DEST="ETHERNET-PHYSICAL-CHANNEL">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195</DEFAULT-VLAN-REF>
+                  <VLAN-MEMBERSHIPS>
+                    <VLAN-MEMBERSHIP>
+                      <SEND-ACTIVITY>SENT-TAGGED</SEND-ACTIVITY>
+                      <VLAN-REF DEST="ETHERNET-PHYSICAL-CHANNEL">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195</VLAN-REF>
+                    </VLAN-MEMBERSHIP>
+                  </VLAN-MEMBERSHIPS>
+                </COUPLING-PORT>
+              </COUPLING-PORTS>
+              <COUPLING-TYPE>SWITCH</COUPLING-TYPE>
+            </COUPLING-ELEMENT>
+            <ECU-INSTANCE UUID="Na0753a5160d357a39929ea7XNa0753a5160d357a39929ea600">
+              <SHORT-NAME>J6</SHORT-NAME>
+              <ASSOCIATED-COM-I-PDU-GROUP-REFS>
+                <ASSOCIATED-COM-I-PDU-GROUP-REF DEST="I-SIGNAL-I-PDU-GROUP">/Communication/PDUs/J6_BusSystem57_Tx</ASSOCIATED-COM-I-PDU-GROUP-REF>
+                <ASSOCIATED-COM-I-PDU-GROUP-REF DEST="I-SIGNAL-I-PDU-GROUP">/Communication/PDUs/J6_BusSystem57_Rx</ASSOCIATED-COM-I-PDU-GROUP-REF>
+              </ASSOCIATED-COM-I-PDU-GROUP-REFS>
+              <COMM-CONTROLLERS>
+                <ETHERNET-COMMUNICATION-CONTROLLER UUID="Na0753a5160d357a3992a8faXNa0753a5160d357a3992a8f700">
+                  <SHORT-NAME>BA_J6_0_EPC</SHORT-NAME>
+                  <ETHERNET-COMMUNICATION-CONTROLLER-VARIANTS>
+                    <ETHERNET-COMMUNICATION-CONTROLLER-CONDITIONAL>
+                      <COUPLING-PORTS>
+                        <COUPLING-PORT>
+                          <SHORT-NAME>BA_J6_0</SHORT-NAME>
+                          <CONNECTION-NEGOTIATION-BEHAVIOR>AUTO</CONNECTION-NEGOTIATION-BEHAVIOR>
+                          <PHYSICAL-LAYER-TYPE>BROAD-R-REACH</PHYSICAL-LAYER-TYPE>
+                          <VLAN-MEMBERSHIPS>
+                            <VLAN-MEMBERSHIP>
+                              <DEFAULT-PRIORITY>1</DEFAULT-PRIORITY>
+                              <VLAN-REF DEST="ETHERNET-PHYSICAL-CHANNEL">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195</VLAN-REF>
+                            </VLAN-MEMBERSHIP>
+                          </VLAN-MEMBERSHIPS>
+                        </COUPLING-PORT>
+                      </COUPLING-PORTS>
+                      <MAC-UNICAST-ADDRESS>AA:BB:CC:DD:00:02</MAC-UNICAST-ADDRESS>
+                    </ETHERNET-COMMUNICATION-CONTROLLER-CONDITIONAL>
+                  </ETHERNET-COMMUNICATION-CONTROLLER-VARIANTS>
+                </ETHERNET-COMMUNICATION-CONTROLLER>
+              </COMM-CONTROLLERS>
+              <CONNECTORS>
+                <ETHERNET-COMMUNICATION-CONNECTOR UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992abed00">
+                  <SHORT-NAME>BA_J6_0_EEI</SHORT-NAME>
+                  <COMM-CONTROLLER-REF DEST="ETHERNET-COMMUNICATION-CONTROLLER">/Topology/HardwareComponents/J6/BA_J6_0_EPC</COMM-CONTROLLER-REF>
+                  <ECU-COMM-PORT-INSTANCES>
+                    <I-SIGNAL-PORT UUID="e3d46eeb8f773ae2b2fb332bab3b5e9f">
+                      <SHORT-NAME>DoorStatus_BA_J6_0_EEI_in</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="932fd4e88dcf3e0b93d395477445406b">
+                      <SHORT-NAME>Learn_Percent_BA_J6_0_EEI_in</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="27457efc425a3c6885ccf523d8cc13b3">
+                      <SHORT-NAME>Learn_Result_BA_J6_0_EEI_in</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="962197f73b093ef4b0fadebe51e10951">
+                      <SHORT-NAME>Inactive_Result_BA_J6_0_EEI_in</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="0c06809dcb13307483a89cb6a3bd3cb9">
+                      <SHORT-NAME>Delete_Result_BA_J6_0_EEI_in</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="9edf398a713f3624bb61724fb22e00f0">
+                      <SHORT-NAME>Powermode_BA_J6_0_EEI_in</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="c028ddaf852f3984a675a613bba40840">
+                      <SHORT-NAME>Learn_Request_BA_J6_0_EEI_out</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="701deba5c19a31599f4437a597c2f23b">
+                      <SHORT-NAME>Inactive_Request_BA_J6_0_EEI_out</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="ab3eb48eb7b737b0b2255dc430264b4b">
+                      <SHORT-NAME>Delete_Request_BA_J6_0_EEI_out</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>Learn_RequestSignalIPDU_J6</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>Inactive_RequestSignalIPDU_J6</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>Delete_RequestSignalIPDU_J6</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>Learn_PercentSignalIPDU_J6</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>DoorStatusSignalIPDU_J6</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>Inactive_ResultSignalIPDU_J6</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>Learn_ResultSignalIPDU_J6</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>Delete_ResultSignalIPDU_J6</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>PowermodeSignalIPDU_J6</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                  </ECU-COMM-PORT-INSTANCES>
+                  <NETWORK-ENDPOINT-REFS>
+                    <NETWORK-ENDPOINT-REF DEST="NETWORK-ENDPOINT">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/BA_J6_NEP</NETWORK-ENDPOINT-REF>
+                  </NETWORK-ENDPOINT-REFS>
+                </ETHERNET-COMMUNICATION-CONNECTOR>
+              </CONNECTORS>
+              <SLEEP-MODE-SUPPORTED>false</SLEEP-MODE-SUPPORTED>
+              <WAKE-UP-OVER-BUS-SUPPORTED>false</WAKE-UP-OVER-BUS-SUPPORTED>
+            </ECU-INSTANCE>
+            <ECU-INSTANCE UUID="Na0753a5160d357a399294a1XNa0753a5160d357a399294a000">
+              <SHORT-NAME>TC297</SHORT-NAME>
+              <ASSOCIATED-COM-I-PDU-GROUP-REFS>
+                <ASSOCIATED-COM-I-PDU-GROUP-REF DEST="I-SIGNAL-I-PDU-GROUP">/Communication/PDUs/TC297_BusSystem56_Tx</ASSOCIATED-COM-I-PDU-GROUP-REF>
+                <ASSOCIATED-COM-I-PDU-GROUP-REF DEST="I-SIGNAL-I-PDU-GROUP">/Communication/PDUs/TC297_BusSystem56_Rx</ASSOCIATED-COM-I-PDU-GROUP-REF>
+              </ASSOCIATED-COM-I-PDU-GROUP-REFS>
+              <COMM-CONTROLLERS>
+                <ETHERNET-COMMUNICATION-CONTROLLER UUID="Na0753a5160d357a3992a952XNa0753a5160d357a3992a94f00">
+                  <SHORT-NAME>BA_TC297_0_EPC</SHORT-NAME>
+                  <ETHERNET-COMMUNICATION-CONTROLLER-VARIANTS>
+                    <ETHERNET-COMMUNICATION-CONTROLLER-CONDITIONAL>
+                      <COUPLING-PORTS>
+                        <COUPLING-PORT>
+                          <SHORT-NAME>BA_TC297_0</SHORT-NAME>
+                          <CONNECTION-NEGOTIATION-BEHAVIOR>AUTO</CONNECTION-NEGOTIATION-BEHAVIOR>
+                          <PHYSICAL-LAYER-TYPE>BROAD-R-REACH</PHYSICAL-LAYER-TYPE>
+                          <VLAN-MEMBERSHIPS>
+                            <VLAN-MEMBERSHIP>
+                              <DEFAULT-PRIORITY>1</DEFAULT-PRIORITY>
+                              <VLAN-REF DEST="ETHERNET-PHYSICAL-CHANNEL">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195</VLAN-REF>
+                            </VLAN-MEMBERSHIP>
+                          </VLAN-MEMBERSHIPS>
+                        </COUPLING-PORT>
+                      </COUPLING-PORTS>
+                      <MAC-UNICAST-ADDRESS>AA:BB:CC:DD:00:01</MAC-UNICAST-ADDRESS>
+                    </ETHERNET-COMMUNICATION-CONTROLLER-CONDITIONAL>
+                  </ETHERNET-COMMUNICATION-CONTROLLER-VARIANTS>
+                </ETHERNET-COMMUNICATION-CONTROLLER>
+              </COMM-CONTROLLERS>
+              <CONNECTORS>
+                <ETHERNET-COMMUNICATION-CONNECTOR UUID="Na0753a5160d357a3992a49exNa0753a5160d357a3992aced00">
+                  <SHORT-NAME>BA_TC297_0_EEI</SHORT-NAME>
+                  <COMM-CONTROLLER-REF DEST="ETHERNET-COMMUNICATION-CONTROLLER">/Topology/HardwareComponents/TC297/BA_TC297_0_EPC</COMM-CONTROLLER-REF>
+                  <ECU-COMM-PORT-INSTANCES>
+                    <I-SIGNAL-PORT UUID="9fb5a1ed6745320b8c5c7a507998906a">
+                      <SHORT-NAME>Learn_Request_BA_TC297_0_EEI_in</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="756a1bbd85e13adab59e2d796689e345">
+                      <SHORT-NAME>Inactive_Request_BA_TC297_0_EEI_in</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="412d0cea16033876af22c8efbb88f5b2">
+                      <SHORT-NAME>Delete_Request_BA_TC297_0_EEI_in</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="b93cf2d69ca5321b972c6a09edee0727">
+                      <SHORT-NAME>DoorStatus_BA_TC297_0_EEI_out</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="ad554821c45e3e729e689e260cc535d5">
+                      <SHORT-NAME>Learn_Percent_BA_TC297_0_EEI_out</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="bbd41aee764b310794c587580b4ab2af">
+                      <SHORT-NAME>Learn_Result_BA_TC297_0_EEI_out</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="313123d9769b3b8799163399357ae57b">
+                      <SHORT-NAME>Inactive_Result_BA_TC297_0_EEI_out</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="8cc83af8ffb4371cbf6a782154de5d26">
+                      <SHORT-NAME>Delete_Result_BA_TC297_0_EEI_out</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-SIGNAL-PORT UUID="4afc7ef2365d3af38d079afb3ab12f8e">
+                      <SHORT-NAME>Powermode_BA_TC297_0_EEI_out</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-SIGNAL-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>Learn_PercentSignalIPDU_TC297</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>DoorStatusSignalIPDU_TC297</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>Learn_ResultSignalIPDU_TC297</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>Inactive_ResultSignalIPDU_TC297</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>Delete_ResultSignalIPDU_TC297</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>PowermodeSignalIPDU_TC297</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>OUT</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>Learn_RequestSignalIPDU_TC297</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>Inactive_RequestSignalIPDU_TC297</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                    <I-PDU-PORT>
+                      <SHORT-NAME>Delete_RequestSignalIPDU_TC297</SHORT-NAME>
+                      <COMMUNICATION-DIRECTION>IN</COMMUNICATION-DIRECTION>
+                    </I-PDU-PORT>
+                  </ECU-COMM-PORT-INSTANCES>
+                  <NETWORK-ENDPOINT-REFS>
+                    <NETWORK-ENDPOINT-REF DEST="NETWORK-ENDPOINT">/Topology/Clusters/FingerprintEthernetCluster/ChannelCommunication195/BA_TC297_NEP</NETWORK-ENDPOINT-REF>
+                  </NETWORK-ENDPOINT-REFS>
+                </ETHERNET-COMMUNICATION-CONNECTOR>
+              </CONNECTORS>
+              <SLEEP-MODE-SUPPORTED>false</SLEEP-MODE-SUPPORTED>
+              <WAKE-UP-OVER-BUS-SUPPORTED>false</WAKE-UP-OVER-BUS-SUPPORTED>
+            </ECU-INSTANCE>
+          </ELEMENTS>
+        </AR-PACKAGE>
+      </AR-PACKAGES>
+    </AR-PACKAGE>
+  </AR-PACKAGES>
+</AUTOSAR>
